@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>Dashboard</h2>
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>2,540</h3>
+            <span>Total Products</span>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>$125,450</h3>
+            <span>Inventory Value</span>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>$8,540</h3>
+            <span>Today's Sales</span>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h3>$24,600</h3>
+            <span>Receivables</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-8">
+
+        <div class="card dashboard-card">
+
+            <div class="card-header">
+                Monthly Sales
+            </div>
+
+            <div class="card-body">
+
+                <div class="chart-placeholder">
+                    Sales Chart Area
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+
+        <div class="card dashboard-card">
+
+            <div class="card-header">
+                Inventory Summary
+            </div>
+
+            <div class="card-body">
+
+                <p>Warehouse Stock : 1250</p>
+                <p>Reserved Stock : 220</p>
+                <p>Low Stock Items : 18</p>
+                <p>Out Of Stock : 6</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row g-4 mt-2">
+
+    <div class="col-lg-6">
+
+        <div class="card dashboard-card">
+
+            <div class="card-header">
+                Low Stock Products
+            </div>
+
+            <div class="card-body">
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <td>SKU001</td>
+                        <td>Chair</td>
+                        <td>5</td>
+                    </tr>
+
+                    <tr>
+                        <td>SKU002</td>
+                        <td>Wardrobe</td>
+                        <td>2</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-6">
+
+        <div class="card dashboard-card">
+
+            <div class="card-header">
+                Recent Purchase Orders
+            </div>
+
+            <div class="card-body">
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>PO</th>
+                        <th>Supplier</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <td>PO1001</td>
+                        <td>Factory A</td>
+                        <td>Received</td>
+                    </tr>
+
+                    <tr>
+                        <td>PO1002</td>
+                        <td>Factory B</td>
+                        <td>Pending</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

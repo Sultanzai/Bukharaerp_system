@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Categories
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Product Categories</h2>
+            <p class="text-muted mb-0">
+                Create and manage product categories.
+            </p>
+        </div>
+    </div>
+
+    <!-- Category Form -->
+
+    <div class="card dashboard-card mb-4">
+
+        <div class="card-header">
+            Add Category
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Category Name
+                        </label>
+
+                        {{ form.name }}
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Category Type
+                        </label>
+
+                        {{ form.type }}
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-8 mb-3">
+
+                        <label class="form-label">
+                            Description
+                        </label>
+
+                        {{ form.description }}
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+
+                    Save Category
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Category List -->
+
+    <div class="card dashboard-card">
+
+        <div class="card-header">
+            Category List
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th width="120">Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for category in categories %}
+
+                    <tr>
+
+                        <td>{{ category.id }}</td>
+
+                        <td>{{ category.name }}</td>
+
+                        <td>{{ category.type }}</td>
+
+                        <td>{{ category.description }}</td>
+
+                        <td>
+
+                            <button
+                                class="btn btn-danger btn-sm">
+
+                                Delete
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="5" class="text-center">
+
+                            No categories found
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h4 class="mb-0">
+                Add Product
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Category
+                        </label>
+
+                        {{ form.category }}
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Product Name
+                        </label>
+
+                        {{ form.name }}
+
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+
+                        <label class="form-label">
+                            Active
+                        </label>
+
+                        <div>
+                            {{ form.active }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-end">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100"
+                        >
+                            Save
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+            <h4 class="mb-0">
+                Product List
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <table
+                id="productTable"
+                class="table table-bordered table-striped"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Category</th>
+                        <th>Product Name</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for product in products %}
+
+                    <tr>
+
+                        <td>
+                            {{ product.id }}
+                        </td>
+
+                        <td>
+                            {{ product.category.name }}
+                        </td>
+
+                        <td>
+                            {{ product.name }}
+                        </td>
+
+                        <td>
+
+                            {% if product.active %}
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-danger">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ product.created_at|date:"d M Y" }}
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-warning">
+                                Edit
+                            </a> 
+                        </td>   
+                        <td>
+                            <a href="#" class="btn btn-sm btn-danger">
+                                Delete
+                            </a> 
+                        </td>   
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="5" class="text-center">
+
+                            No Products Found
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+$(document).ready(function () {
+
+    $('#productTable').DataTable({
+        pageLength: 25
+    });
+
+});
+
+</script>
+
+{% endblock %}
