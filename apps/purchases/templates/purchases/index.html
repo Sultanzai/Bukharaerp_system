@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h3>
+            Factories
+        </h3>
+
+        <a
+            href="{% url 'purchases:factory-create' %}"
+            class="btn btn-primary"
+        >
+            Add Factory
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <table
+                id="factoryTable"
+                class="table table-bordered table-striped"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        <th>Created</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for factory in factories %}
+
+                    <tr>
+
+                        <td>
+                            {{ factory.id }}
+                        </td>
+
+                        <td>
+                            {{ factory.name }}
+                        </td>
+
+                        <td>
+                            {{ factory.phone }}
+                        </td>
+
+                        <td>
+
+                            {% if factory.status %}
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-danger">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ factory.created_at|date:"d M Y" }}
+                        </td>
+
+                                                <td>
+                            <a href="#" class="btn btn-sm btn-warning">
+                                Edit
+                            </a> 
+                        </td>   
+                        <td>
+                            <a href="#" class="btn btn-sm btn-danger">
+                                Delete
+                            </a> 
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+$(document).ready(function () {
+
+    $('#factoryTable').DataTable({
+        pageLength: 25
+    });
+
+});
+
+</script>
+
+{% endblock %}

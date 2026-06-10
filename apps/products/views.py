@@ -1,13 +1,15 @@
 from django.views.generic import ListView, TemplateView
 from django.shortcuts import redirect
-from .models import Category
+from .models import Category, StockMovement
 from .forms import CategoryForm
-
+from django.db import transaction
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from apps.products.models import Product
-from apps.products.forms import ProductForm
+from .forms import ProductForm, ProductVariantForm
+
 
 
 class ProductHomeView(TemplateView):
@@ -36,9 +38,12 @@ class MasterProductView(TemplateView):
 
         if form.is_valid():
 
-            form.save()
+            product = form.save()
 
-            return redirect("products:master-products")
+            return redirect(
+                "products:variants",
+                product_id=product.id
+            )
 
         context = {
             "form": form,
@@ -93,3 +98,87 @@ class ProductListView(ListView):
     queryset = Product.objects.select_related(
         "category"
     ).order_by("name")
+
+
+
+
+
+
+class ProductVariantView(TemplateView):
+
+    template_name = "products/variants.html"
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        product = get_object_or_404(
+            Product,
+            pk=self.kwargs["product_id"]
+        )
+
+        context["product"] = product
+
+        context["form"] = ProductVariantForm()
+
+        context["variants"] = product.variants.all()
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+
+        product = get_object_or_404(
+            Product,
+            pk=self.kwargs["product_id"]
+        )
+
+        form = ProductVariantForm(request.POST)
+
+        if form.is_valid():
+
+            with transaction.atomic():
+
+                variant = form.save(
+                    commit=False
+                )
+
+                variant.product = product
+
+                variant.save()
+
+                opening_stock = form.cleaned_data[
+                    "opening_stock"
+                ]
+
+                if opening_stock > 0:
+
+                    StockMovement.objects.create(
+
+                        product_variant=variant,
+
+                        movement_type="OPENING",
+
+                        qty=opening_stock,
+
+                        related_docs="MASTER_PRODUCT",
+
+                        file_number=product.id,
+
+                        notes="Opening Stock"
+
+                    )
+
+            return redirect(
+                "products:variants",
+                product_id=product.id
+            )
+
+        return self.render_to_response({
+
+            "product": product,
+
+            "form": form,
+
+            "variants": product.variants.all()
+
+        })

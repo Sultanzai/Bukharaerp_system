@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card">
+
+        <div class="card-header">
+            <h4>
+                Add Factory
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>
+                            Factory Name
+                        </label>
+
+                        {{ form.name }}
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>
+                            Phone
+                        </label>
+
+                        {{ form.phone }}
+
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+
+                        <label>
+                            Address
+                        </label>
+
+                        {{ form.address }}
+
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+
+                        <label>
+                            Notes
+                        </label>
+
+                        {{ form.notes }}
+
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+
+                        <div class="form-check">
+
+                            {{ form.status }}
+
+                            <label class="form-check-label">
+
+                                Active
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Save Factory
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

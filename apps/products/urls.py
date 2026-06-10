@@ -5,6 +5,7 @@ from .views import (
     ProductHomeView,
     MasterProductView,
     CategoryView,
+    ProductVariantView,
 )
 
 app_name = "products"
@@ -27,4 +28,9 @@ urlpatterns = [
         CategoryView.as_view(),
         name="categories"
     ),
+    path(
+    "<int:product_id>/variants/",
+    ProductVariantView.as_view(),
+    name="variants"
+),
 ]

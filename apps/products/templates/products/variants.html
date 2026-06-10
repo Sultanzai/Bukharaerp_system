@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h3>
+
+        {{ product.name }}
+
+    </h3>
+
+    <hr>
+
+    <div class="card mb-4">
+
+        <div class="card-header">
+
+            Add Variant
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        {{ form.sku.label_tag }}
+                        {{ form.sku }}
+                    </div>
+
+                    <div class="col-md-3">
+                        {{ form.size.label_tag }}
+                        {{ form.size }}
+                    </div>
+
+                    <div class="col-md-3">
+                        {{ form.color.label_tag }}
+                        {{ form.color }}
+                    </div>
+
+                    <div class="col-md-3">
+                        {{ form.factory.label_tag }}
+                        {{ form.factory }}
+                    </div>
+
+                    <div class="col-md-3 mt-3">
+                        {{ form.cost_price.label_tag }}
+                        {{ form.cost_price }}
+                    </div>
+
+                    <div class="col-md-3 mt-3">
+                        {{ form.selling_price.label_tag }}
+                        {{ form.selling_price }}
+                    </div>
+
+                    <div class="col-md-3 mt-3">
+                        {{ form.opening_stock.label_tag }}
+                        {{ form.opening_stock }}
+                    </div>
+
+                    <div class="col-md-3 mt-3 d-flex align-items-end">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100"
+                        >
+                            Save Variant
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-header">
+
+            Variant List
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+
+                        <th>SKU</th>
+
+                        <th>Color</th>
+
+                        <th>Size</th>
+
+                        <th>Cost</th>
+
+                        <th>Selling</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for variant in variants %}
+
+                    <tr>
+
+                        <td>{{ variant.sku }}</td>
+
+                        <td>{{ variant.color }}</td>
+
+                        <td>{{ variant.size }}</td>
+
+                        <td>{{ variant.cost_price }}</td>
+
+                        <td>{{ variant.selling_price }}</td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
