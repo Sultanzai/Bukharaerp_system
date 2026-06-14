@@ -49,6 +49,8 @@ class ProductForm(forms.ModelForm):
         fields = [
             "category",
             "name",
+            "belongto",
+            "description",
             "active",
         ]
 
@@ -66,17 +68,21 @@ class ProductForm(forms.ModelForm):
                 }
             ),
 
-            "active": forms.CheckboxInput(
+            "belongto": forms.Select(
                 attrs={
-                    "class": "form-check-input"
+                    "class": "form-select"
+                }
+            ),
+
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": "Enter product description..."
                 }
             ),
 
         }
-
-
-
-
 
 
 
@@ -107,7 +113,7 @@ class ProductVariantForm(forms.ModelForm):
 
             "cost_price",
 
-            "selling_price"
+            "selling_price",
 
         ]
 
@@ -162,3 +168,27 @@ class ProductVariantForm(forms.ModelForm):
             ),
 
         }
+
+
+class StockInForm(forms.Form):
+
+    qty = forms.IntegerField(
+        required=False,
+        min_value=0,
+        widget=forms.NumberInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Qty"
+            }
+        )
+    )
+
+    notes = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Notes"
+            }
+        )
+    )

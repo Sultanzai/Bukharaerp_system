@@ -13,16 +13,15 @@
         </div>
 
         <div class="card-body">
-
             <form method="post">
 
                 {% csrf_token %}
 
-                <div class="row">
+                <div class="row g-3">
 
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-4">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
                             Category
                         </label>
 
@@ -30,9 +29,9 @@
 
                     </div>
 
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-4">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
                             Product Name
                         </label>
 
@@ -40,25 +39,45 @@
 
                     </div>
 
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-3">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
+                            Product Belonging To
+                        </label>
+
+                        {{ form.belongto }}
+
+                    </div>
+
+                    <div class="col-md-1">
+
+                        <label class="form-label fw-semibold d-block">
                             Active
                         </label>
 
-                        <div>
+                        <div class="form-check mt-2">
                             {{ form.active }}
                         </div>
 
                     </div>
 
-                    <div class="col-md-2 d-flex align-items-end">
+                    <div class="col-md-12">
+
+                        <label class="form-label fw-semibold">
+                            Product Description
+                        </label>
+
+                        {{ form.description }}
+
+                    </div>
+
+                    <div class="col-md-12 text-end">
 
                         <button
                             type="submit"
-                            class="btn btn-primary w-100"
+                            class="btn btn-primary px-4"
                         >
-                            Save
+                            Save Product
                         </button>
 
                     </div>
@@ -92,8 +111,9 @@
                     <tr>
 
                         <th>ID</th>
+                        <th>Name</th>
                         <th>Category</th>
-                        <th>Product Name</th>
+                        <th>Location</th>
                         <th>Status</th>
                         <th>Created</th>
                         <th>Edit</th>
@@ -113,12 +133,15 @@
                             {{ product.id }}
                         </td>
 
+                        
+                        <td>
+                            <a href="{% url 'products:variants' product.id %}" class="fw-semibold text-decoration-none" > {{ product.name }} </a>
+                        </td>
                         <td>
                             {{ product.category.name }}
                         </td>
-
                         <td>
-                            {{ product.name }}
+                            {{ product.belongto }}
                         </td>
 
                         <td>

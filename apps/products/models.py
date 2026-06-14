@@ -40,6 +40,14 @@ class Product(models.Model):
     # )
 
     name = models.CharField(max_length=255)
+    description = models.TextField( blank=True, null=True)
+    BELONG_TO_CHOICES = (
+    ("stock", "In Stock"),
+    ("factory", "In Factory"),)
+    belongto = models.CharField(
+    max_length=20,
+    choices=BELONG_TO_CHOICES,
+    default="stock")
 
     active = models.BooleanField(default=True)
 
@@ -127,24 +135,14 @@ class StockMovement(models.Model):
     product_variant = models.ForeignKey(
         ProductVariant,
         on_delete=models.CASCADE,
-        related_name="movements"
+        related_name="stock_movements"
     )
 
-    movement_type = models.CharField(
+    type = models.CharField(
         max_length=50
     )
 
     qty = models.IntegerField()
-
-    related_docs = models.TextField(
-        blank=True,
-        null=True
-    )
-
-    file_number = models.BigIntegerField(
-        blank=True,
-        null=True
-    )
 
     notes = models.TextField(
         blank=True,

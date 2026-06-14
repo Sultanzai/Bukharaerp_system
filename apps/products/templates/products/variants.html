@@ -98,6 +98,8 @@
 
                     <tr>
 
+                        <th>ID</th>
+
                         <th>SKU</th>
 
                         <th>Color</th>
@@ -111,23 +113,29 @@
                     </tr>
 
                 </thead>
+                <h5>
+                Total Variant: {{ variants.count }}
+                </h5> <br>
 
                 <tbody>
 
                     {% for variant in variants %}
 
                     <tr>
-
+                        <td>{{ variant.id }}</td>
                         <td>{{ variant.sku }}</td>
-
-                        <td>{{ variant.color }}</td>
-
                         <td>{{ variant.size }}</td>
-
+                        <td>{{ variant.color }}</td>
                         <td>{{ variant.cost_price }}</td>
-
                         <td>{{ variant.selling_price }}</td>
+                    </tr>
 
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            No Variants Found
+                        </td>
                     </tr>
 
                     {% endfor %}
