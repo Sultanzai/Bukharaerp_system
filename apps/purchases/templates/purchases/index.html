@@ -55,7 +55,9 @@
                         </td>
 
                         <td>
-                            {{ factory.name }}
+                            <a href="{% url 'purchases:factory_purchase_orders' factory.id %}">
+                                {{ factory.name }}
+                            </a>
                         </td>
 
                         <td>
