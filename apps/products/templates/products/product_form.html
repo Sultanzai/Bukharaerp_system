@@ -165,16 +165,19 @@
                         <td>
                             {{ product.created_at|date:"d M Y" }}
                         </td>
+                        
                         <td>
-                            <a href="#" class="btn btn-sm btn-warning">
+                            <a href="#"
+                               class="btn btn-sm btn-outline-primary">
                                 Edit
-                            </a> 
-                        </td>   
+                            </a>
+                        </td>
                         <td>
-                            <a href="#" class="btn btn-sm btn-danger">
+                            <a href="#"
+                               class="btn btn-sm btn-outline-danger">
                                 Delete
-                            </a> 
-                        </td>   
+                            </a>
+                        </td>
                     </tr>
 
                     {% empty %}
