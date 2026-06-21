@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header d-flex justify-content-between">
+            
+                        <a href="{% url 'sales:order_list' %}"
+                           class="btn btn-secondary">
+                            Back
+                        </a>
+            
+            <h4 class="mb-0">
+                Order #{{ order.id }}
+            </h4>
+            <a href="#"
+               class="btn bg-primary text-white">
+                Invocie
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <label class="fw-bold">
+                        Customer
+                    </label>
+
+                    <div>
+                        {{ order.customer }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="fw-bold">
+                        Order Date
+                    </label>
+
+                    <div>
+                        {{ order.created_at|date:"Y-m-d" }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <label class="fw-bold">
+                        Status
+                    </label>
+
+                    <div>
+
+                        {% if order.status == 'pending' %}
+                            <span class="badge bg-warning">
+                                Pending
+                            </span>
+                        {% elif order.status == 'completed' %}
+                            <span class="badge bg-success">
+                                Completed
+                            </span>
+                        {% else %}
+                            <span class="badge bg-primary">
+                                {{ order.status }}
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <label class="fw-bold">
+                        Order Type
+                    </label>
+
+                    <div>
+                        {{ order.get_order_type_display }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <label class="fw-bold">
+                        Notes
+                    </label>
+
+                    <div>
+                        {{ order.notes|default:"-" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Order Items -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Order Items
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-striped">
+
+                <thead>
+
+                    <tr>
+
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for item in order.items.all %}
+
+                    <tr>
+
+                        <td>
+                            {{ item.product_variant.sku }}
+                        </td>
+
+                        <td>
+                            {{ item.product_variant.product }}
+                        </td>
+
+                        <td>
+                            {{ item.product_variant.size }}
+                        </td>
+
+                        <td>
+                            {{ item.product_variant.color }}
+                        </td>
+
+                        <td>
+                            {{ item.qty }}
+                        </td>
+
+                        <td>
+                            {{ item.unit_price }}
+                        </td>
+
+                        <td>
+                            {{ item.total }}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="7"
+                            class="text-center">
+
+                            No items found.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <div class="row">
+
+        <!-- Financial Summary -->
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+
+                        Financial Summary
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table">
+
+                        <tr>
+
+                            <th>
+                                Subtotal
+                            </th>
+
+                            <td class="text-end">
+
+                                {{ order.total }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr class="table-light">
+
+                            <th>
+                                Grand Total
+                            </th>
+
+                            <th class="text-end">
+
+                                {{ order.total }}
+
+                            </th>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Payments -->
+
+        <div class="col-md-8">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+
+                        Payments
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-bordered">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Reference</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+
+                                <td colspan="4"
+                                    class="text-center text-muted">
+
+                                    No payments recorded.
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

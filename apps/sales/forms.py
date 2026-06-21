@@ -23,3 +23,27 @@ class CustomerForm(forms.ModelForm):
                 'rows': 3
             }),
         }
+
+
+
+# apps/sales/forms.py
+
+from django import forms
+from .models import Order
+
+
+class OrderForm(forms.ModelForm):
+
+    class Meta:
+        model = Order
+        fields = [
+            'customer',
+            'order_type',
+            'notes'
+        ]
+
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'customer': forms.Select(attrs={'class': 'form-control'}),
+            'order_type': forms.Select(attrs={'class': 'form-control'}),
+        }
