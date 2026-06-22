@@ -1,9 +1,12 @@
 from django.urls import path
 
+from apps.core import views
+
 from .views import (
     FactoryListView,
     FactoryCreateView,
     factory_purchase_orders,
+    purchase_order_detail,
     purchase_order_create,
 )
 
@@ -35,4 +38,9 @@ urlpatterns = [
         name="purchase_order_create"
     ),
 
+    path(
+        "purchase-orders/<int:pk>/",
+        purchase_order_detail,
+        name="purchase_order_detail"
+    ),
 ]

@@ -39,6 +39,8 @@
                         <th>Subtotal</th>
                         <th>Expenses</th>
                         <th>Total</th>
+                        <th>Actions</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
 
@@ -53,6 +55,16 @@
                         <td>${{ po.subtotal }}</td>
                         <td>${{ po.transport_tax_expenses_cost }}</td>
                         <td>${{ po.total }}</td>
+                        <td>
+                            <a href="{% url 'purchases:purchase_order_detail' po.id %}" class="btn btn-primary btn-sm">
+                                View
+                            </a>
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-danger btn-sm">
+                                Delete
+                            </a>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>

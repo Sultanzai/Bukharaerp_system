@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 from django.conf import settings
 
@@ -9,6 +11,24 @@ class Factory(models.Model):
     )
 
     phone = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
+    
+    gstin = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
+
+    supliercode = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
+
+    email = models.CharField(
         max_length=50,
         blank=True,
         null=True
@@ -117,9 +137,54 @@ class PurchaseOrder(models.Model):
         auto_now=True
     )
 
-    class Meta:
-        db_table = "purchase_orders"
-        ordering = ["-id"]
+    # Calculated fields for POS items total and overall total
+    @property
+    def calculated_subtotal(self):
 
-    def __str__(self):
-        return self.po_number
+        subtotal = Decimal('0.00')
+
+        for item in self.items.all():
+            subtotal += item.quantity * item.price
+
+        return subtotal
+
+
+    @property
+    def calculated_total(self):
+
+        return self.calculated_subtotal + self.transport_tax_expenses_cost
+
+
+
+class PurchaseOrderItem(models.Model):
+
+    purchase_order = models.ForeignKey(
+        PurchaseOrder,
+        on_delete=models.CASCADE,
+        related_name='items'
+    )
+
+    product_code = models.CharField(
+        max_length=100
+    )
+
+    product_name = models.CharField(
+        max_length=255
+    )
+
+    quantity = models.PositiveIntegerField(
+        default=1
+    )
+
+    price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+    class Meta:
+        db_table = "purchase_order_items"
+
+    @property
+    def amount(self):
+        return self.quantity * self.price

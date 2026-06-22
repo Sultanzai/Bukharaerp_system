@@ -4,36 +4,233 @@
 
 <div class="container-fluid">
 
-    <div class="card">
+<div class="card">
 
-        <div class="card-header">
-            <h4>Create Purchase Order</h4>
+<div class="card-header">
+    <h4>Create Purchase Order</h4>
+</div>
+
+<div class="card-body">
+
+<form method="post">
+    {% csrf_token %}
+
+    <h5>Purchase Order Information</h5>
+
+    <div class="row">
+        <div class="mb-3">
+            <label class="form-label">
+                {{ form.po_number.label }}
+            </label>
+            {{ form.po_number }}
         </div>
-
-        <div class="card-body">
-
-            <form method="post">
-
-                {% csrf_token %}
-
-                {{ form.as_p }}
-
-                <button type="submit"
-                        class="btn btn-success">
-                    Save
-                </button>
-
-                <a href="{% url 'purchases:factory_purchase_orders' factory.id %}"
-                   class="btn btn-secondary">
-                    Cancel
-                </a>
-
-            </form>
-
+        <div class="mb-3">
+            <label class="form-label">
+                {{ form.order_date.label }}
+            </label>
+            {{ form.order_date }}
         </div>
-
+        <div class="mb-3">
+            <label class="form-label">
+                {{ form.expected_date.label }}
+            </label>
+            {{ form.expected_date }}
+        </div>
     </div>
 
+    <div class="row mt-2">
+        <div class="mb-3">
+            <label class="form-label">
+                {{ form.status.label }}
+            </label>
+            {{ form.status }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">
+                {{ form.transport_tax_expenses_cost.label }}
+            </label>
+            {{ form.transport_tax_expenses_cost }}
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="mb-3">
+            <label class="form-label">
+                {{ form.notes.label }}
+            </label>
+            {{ form.notes }}
+        </div>
+    </div>
+
+    <hr>
+
+    <h5>Purchase Order Items</h5>
+
+    {{ formset.management_form }}
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody id="item-table-body">
+
+            {% for form in formset %}
+
+            <tr class="item-row">
+                <td>{{ form.product_code }}</td>
+                <td>{{ form.product_name }}</td>
+                <td class="qty-cell">{{ form.quantity }}</td>
+                <td class="price-cell">{{ form.price }}</td>
+                <td class="amount-cell">0.00</td>
+                <td>
+                    <button type="button" class="btn btn-danger remove-row">X</button>
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <!-- EMPTY FORM TEMPLATE (IMPORTANT) -->
+    <table style="display:none;">
+        <tbody id="empty-form">
+            <tr class="item-row">
+                <td>{{ formset.empty_form.product_code }}</td>
+                <td>{{ formset.empty_form.product_name }}</td>
+                <td>{{ formset.empty_form.quantity }}</td>
+                <td>{{ formset.empty_form.price }}</td>
+                <td class="amount-cell">0.00</td>
+                <td>
+                    <button type="button" class="btn btn-danger remove-row">X</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-primary mb-3" id="add-row">
+        + Add Item
+    </button>
+
+    <!-- TOTALS -->
+    <div class="row mt-4">
+        <div class="col-md-4 ms-auto">
+
+            <table class="table">
+
+                <tr>
+                    <th>Subtotal</th>
+                    <td id="subtotal">0.00</td>
+                </tr>
+
+                <tr>
+                    <th>Transport Cost</th>
+                    <td id="transport">
+                        {{ form.transport_tax_expenses_cost.value|default:0 }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Total</th>
+                    <td id="total">0.00</td>
+                </tr>
+
+            </table>
+
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Save
+    </button>
+
+    <a href="{% url 'purchases:factory_purchase_orders' factory.id %}"
+       class="btn btn-secondary">
+        Cancel
+    </a>
+
+</form>
+
 </div>
+</div>
+</div>
+
+<script>
+
+function updateTotals() {
+
+    let subtotal = 0;
+
+    document.querySelectorAll(".item-row").forEach(row => {
+
+        let qtyInput = row.querySelector("input[name$='quantity']");
+        let priceInput = row.querySelector("input[name$='price']");
+        let amountCell = row.querySelector(".amount-cell");
+
+        let qty = parseFloat(qtyInput?.value || 0);
+        let price = parseFloat(priceInput?.value || 0);
+
+        let amount = qty * price;
+
+        amountCell.innerText = amount.toFixed(2);
+
+        subtotal += amount;
+    });
+
+    document.getElementById("subtotal").innerText = subtotal.toFixed(2);
+
+    let transport = parseFloat(
+        document.getElementById("id_transport_tax_expenses_cost")?.value || 0
+    );
+
+    let total = subtotal + transport;
+
+    document.getElementById("total").innerText = total.toFixed(2);
+}
+
+
+// ADD ROW
+document.getElementById("add-row").addEventListener("click", function () {
+
+    let formIdx = document.getElementById("id_items-TOTAL_FORMS");
+
+    let newRowHtml = document.getElementById("empty-form").innerHTML.replace(/__prefix__/g, formIdx.value);
+
+    document.getElementById("item-table-body").insertAdjacentHTML("beforeend", newRowHtml);
+
+    formIdx.value = parseInt(formIdx.value) + 1;
+
+});
+
+
+// REMOVE ROW
+document.addEventListener("click", function (e) {
+
+    if (e.target.classList.contains("remove-row")) {
+        e.target.closest("tr").remove();
+        updateTotals();
+    }
+
+});
+
+
+// LIVE CALCULATION
+document.addEventListener("input", function () {
+    updateTotals();
+});
+
+updateTotals();
+
+</script>
 
 {% endblock %}

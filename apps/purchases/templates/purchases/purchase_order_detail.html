@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Company Information -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header">
+
+            <h4>
+                Company Information
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <strong>Factory Name</strong>
+
+                    <br>
+
+                    {{ factory.name }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Phone</strong>
+
+                    <br>
+
+                    {{ factory.phone }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Email</strong>
+
+                    <br>
+
+                    {{ factory.email }}
+
+                </div>
+
+            </div>
+
+            <div class="row mt-3">
+
+                <div class="col-md-4">
+
+                    <strong>Supplier Code</strong>
+
+                    <br>
+
+                    {{ factory.supliercode }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>GSTIN</strong>
+
+                    <br>
+
+                    {{ factory.gstin }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Address</strong>
+
+                    <br>
+
+                    {{ factory.address }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PO Information -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header">
+
+            <h4>
+
+                Purchase Order Information
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <strong>PO Number</strong>
+
+                    <br>
+
+                    {{ purchase_order.po_number }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Order Date</strong>
+
+                    <br>
+
+                    {{ purchase_order.order_date }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Expected Date</strong>
+
+                    <br>
+
+                    {{ purchase_order.expected_date }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Status</strong>
+
+                    <br>
+
+                    {{ purchase_order.get_status_display }}
+
+                </div>
+
+            </div>
+
+            <div class="row mt-3">
+
+                <div class="col-md-12">
+
+                    <strong>Notes</strong>
+
+                    <br>
+
+                    {{ purchase_order.notes }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Items -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h4>
+
+                Purchase Order Items
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-striped">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Product Code</th>
+
+                        <th>Product Name</th>
+
+                        <th width="120">Qty</th>
+
+                        <th width="150">Price</th>
+
+                        <th width="150">Amount</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in items %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ item.product_code }}
+
+                        </td>
+
+                        <td>
+
+                            {{ item.product_name }}
+
+                        </td>
+
+                        <td>
+
+                            {{ item.quantity }}
+
+                        </td>
+
+                        <td>
+
+                            {{ item.price }}
+
+                        </td>
+
+                        <td>
+
+                            {{ item.amount }}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            <div class="row">
+
+                <div class="col-md-4 ms-auto">
+
+                    <table class="table">
+
+                        <tr>
+
+                            <th>
+
+                                Subtotal
+
+                            </th>
+
+                            <td>
+
+                                {{ purchase_order.subtotal }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>
+
+                                Transport / Tax Expense
+
+                            </th>
+
+                            <td>
+
+                                {{ purchase_order.transport_tax_expenses_cost }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>
+
+                                Total
+
+                            </th>
+
+                            <td>
+
+                                <strong>
+
+                                    {{ purchase_order.total }}
+
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

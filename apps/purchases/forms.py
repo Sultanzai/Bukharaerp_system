@@ -1,8 +1,10 @@
 from django import forms
-
+from django.forms import inlineformset_factory
+from .models import PurchaseOrder, PurchaseOrderItem
 from .models import (
     Factory,
-    PurchaseOrder
+    PurchaseOrder,
+    PurchaseOrderItem
 )
 
 
@@ -15,6 +17,9 @@ class FactoryForm(forms.ModelForm):
         fields = [
             "name",
             "phone",
+            "email",
+            "gstin",
+            "supliercode",
             "address",
             "notes",
             "status",
@@ -29,6 +34,24 @@ class FactoryForm(forms.ModelForm):
             ),
 
             "phone": forms.TextInput(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+
+            "gstin": forms.TextInput(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+
+            "supliercode": forms.TextInput(
                 attrs={
                     "class": "form-control"
                 }
@@ -55,7 +78,6 @@ class FactoryForm(forms.ModelForm):
             )
         }
 
-
 class PurchaseOrderForm(forms.ModelForm):
 
     class Meta:
@@ -67,17 +89,31 @@ class PurchaseOrderForm(forms.ModelForm):
             "order_date",
             "expected_date",
             "status",
-            "subtotal",
             "transport_tax_expenses_cost",
-            "total",
             "notes",
         ]
+
+        labels = {
+
+            "po_number": "PO Number",
+
+            "order_date": "Order Date",
+
+            "expected_date": "Expected Date",
+
+            "status": "Status",
+
+            "transport_tax_expenses_cost": "Transport / Tax Expense",
+
+            "notes": "Notes",
+        }
 
         widgets = {
 
             "po_number": forms.TextInput(
                 attrs={
-                    "class": "form-control"
+                    "class": "form-control",
+                    "placeholder": "PO Number"
                 }
             ),
 
@@ -101,31 +137,84 @@ class PurchaseOrderForm(forms.ModelForm):
                 }
             ),
 
-            "subtotal": forms.NumberInput(
-                attrs={
-                    "class": "form-control",
-                    "step": "0.01"
-                }
-            ),
-
             "transport_tax_expenses_cost": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "step": "0.01"
-                }
-            ),
-
-            "total": forms.NumberInput(
-                attrs={
-                    "class": "form-control",
-                    "step": "0.01"
+                    "step": "0.01",
+                    "placeholder": "Transport / Tax Expense"
                 }
             ),
 
             "notes": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "rows": 3
+                    "rows": 3,
+                    "placeholder": "Notes"
                 }
             ),
         }
+
+
+class PurchaseOrderItemForm(forms.ModelForm):
+
+    class Meta:
+
+        model = PurchaseOrderItem
+
+        fields = [
+            "product_code",
+            "product_name",
+            "quantity",
+            "price"
+        ]
+
+        labels = {
+
+            "product_code": "Product Code",
+
+            "product_name": "Product Name",
+
+            "quantity": "Quantity",
+
+            "price": "Price"
+        }
+
+        widgets = {
+
+            "product_code": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Product Code"
+                }
+            ),
+
+            "product_name": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Product Name"
+                }
+            ),
+
+            "quantity": forms.NumberInput(
+                attrs={
+                    "class": "form-control qty",
+                    "placeholder": "Qty"
+                }
+            ),
+
+            "price": forms.NumberInput(
+                attrs={
+                    "class": "form-control price",
+                    "step": "0.01",
+                    "placeholder": "Price"
+                }
+            )
+        }
+        
+PurchaseOrderItemFormSet = inlineformset_factory(
+    PurchaseOrder,
+    PurchaseOrderItem,
+    form=PurchaseOrderItemForm,
+    extra=1,
+    can_delete=True
+)

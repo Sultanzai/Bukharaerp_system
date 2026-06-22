@@ -35,10 +35,13 @@
                         <th>ID</th>
                         <th>Name</th>
                         <th>Phone</th>
+                        <th>GSTIN</th>
+                        <th>Supplier Code</th>
                         <th>Status</th>
+                        <th>Date</th>
+                        <th>View</th>
                         <th>Edit</th>
                         <th>Delete</th>
-                        <th>Created</th>
 
                     </tr>
 
@@ -55,9 +58,7 @@
                         </td>
 
                         <td>
-                            <a href="{% url 'purchases:factory_purchase_orders' factory.id %}">
-                                {{ factory.name }}
-                            </a>
+                           {{ factory.name }}
                         </td>
 
                         <td>
@@ -65,7 +66,12 @@
                         </td>
 
                         <td>
-
+                            {{ factory.gstin }}
+                        </td>
+                        <td>
+                            {{ factory.supliercode }}
+                        </td>
+                        <td>
                             {% if factory.status %}
 
                                 <span class="badge bg-success">
@@ -86,6 +92,12 @@
                             {{ factory.created_at|date:"d M Y" }}
                         </td>
 
+                        <td>
+                            <a href="{% url 'purchases:factory_purchase_orders' factory.id %}"
+                               class="btn btn-sm btn-outline-primary">
+                                View POs
+                            </a>
+                        </td>
                         <td>
                             <a href="#"
                                class="btn btn-sm btn-outline-primary">
