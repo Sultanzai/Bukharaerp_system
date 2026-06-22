@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                Transactions
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Party Type</th>
+                            <th>Party ID</th>
+                            <th>Reference Type</th>
+                            <th>Reference ID</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Created</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for transaction in transactions %}
+
+                        <tr>
+
+                            <td>{{ transaction.id }}</td>
+
+                            <td>
+                                {% if transaction.type == 'incoming' %}
+                                    <span class="badge bg-success">
+                                        Incoming
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        Outgoing
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ transaction.get_party_type_display }}</td>
+
+                            <td>{{ transaction.party_id }}</td>
+
+                            <td>{{ transaction.get_reference_type_display }}</td>
+
+                            <td>{{ transaction.reference_id }}</td>
+
+                            <td>$ {{ transaction.amount }}</td>
+
+                            <td>
+
+                                {% if transaction.status == 'completed' %}
+                                    <span class="badge bg-success">
+                                        Completed
+                                    </span>
+
+                                {% elif transaction.status == 'pending' %}
+                                    <span class="badge bg-warning">
+                                        Pending
+                                    </span>
+
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>{{ transaction.notes }}</td>
+
+                            <td>{{ transaction.created_at|date:"Y-m-d H:i" }}</td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="10" class="text-center">
+                                No transactions found.
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

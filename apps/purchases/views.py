@@ -1,5 +1,7 @@
 from django.urls import reverse_lazy
 
+from apps.accounting.models import Transaction
+
 from .models import PurchaseOrder, PurchaseOrderItem
 from .forms import PurchaseOrderItemForm
 from .forms import (
@@ -95,6 +97,12 @@ def purchase_order_create(request, factory_id):
 
             purchase_order.save()
 
+
+            # Transaction creation for the new purchase order
+            formset.instance = purchase_order
+            formset.save()
+
+
             # NOW attach the formset to the saved PO
             formset.instance = purchase_order
 
@@ -117,6 +125,26 @@ def purchase_order_create(request, factory_id):
             )
 
             purchase_order.save()
+
+            # Create an accounting transaction for this purchase order
+            Transaction.objects.create(
+
+            type='outgoing',
+
+            party_type='factory',
+
+            party_id=factory.id,
+
+            reference_type='purchase_order',
+
+            reference_id=purchase_order.id,
+
+            amount=purchase_order.total,
+
+            status='pending',
+
+            notes=f'Purchase Order {purchase_order.po_number}'
+        )
 
             return redirect(
                 "purchases:factory_purchase_orders",

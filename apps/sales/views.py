@@ -5,6 +5,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
 
+from apps.accounting.models import Transaction
 from apps.products.models import Product
 from apps.sales.forms import CustomerForm, OrderForm
 from apps.sales.models import Customer, Order, OrderItem
@@ -131,6 +132,19 @@ def order_create(request):
             # FINAL UPDATE (ONLY ONCE)
             order.total = grand_total
             order.save(update_fields=["total"])
+
+
+            # Transaction creation for the new sales order
+            Transaction.objects.create(
+                type='incoming',
+                party_type='customer',
+                party_id=order.customer_id,
+                reference_type='customer_order',
+                reference_id=order.id,
+                amount=order.total,
+                status='pending',
+                notes=order.notes
+            )
 
             messages.success(request, "Order created successfully.")
             return redirect("sales:order_list")
