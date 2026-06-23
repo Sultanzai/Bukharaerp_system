@@ -139,7 +139,7 @@ def order_create(request):
                 type='incoming',
                 party_type='customer',
                 party_id=order.customer_id,
-                reference_type='customer_order',
+                reference_type=f'Customer Order {order.customer.name}',
                 reference_id=order.id,
                 amount=order.total,
                 status='pending',

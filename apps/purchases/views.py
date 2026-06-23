@@ -135,7 +135,7 @@ def purchase_order_create(request, factory_id):
 
             party_id=factory.id,
 
-            reference_type='purchase_order',
+            reference_type=f'Purchase Order {factory.name}',
 
             reference_id=purchase_order.id,
 

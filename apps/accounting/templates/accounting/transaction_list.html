@@ -22,15 +22,19 @@
 
                         <tr>
                             <th>ID</th>
+                            <th>User ID</th>
+                            <th>User Name</th>
                             <th>Type</th>
-                            <th>Party Type</th>
+                            <th>Party Name</th>
                             <th>Party ID</th>
-                            <th>Reference Type</th>
-                            <th>Reference ID</th>
                             <th>Amount</th>
+                            <th>Paid</th>
+                            <th>Remaining</th>
                             <th>Status</th>
                             <th>Notes</th>
                             <th>Created</th>
+                            <th>View</th>
+                            <th>Payment</th>
                         </tr>
 
                     </thead>
@@ -42,6 +46,8 @@
                         <tr>
 
                             <td>{{ transaction.id }}</td>
+                            <td>{{ transaction.reference_id }}</td>
+                            <td>{{ transaction.get_reference_type_display }}</td>
 
                             <td>
                                 {% if transaction.type == 'incoming' %}
@@ -59,11 +65,34 @@
 
                             <td>{{ transaction.party_id }}</td>
 
-                            <td>{{ transaction.get_reference_type_display }}</td>
 
-                            <td>{{ transaction.reference_id }}</td>
+                            <td>
+                                $ {{ transaction.amount }}
+                            </td>
 
-                            <td>$ {{ transaction.amount }}</td>
+                            <td>
+                                <span class="text-success">
+                                    $ {{ transaction.paid_amount }}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                {% if transaction.remaining_amount > 0 %}
+
+                                    <span class="text-danger">
+                                        $ {{ transaction.remaining_amount }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="text-success">
+                                        0.00
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
 
                             <td>
 
@@ -88,7 +117,21 @@
 
                             <td>{{ transaction.notes }}</td>
 
-                            <td>{{ transaction.created_at|date:"Y-m-d H:i" }}</td>
+                            <td>{{ transaction.created_at|date:"Y-m-d" }}</td>
+
+                            <td>
+                                <a href="{% url 'transaction_detail' transaction.id %}"
+                                class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="{% url 'payment_create' transaction.id %}"
+                                class="btn btn-sm btn-outline-primary">
+                                    Payment
+                                </a>
+                            </td>
 
                         </tr>
 
