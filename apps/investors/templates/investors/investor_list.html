@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h4 class="mb-0">
+                Investors
+            </h4>
+
+            <a href="{% url 'investor_create' %}"
+               class="btn btn-primary">
+
+                + Investor
+
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+
+                            <th>Invested</th>
+                            <th>Withdrawn</th>
+                            <th>Profit</th>
+                            <th>Balance</th>
+
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for investor in investors %}
+
+                        <tr>
+
+                            <td>{{ investor.id }}</td>
+                            <td>{{ investor.name }}</td>
+                            <td>{{ investor.phone }}</td>
+                            <td>{{ investor.email }}</td>
+
+                            <td>{{ investor.total_invested }}</td>
+
+                            <td>{{ investor.total_withdrawn }}</td>
+
+                            <td>{{ investor.total_profit }}</td>
+
+                            <td>
+                                <strong>{{ investor.balance }}</strong>
+                            </td>
+
+                            <td>
+                                {% if investor.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a href="{% url 'investor_detail' investor.id %}"
+                                class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="6"
+                                class="text-center">
+
+                                No investors found.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

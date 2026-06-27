@@ -1,28 +1,62 @@
 from decimal import Decimal
 
 from django.contrib import messages
+from django.db.models import Count, Sum, Q, DecimalField
+from django.db.models.functions import Coalesce
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, CreateView
+from django.views.generic import ListView, DetailView, CreateView
 
-from apps.accounting.models import Transaction
-from apps.products.models import Product
+from apps.accounting.models import Transaction, PaymentRecord
+from apps.products.models import ProductVariant
 from apps.sales.forms import CustomerForm, OrderForm
 from apps.sales.models import Customer, Order, OrderItem
-from django.http import JsonResponse
-from apps.products.models import ProductVariant
-from django.http import JsonResponse
-from django.db.models import Q, Count
-from apps.products.models import ProductVariant
 
-# ==========================
+
+# ==========================================================
 # Customers
-# ==========================
+# ==========================================================
 
 class CustomerListView(ListView):
     model = Customer
     template_name = "sales/customer_list.html"
     context_object_name = "customers"
+
+    def get_queryset(self):
+
+        customers = (
+            Customer.objects
+            .annotate(
+                total_orders=Count("orders"),
+                total_amount=Coalesce(
+                    Sum("orders__total"),
+                    Decimal("0.00"),
+                    output_field=DecimalField()
+                )
+            )
+        )
+
+        for customer in customers:
+
+            transactions = Transaction.objects.filter(
+                party_type="customer",
+                party_id=customer.id
+            )
+
+            total_paid = (
+                PaymentRecord.objects.filter(
+                    transaction__in=transactions
+                ).aggregate(
+                    total=Sum("paid_amount")
+                )["total"]
+                or Decimal("0.00")
+            )
+
+            customer.total_paid = total_paid
+            customer.balance = customer.total_amount - total_paid
+
+        return customers
 
 
 class CustomerCreateView(CreateView):
@@ -32,9 +66,65 @@ class CustomerCreateView(CreateView):
     success_url = reverse_lazy("sales:customer_list")
 
 
-# ==========================
+class CustomerDetailView(DetailView):
+    model = Customer
+    template_name = "sales/customer_detail.html"
+    context_object_name = "customer"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        customer = self.object
+
+        orders = customer.orders.order_by("-created_at")
+
+        transactions = (
+            Transaction.objects
+            .filter(
+                party_type="customer",
+                party_id=customer.id
+            )
+            .order_by("-created_at")
+        )
+
+        total_orders = orders.count()
+
+        total_amount = (
+            orders.aggregate(
+                total=Coalesce(
+                    Sum("total"),
+                    Decimal("0.00"),
+                    output_field=DecimalField()
+                )
+            )["total"]
+        )
+
+        total_paid = (
+            PaymentRecord.objects.filter(
+                transaction__in=transactions
+            ).aggregate(
+                total=Sum("paid_amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        remaining = total_amount - total_paid
+
+        context.update({
+            "orders": orders,
+            "transactions": transactions,
+            "total_orders": total_orders,
+            "total_amount": total_amount,
+            "total_paid": total_paid,
+            "remaining": remaining,
+        })
+
+        return context
+
+
+# ==========================================================
 # Orders
-# ==========================
+# ==========================================================
 
 class OrderListView(ListView):
     model = Order
@@ -46,7 +136,9 @@ class OrderListView(ListView):
         queryset = (
             Order.objects
             .select_related("customer")
-            .annotate(item_count=Count("items"))
+            .annotate(
+                item_count=Count("items")
+            )
             .order_by("-created_at")
         )
 
@@ -54,13 +146,14 @@ class OrderListView(ListView):
 
         if search:
             queryset = queryset.filter(
-                Q(customer__name__icontains=search) |
-                Q(order_type__icontains=search) |
-                Q(status__icontains=search) |
-                Q(id__icontains=search)
+                Q(customer__name__icontains=search)
+                | Q(order_type__icontains=search)
+                | Q(status__icontains=search)
+                | Q(id__icontains=search)
             )
 
         return queryset
+
 
 class OrderDetailView(DetailView):
     model = Order
@@ -78,15 +171,16 @@ class OrderDetailView(DetailView):
             )
         )
 
+
 def order_create(request):
 
     if request.method == "POST":
+
         form = OrderForm(request.POST)
 
         if form.is_valid():
-            order = form.save(commit=False)
 
-            # SYSTEM CONTROLLED STATUS
+            order = form.save(commit=False)
             order.status = "pending"
             order.total = Decimal("0.00")
             order.save()
@@ -99,16 +193,27 @@ def order_create(request):
 
             if not (variant_ids and qtys and prices):
                 messages.error(request, "Order items are missing.")
-                return render(request, "sales/order_form.html", {"form": form})
+                return render(
+                    request,
+                    "sales/order_form.html",
+                    {"form": form}
+                )
 
-            for variant_id, qty, price in zip(variant_ids, qtys, prices):
+            for variant_id, qty, price in zip(
+                    variant_ids,
+                    qtys,
+                    prices):
 
                 try:
+
                     if not variant_id or not qty or not price:
                         continue
 
                     qty = int(qty)
-                    price = Decimal(str(price).replace(",", "").strip())
+
+                    price = Decimal(
+                        str(price).replace(",", "").strip()
+                    )
 
                     if qty <= 0 or price <= 0:
                         continue
@@ -126,38 +231,69 @@ def order_create(request):
                     grand_total += line_total
 
                 except Exception as e:
-                    messages.error(request, f"Item error: {str(e)}")
-                    return render(request, "sales/order_form.html", {"form": form})
 
-            # FINAL UPDATE (ONLY ONCE)
+                    messages.error(
+                        request,
+                        f"Item error: {str(e)}"
+                    )
+
+                    return render(
+                        request,
+                        "sales/order_form.html",
+                        {"form": form}
+                    )
+
             order.total = grand_total
-            order.save(update_fields=["total"])
 
+            order.save(
+                update_fields=["total"]
+            )
 
-            # Transaction creation for the new sales order
             Transaction.objects.create(
-                type='incoming',
-                party_type='customer',
+                type="incoming",
+                party_type="customer",
                 party_id=order.customer_id,
-                reference_type=f'Customer Order {order.customer.name}',
+                reference_type="customer_order",
                 reference_id=order.id,
                 amount=order.total,
-                status='pending',
+                status="pending",
                 notes=order.notes
             )
 
-            messages.success(request, "Order created successfully.")
-            return redirect("sales:order_list")
+            messages.success(
+                request,
+                "Order created successfully."
+            )
+
+            return redirect(
+                "sales:order_list"
+            )
 
         else:
+
             print(form.errors)
-            messages.error(request, "Form is invalid.")
+
+            messages.error(
+                request,
+                "Form is invalid."
+            )
 
     else:
+
         form = OrderForm()
 
-    return render(request, "sales/order_form.html", {"form": form})
+    return render(
+        request,
+        "sales/order_form.html",
+        {
+            "form": form
+        }
+    )
 
+
+# ==========================================================
+# Ajax Search
+# ==========================================================
 
 def customer_search(request):
 
@@ -167,23 +303,19 @@ def customer_search(request):
         name__icontains=term
     )[:20]
 
-    results = []
-
-    for customer in customers:
-
-        results.append({
+    results = [
+        {
             "id": customer.id,
             "text": f"{customer.id} - {customer.name}"
-        })
+        }
+        for customer in customers
+    ]
 
-    return JsonResponse({
-        "results": results
-    })
-
-
-from django.http import JsonResponse
-from django.db.models import Q
-from apps.products.models import ProductVariant
+    return JsonResponse(
+        {
+            "results": results
+        }
+    )
 
 
 def variant_search(request):
@@ -192,13 +324,16 @@ def variant_search(request):
 
     variants = (
         ProductVariant.objects
-        .select_related("product", "factory")
+        .select_related(
+            "product",
+            "factory"
+        )
         .filter(
-            Q(sku__icontains=term) |
-            Q(product__name__icontains=term) |
-            Q(size__icontains=term) |
-            Q(color__icontains=term) |
-            Q(source_type__icontains=term)
+            Q(sku__icontains=term)
+            | Q(product__name__icontains=term)
+            | Q(size__icontains=term)
+            | Q(color__icontains=term)
+            | Q(source_type__icontains=term)
         )[:20]
     )
 
@@ -226,6 +361,8 @@ def variant_search(request):
 
         })
 
-    return JsonResponse({
-        "results": results
-    })
+    return JsonResponse(
+        {
+            "results": results
+        }
+    )

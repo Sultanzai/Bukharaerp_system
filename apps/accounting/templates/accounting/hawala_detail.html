@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between mb-3">
+
+        <h4>
+            Hawala Account Details
+        </h4>
+
+        <a href="{% url 'hawala_transaction_create' account.id %}"
+           class="btn btn-success">
+
+            Add Transaction
+
+        </a>
+
+    </div>
+
+
+    <!-- Hawala Information -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header">
+
+            <h5>
+                Hawala Information
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <strong>Company</strong>
+
+                    <br>
+
+                    {{ account.name }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Contact Person</strong>
+
+                    <br>
+
+                    {{ account.contact_person }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Phone</strong>
+
+                    <br>
+
+                    {{ account.phone }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Email</strong>
+
+                    <br>
+
+                    {{ account.email }}
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <strong>City</strong>
+
+                    <br>
+
+                    {{ account.city }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Status</strong>
+
+                    <br>
+
+                    {% if account.is_active %}
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+                    {% else %}
+                        <span class="badge bg-danger">
+                            Inactive
+                        </span>
+                    {% endif %}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Created</strong>
+
+                    <br>
+
+                    {{ account.created_at|date:"d M Y" }}
+
+                </div>
+
+            </div>
+
+            {% if account.address %}
+
+            <hr>
+
+            <strong>Address</strong>
+
+            <br>
+
+            {{ account.address }}
+
+            {% endif %}
+
+            {% if account.notes %}
+
+            <hr>
+
+            <strong>Notes</strong>
+
+            <br>
+
+            {{ account.notes }}
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Summary -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header">
+
+            <h5>
+
+                Account Summary
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <strong>Total Deposits</strong>
+
+                    <br>
+
+                    {{ total_debit }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Total Payments</strong>
+
+                    <br>
+
+                    {{ total_credit }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Current Balance</strong>
+
+                    <br>
+
+                    {% if balance >= 0 %}
+
+                        <span class="text-success fw-bold">
+
+                            {{ balance }}
+
+                        </span>
+
+                        <br>
+
+                        <small>
+                            Hawala owes your company
+                        </small>
+
+                    {% else %}
+
+                        <span class="text-danger fw-bold">
+
+                            {{ balance }}
+
+                        </span>
+
+                        <br>
+
+                        <small>
+                            Your company owes Hawala
+                        </small>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Transactions -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h5>
+
+                Transactions
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Debit</th>
+                            <th>Credit</th>
+                            <th>Method</th>
+                            <th>Reference</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for transaction in transactions %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ transaction.id }}
+
+                            </td>
+
+                            <td>
+
+                                {{ transaction.transaction_date }}
+
+                            </td>
+
+                            <td>
+
+                                {{ transaction.get_transaction_type_display }}
+
+                            </td>
+
+                            <td>
+
+                                {{ transaction.debit }}
+
+                            </td>
+
+                            <td>
+
+                                {{ transaction.credit }}
+
+                            </td>
+
+                            <td>
+
+                                {{ transaction.get_payment_method_display }}
+
+                            </td>
+
+                            <td>
+
+                                {{ transaction.reference_number }}
+
+                            </td>
+
+                            <td>
+
+                                {{ transaction.get_status_display }}
+
+                            </td>
+
+                            <td>
+
+                                {{ transaction.notes }}
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="9"
+                                class="text-center">
+
+                                No transactions found.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

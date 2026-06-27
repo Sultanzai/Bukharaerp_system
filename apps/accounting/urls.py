@@ -3,7 +3,7 @@
 from django.urls import path
 
 from apps.accounting import views
-from .views import TransactionListView, TransactionDetailView
+from .views import HawalaAccountListView, HawalaDetailView, HawalaTransactionCreateView, TransactionListView, TransactionDetailView, HawalaAccountCreateView
 
 
 urlpatterns = [
@@ -22,5 +22,26 @@ urlpatterns = [
         'transactions/<int:transaction_id>/payment/add/',
         views.payment_create,
         name='payment_create'
+    ),
+    path(
+        "hawala/",
+        HawalaAccountListView.as_view(),
+        name="hawala_list"
+    ),
+
+    path(
+        "hawala/create/",
+        HawalaAccountCreateView.as_view(),
+        name="hawala_create"
+    ),
+    path(
+        "hawala/<int:pk>/",
+        HawalaDetailView.as_view(),
+        name="hawala_detail",
+    ),
+    path(
+        "hawala/<int:account_id>/transaction/add/",
+        HawalaTransactionCreateView.as_view(),
+        name="hawala_transaction_create",
     ),
 ]

@@ -23,6 +23,19 @@
                 Users
             </a>
         </li>
+                <li>
+            <a href="{% url 'investor_list' %}">
+                <i class="bi bi-boxes"></i>
+                Investors
+            </a>
+        </li>
+        </li>
+                <li>
+            <a href="{% url 'hawala_list' %}">
+                <i class="bi bi-boxes"></i>
+                Hawala Accounts
+            </a>
+        </li>
 
         <li class="menu-title">
             PRODUCT MANAGEMENT
@@ -34,13 +47,6 @@
                 Products
             </a>
         </li>
-                <li>
-            <a href="{% url 'products:stock-movement' %}">
-                <i class="bi bi-boxes"></i>
-                Stock Overview
-            </a>
-        </li>
-
         <li class="menu-title">
             Accounts
         </li>
@@ -60,12 +66,8 @@
         </li>
 
 
-        {% comment %} <li class="menu-title">
-            INVENTORY
-        </li>
 
-
-
+        {% comment %}
         <li>
             <a href="#">
                 <i class="bi bi-arrow-left-right"></i>

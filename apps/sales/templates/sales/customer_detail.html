@@ -1,0 +1,466 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Customer Information -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h4 class="mb-0">
+
+                Customer Details
+
+            </h4>
+
+            <a href="{% url 'sales:customer_list' %}"
+               class="btn btn-secondary">
+
+                Back
+
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <label class="fw-bold">
+
+                        Name
+
+                    </label>
+
+                    <div>
+
+                        {{ customer.name }}
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="fw-bold">
+
+                        Phone
+
+                    </label>
+
+                    <div>
+
+                        {{ customer.phone }}
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="fw-bold">
+
+                        Email
+
+                    </label>
+
+                    <div>
+
+                        {{ customer.email|default:"-" }}
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="fw-bold">
+
+                        Address
+
+                    </label>
+
+                    <div>
+
+                        {{ customer.address|default:"-" }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Summary -->
+
+    <div class="row mb-3">
+
+        <div class="col-md-3">
+
+            <div class="card border-primary shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6>
+
+                        Total Orders
+
+                    </h6>
+
+                    <h3>
+
+                        {{ total_orders }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-success shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6>
+
+                        Total Amount
+
+                    </h6>
+
+                    <h3>
+
+                        {{ total_amount }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-info shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6>
+
+                        Total Paid
+
+                    </h6>
+
+                    <h3>
+
+                        {{ total_paid }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-danger shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6>
+
+                        Remaining Balance
+
+                    </h6>
+
+                    <h3>
+
+                        {{ remaining }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Orders -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+
+                Orders
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-striped">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Date</th>
+                        <th>Order #</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for order in orders %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ order.created_at|date:"Y-m-d" }}
+
+                        </td>
+
+                        <td>
+
+                            #{{ order.id }}
+
+                        </td>
+
+                        <td>
+
+                            {{ order.get_order_type_display }}
+
+                        </td>
+
+                        <td>
+
+                            {% if order.status == 'pending' %}
+
+                                <span class="badge bg-warning">
+
+                                    Pending
+
+                                </span>
+
+                            {% elif order.status == 'completed' %}
+
+                                <span class="badge bg-success">
+
+                                    Completed
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-primary">
+
+                                    {{ order.status }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {{ order.total }}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'sales:order_detail' order.pk %}"
+                               class="btn btn-sm btn-outline-primary">
+
+                                View
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="text-center">
+
+                            No orders found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- Transactions -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+
+                Transactions
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-striped">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Reference</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for transaction in transactions %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ transaction.created_at|date:"Y-m-d" }}
+
+                        </td>
+
+                        <td>
+
+                            {{ transaction.get_type_display }}
+
+                        </td>
+
+                        <td>
+
+                            {{ transaction.get_reference_type_display }}
+                            #{{ transaction.reference_id }}
+
+                        </td>
+
+                        <td>
+
+                            {{ transaction.amount }}
+
+                        </td>
+
+                        <td>
+
+                            {% if transaction.status == 'pending' %}
+
+                                <span class="badge bg-warning">
+
+                                    Pending
+
+                                </span>
+
+                            {% elif transaction.status == 'completed' %}
+
+                                <span class="badge bg-success">
+
+                                    Completed
+
+                                </span>
+
+                            {% elif transaction.status == 'cancelled' %}
+
+                                <span class="badge bg-danger">
+
+                                    Cancelled
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {{ transaction.notes|default:"-" }}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="text-center">
+
+                            No transactions found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

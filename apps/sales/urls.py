@@ -2,6 +2,7 @@ from django import views
 from django.urls import path
 
 from apps.sales.views import (
+    CustomerDetailView,
     CustomerListView,
     CustomerCreateView,
     OrderDetailView,
@@ -56,5 +57,9 @@ urlpatterns = [
         OrderDetailView.as_view(),
         name="order_detail"
     ),
-
+    path(
+        "customers/<int:pk>/",
+        CustomerDetailView.as_view(),
+        name="customer_detail"
+    ),
 ]

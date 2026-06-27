@@ -144,6 +144,7 @@ $(document).ready(function () {
                     <th>Status</th>
                     <th>Variants</th>
                     <th>Add Variants</th>
+                    <th>View</th>
 
                 </tr>
 
@@ -160,14 +161,7 @@ $(document).ready(function () {
                     </td>
 
                     <td>
-
-                        <a
-                            href="{% url 'products:product-detail' product.id %}"
-                            class="fw-semibold text-decoration-none"
-                        >
-                            {{ product.name }}
-                        </a>
-
+                        {{ product.name }}
                     </td>
 
                     <td>
@@ -215,6 +209,14 @@ $(document).ready(function () {
                             Add Variants
                         </a>
 
+                    </td>
+                    <td>
+                        <a
+                            href="{% url 'products:product-detail' product.id %}"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+                            View
+                        </a>
                     </td>
 
                 </tr>

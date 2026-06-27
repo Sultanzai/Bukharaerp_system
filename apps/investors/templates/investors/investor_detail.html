@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between mb-3">
+
+        <h4>
+            Investor Details
+        </h4>
+
+        <a href="{% url 'investor_transaction_create' investor.id %}"
+        class="btn btn-success">
+            Add Transaction
+        </a>
+
+    </div>
+
+
+    <!-- Investor Information -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header">
+
+            <h5>
+
+                Investor Information
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <strong>Name</strong>
+
+                    <br>
+
+                    {{ investor.name }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Phone</strong>
+
+                    <br>
+
+                    {{ investor.phone }}
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <strong>Email</strong>
+
+                    <br>
+
+                    {{ investor.email }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Summary -->
+
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-header">
+
+            <h5>
+
+                Summary
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <strong>Total Investment</strong>
+
+                    <br>
+
+                    {{ investment_total }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Total Withdrawal</strong>
+
+                    <br>
+
+                    {{ withdrawal_total }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Profit Share</strong>
+
+                    <br>
+
+                    {{ profit_total }}
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <strong>Current Balance</strong>
+
+                    <br>
+
+                    <span class="text-primary fw-bold">
+
+                        {{ balance }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Transactions -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h5>
+
+                Transactions
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Reference</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for transaction in transactions %}
+
+                        <tr>
+
+                            <td>
+                                {{ transaction.id }}
+                            </td>
+
+                            <td>
+                                {{ transaction.transaction_date }}
+                            </td>
+
+                            <td>
+                                {{ transaction.get_type_display }}
+                            </td>
+
+                            <td>
+                                {{ transaction.amount }}
+                            </td>
+
+                            <td>
+                                {{ transaction.get_payment_method_display }}
+                            </td>
+
+                            <td>
+                                {{ transaction.reference_number }}
+                            </td>
+
+                            <td>
+                                {{ transaction.get_status_display }}
+                            </td>
+
+                            <td>
+                                {{ transaction.notes }}
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="8"
+                            class="text-center">
+
+                                No transactions found.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,10 +1,9 @@
 # apps/accounting/views.py
 
+from django.urls import reverse_lazy
 from django.views.generic import ListView
-from .models import Transaction
 from django.views.generic import DetailView
-
-from .models import Transaction
+from django.views.generic import ListView, CreateView
 from apps.sales.models import Order
 from apps.purchases.models import PurchaseOrder
 from apps.sales.models import Customer
@@ -12,9 +11,12 @@ from apps.purchases.models import Factory
 from django.shortcuts import get_object_or_404, redirect, render
 from decimal import Decimal
 from django.db.models import Sum
-from .models import Transaction
+from .models import HawalaTransaction, Transaction
 from .models import PaymentRecord
-from .forms import PaymentRecordForm
+from .forms import HawalaTransactionForm, PaymentRecordForm
+
+from .forms import HawalaAccountForm
+from .models import HawalaAccount
 
 class TransactionListView(ListView):
     model = Transaction
@@ -126,3 +128,124 @@ def payment_create(request, transaction_id):
         'accounting/payment_form.html',
         context
     )
+
+class HawalaAccountListView(ListView):
+
+    model = HawalaAccount
+
+    template_name = "accounting/hawala_list.html"
+
+    context_object_name = "accounts"
+
+    def get_queryset(self):
+
+        accounts = HawalaAccount.objects.all()
+
+        for account in accounts:
+
+            debit = account.transactions.aggregate(
+                total=Sum("debit")
+            )["total"] or 0
+
+            credit = account.transactions.aggregate(
+                total=Sum("credit")
+            )["total"] or 0
+
+            account.balance = debit - credit
+
+        return accounts
+
+class HawalaAccountCreateView(CreateView):
+
+    model = HawalaAccount
+
+    form_class = HawalaAccountForm
+
+    template_name = "accounting/hawala_form.html"
+
+    success_url = reverse_lazy("hawala_list")
+
+
+
+
+
+class HawalaDetailView(DetailView):
+
+    model = HawalaAccount
+
+    template_name = "accounting/hawala_detail.html"
+
+    context_object_name = "account"
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        account = self.object
+
+        total_debit = account.transactions.aggregate(
+            total=Sum("debit")
+        )["total"] or 0
+
+        total_credit = account.transactions.aggregate(
+            total=Sum("credit")
+        )["total"] or 0
+
+        balance = total_debit - total_credit
+
+        context["transactions"] = account.transactions.all()
+
+        context["total_debit"] = total_debit
+
+        context["total_credit"] = total_credit
+
+        context["balance"] = balance
+
+        return context
+    
+
+class HawalaTransactionCreateView(CreateView):
+
+    model = HawalaTransaction
+
+    form_class = HawalaTransactionForm
+
+    template_name = "accounting/hawala_transaction_form.html"
+
+    def get_account(self):
+
+        return get_object_or_404(
+
+            HawalaAccount,
+
+            pk=self.kwargs["account_id"]
+
+        )
+
+    def form_valid(self, form):
+
+        form.instance.hawala_account = self.get_account()
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+
+        return reverse_lazy(
+
+            "hawala_detail",
+
+            kwargs={
+
+                "pk": self.kwargs["account_id"]
+
+            }
+
+        )
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        context["account"] = self.get_account()
+
+        return context

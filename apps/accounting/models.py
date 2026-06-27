@@ -149,3 +149,190 @@ class PaymentRecord(models.Model):
 
     def __str__(self):
         return f"Payment #{self.id}"
+    
+
+
+
+# Hawala Model 
+
+class HawalaAccount(models.Model):
+
+    name = models.CharField(
+        max_length=255,
+        unique=True
+    )
+
+    contact_person = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+    phone = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True
+    )
+
+    email = models.EmailField(
+        blank=True,
+        null=True
+    )
+
+    city = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    address = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    notes = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        db_table = "hawala_accounts"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class HawalaTransaction(models.Model):
+
+    TRANSACTION_TYPES = (
+
+        ("deposit", "Deposit"),
+
+        ("supplier_payment", "Supplier Payment"),
+
+        ("customer_receipt", "Customer Receipt"),
+
+        ("withdrawal", "Withdrawal"),
+
+        ("adjustment", "Adjustment"),
+
+    )
+
+    STATUS_CHOICES = (
+
+        ("pending", "Pending"),
+
+        ("completed", "Completed"),
+
+        ("cancelled", "Cancelled"),
+
+    )
+
+    PAYMENT_METHODS = (
+
+        ("cash", "Cash"),
+
+        ("bank", "Bank"),
+
+        ("other", "Other"),
+
+    )
+
+    hawala_account = models.ForeignKey(
+        HawalaAccount,
+        on_delete=models.CASCADE,
+        related_name="transactions"
+    )
+
+    transaction_type = models.CharField(
+        max_length=30,
+        choices=TRANSACTION_TYPES
+    )
+
+    debit = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=0
+    )
+
+    credit = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=0
+    )
+
+    currency_rate = models.DecimalField(
+        max_digits=12,
+        decimal_places=4,
+        default=1
+    )
+
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHODS,
+        default="cash"
+    )
+
+    reference_type = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
+
+    reference_id = models.PositiveBigIntegerField(
+        blank=True,
+        null=True
+    )
+
+    reference_number = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    transaction_date = models.DateField()
+
+    notes = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="completed"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        db_table = "hawala_transactions"
+        ordering = [
+            "-transaction_date",
+            "-id"
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.hawala_account.name} - "
+            f"{self.get_transaction_type_display()}"
+        )
