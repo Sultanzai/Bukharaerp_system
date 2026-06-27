@@ -41,12 +41,12 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.users',
     'apps.products',
-    'apps.inventory',
     'apps.purchases',
     'apps.sales',
     'apps.accounting',
     'apps.reports',
     'apps.investors',
+    'apps.expenses',
 ]
 
 

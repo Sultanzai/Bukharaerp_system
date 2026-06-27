@@ -64,34 +64,7 @@
                 Factories
             </a>
         </li>
-
-
-
-        {% comment %}
-        <li>
-            <a href="#">
-                <i class="bi bi-arrow-left-right"></i>
-                Stock Movements
-            </a>
-        </li> {% endcomment %}
-
-        {% comment %} <li class="menu-title">
-            PURCHASES
-        </li>
-
-        <li>
-            <a href="">
-                <i class="bi bi-cart"></i>
-                Purchase Orders
-            </a>
-        </li>
-
-        <li>
-            <a href="#">
-                <i class="bi bi-truck"></i>
-                Goods Receipts
-            </a>
-        </li> {% endcomment %}
+ 
 
         <li class="menu-title">
             SALES
@@ -111,17 +84,22 @@
             </a>
         </li>
 
+        
+        <li class="menu-title">
+            EXPESSES
+        </li>
+
         <li>
-            <a href="#">
+            <a href="{% url 'expenses:category_list' %}">
                 <i class="bi bi-cash-stack"></i>
-                Expenses
+                Expenses Categories
             </a>
         </li>
 
         <li>
-            <a href="#">
+            <a href="{% url 'expenses:expense_list' %}">
                 <i class="bi bi-journal-text"></i>
-                Ledgers
+                Expenses
             </a>
         </li>
 

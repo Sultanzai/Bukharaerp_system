@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h3>
+            Expenses
+        </h3>
+
+        <a href="{% url 'expenses:expense_create' %}"
+           class="btn btn-primary">
+            Add Expense
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <table id="expenseTable"
+                   class="table table-bordered table-striped">
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Expenses Name</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Notes</th>
+                        <th>Delete</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for e in expenses %}
+
+                    <tr>
+
+                        <td>{{ e.id }}</td>
+
+                        <td>{{ e.exname }}</td>
+                        
+                        <td>{{ e.amount }}</td>
+                        
+                        <td>{{ e.category.name }}</td>
+
+                        <td>{{ e.expense_date|date:"d M Y" }}</td>
+
+                        <td>{{ e.notes|default:"-" }}</td>
+
+                        <td>
+                            <form method="POST"
+                                  action="{% url 'expenses:expense_delete' e.id %}"
+                                  onsubmit="return confirm('Delete this expense?');">
+
+                                {% csrf_token %}
+
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </button>
+
+                            </form>
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+$(document).ready(function () {
+
+    $('#expenseTable').DataTable({
+        pageLength: 25
+    });
+
+});
+
+</script>
+
+{% endblock %}

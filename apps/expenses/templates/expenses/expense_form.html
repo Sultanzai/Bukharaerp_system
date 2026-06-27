@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h3>
+            Add Expense
+        </h3>
+
+        <a href="{% url 'expenses:expense_list' %}"
+           class="btn btn-secondary">
+            Back
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label>Category</label>
+                    {{ form.category }}
+                </div>
+
+                <div class="mb-3">
+                    <label>Amount</label>
+                    {{ form.amount }}
+                </div>
+
+                <div class="mb-3">
+                    <label>Name</label>
+                    {{ form.exname }}
+                </div>
+
+                <div class="mb-3">
+                    <label>Date</label>
+                    {{ form.expense_date }}
+                </div>
+
+                <div class="mb-3">
+                    <label>Notes</label>
+                    {{ form.notes }}
+                </div>
+
+                <button type="submit"
+                        class="btn btn-success">
+                    Save Expense
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
