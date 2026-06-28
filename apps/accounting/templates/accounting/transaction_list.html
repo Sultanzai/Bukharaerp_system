@@ -7,16 +7,19 @@
     <div class="card shadow-sm">
 
         <div class="card-header d-flex justify-content-between align-items-center">
+
             <h4 class="mb-0">
                 Transactions
             </h4>
+
         </div>
 
         <div class="card-body">
 
             <div class="table-responsive">
 
-                <table class="table table-bordered table-hover">
+                <table id="transactionsTable"
+                       class="table table-bordered table-hover table-striped align-middle">
 
                     <thead class="table-light">
 
@@ -41,7 +44,7 @@
 
                     <tbody>
 
-                    {% for transaction in transactions %}
+                        {% for transaction in transactions %}
 
                         <tr>
 
@@ -51,20 +54,15 @@
 
                             <td>
                                 {% if transaction.type == 'incoming' %}
-                                    <span class="badge bg-success">
-                                        Incoming
-                                    </span>
+                                    <span class="badge bg-success">Incoming</span>
                                 {% else %}
-                                    <span class="badge bg-danger">
-                                        Outgoing
-                                    </span>
+                                    <span class="badge bg-danger">Outgoing</span>
                                 {% endif %}
                             </td>
 
                             <td>{{ transaction.get_party_type_display }}</td>
 
                             <td>{{ transaction.party_id }}</td>
-
 
                             <td>
                                 $ {{ transaction.amount }}
@@ -77,73 +75,62 @@
                             </td>
 
                             <td>
-
                                 {% if transaction.remaining_amount > 0 %}
-
                                     <span class="text-danger">
                                         $ {{ transaction.remaining_amount }}
                                     </span>
-
                                 {% else %}
-
                                     <span class="text-success">
                                         0.00
                                     </span>
-
                                 {% endif %}
-
                             </td>
 
                             <td>
-
                                 {% if transaction.status == 'completed' %}
-                                    <span class="badge bg-success">
-                                        Completed
-                                    </span>
+                                    <span class="badge bg-success">Completed</span>
 
                                 {% elif transaction.status == 'pending' %}
-                                    <span class="badge bg-warning">
-                                        Pending
-                                    </span>
+                                    <span class="badge bg-warning">Pending</span>
 
                                 {% else %}
-                                    <span class="badge bg-danger">
-                                        Cancelled
-                                    </span>
-
+                                    <span class="badge bg-danger">Cancelled</span>
                                 {% endif %}
-
                             </td>
 
-                            <td>{{ transaction.notes }}</td>
+                            <td>
+                                {{ transaction.notes|default:"-" }}
+                            </td>
 
-                            <td>{{ transaction.created_at|date:"Y-m-d" }}</td>
+                            <td>
+                                {{ transaction.created_at|date:"Y-m-d" }}
+                            </td>
 
                             <td>
                                 <a href="{% url 'transaction_detail' transaction.id %}"
-                                class="btn btn-sm btn-outline-primary">
+                                   class="btn btn-sm btn-outline-primary">
                                     View
                                 </a>
                             </td>
 
                             <td>
                                 <a href="{% url 'payment_create' transaction.id %}"
-                                class="btn btn-sm btn-outline-primary">
+                                   class="btn btn-sm btn-outline-success">
                                     Payment
                                 </a>
                             </td>
 
                         </tr>
 
-                    {% empty %}
+                        {% empty %}
 
                         <tr>
-                            <td colspan="10" class="text-center">
+                            <td colspan="14" class="text-center text-muted py-3">
                                 No transactions found.
                             </td>
                         </tr>
 
-                    {% endfor %}
+                        {% endfor %}
 
                     </tbody>
 
@@ -156,5 +143,21 @@
     </div>
 
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+$(document).ready(function () {
+
+    $('#transactionsTable').DataTable({
+        pageLength: 25,
+        responsive: true,
+        order: [[0, "desc"]]
+    });
+
+});
+</script>
 
 {% endblock %}

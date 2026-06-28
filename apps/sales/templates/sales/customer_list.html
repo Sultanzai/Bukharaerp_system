@@ -99,6 +99,8 @@
 
 </div>
 
+{% block extra_js %}
+
 <script>
 $(document).ready(function () {
     $('#customerTable').DataTable({
@@ -107,5 +109,7 @@ $(document).ready(function () {
     });
 });
 </script>
+
+{% endblock %}
 
 {% endblock %}

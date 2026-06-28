@@ -6,181 +6,140 @@
 
     <div class="card shadow-sm">
 
-    <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
 
-        <div class="row align-items-center">
+            <h4 class="mb-0">
+                Orders
+            </h4>
 
-            <div class="col-md-3">
-                <h4 class="mb-0">
-                    Orders
-                </h4>
-            </div>
-
-            <div class="col-md-6">
-
-                <form method="get">
-
-                    <div class="input-group">
-
-                        <input
-                            type="text"
-                            name="search"
-                            class="form-control"
-                            placeholder="Search customer, type, status..."
-                            value="{{ request.GET.search }}">
-
-                        <button
-                            class="btn btn-outline-secondary"
-                            type="submit">
-
-                            Search
-
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-            <div class="col-md-3 text-end">
-
-                <a href="{% url 'sales:order_create' %}"
-                class="btn btn-primary">
-
-                    Add Order
-
-                </a>
-
-            </div>
+            <a href="{% url 'sales:order_create' %}"
+               class="btn btn-primary">
+                Add Order
+            </a>
 
         </div>
 
-    </div>
-
         <div class="card-body">
 
-            <table class="table table-bordered table-hover table-striped">
+            <div class="table-responsive">
 
-                <thead class="table-light">
+                <table id="ordersTable"
+                       class="table table-bordered table-hover table-striped align-middle">
 
-                    <tr>
+                    <thead class="table-light">
 
-                        <th>Date</th>
-                        <th>Customer</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Items</th>
-                        <th>Total</th>
-                        <th width="150">Actions</th>
+                        <tr>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th width="150">Actions</th>
+                        </tr>
 
-                    </tr>
+                    </thead>
 
-                </thead>
+                    <tbody>
 
-                <tbody>
+                        {% for order in orders %}
 
-                    {% for order in orders %}
+                        <tr>
 
-                    <tr>
+                            <td>
+                                {{ order.created_at|date:"Y-m-d" }}
+                            </td>
 
-                        <td>
-                            {{ order.created_at|date:"Y-m-d" }}
-                        </td>
+                            <td>
+                                {{ order.customer }}
+                            </td>
 
-                        <td>
-                            {{ order.customer }}
-                        </td>
+                            <td>
+                                {{ order.get_order_type_display }}
+                            </td>
 
-                        <td>
-                            {{ order.get_order_type_display }}
-                        </td>
+                            <td>
 
-                        <td>
+                                {% if order.status == "pending" %}
+                                    <span class="badge bg-warning">Pending</span>
 
-                            {% if order.status == "pending" %}
+                                {% elif order.status == "confirmed" %}
+                                    <span class="badge bg-primary">Confirmed</span>
 
-                                <span class="badge bg-warning">
-                                    Pending
-                                </span>
+                                {% elif order.status == "completed" %}
+                                    <span class="badge bg-success">Completed</span>
 
-                            {% elif order.status == "confirmed" %}
+                                {% elif order.status == "cancelled" %}
+                                    <span class="badge bg-danger">Cancelled</span>
 
-                                <span class="badge bg-primary">
-                                    Confirmed
-                                </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        {{ order.status }}
+                                    </span>
+                                {% endif %}
 
-                            {% elif order.status == "completed" %}
+                            </td>
 
-                                <span class="badge bg-success">
-                                    Completed
-                                </span>
+                            <td>
+                                {{ order.item_count }}
+                            </td>
 
-                            {% elif order.status == "cancelled" %}
+                            <td>
+                                {{ order.total }}
+                            </td>
 
-                                <span class="badge bg-danger">
-                                    Cancelled
-                                </span>
+                            <td>
 
-                            {% else %}
+                                <a href="{% url 'sales:order_detail' order.pk %}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
 
-                                <span class="badge bg-secondary">
-                                    {{ order.status }}
-                                </span>
+                                <a href="#"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    Edit
+                                </a>
 
-                            {% endif %}
+                            </td>
 
-                        </td>
+                        </tr>
 
-                        <td>
-                            {{ order.item_count }}
-                        </td>
+                        {% empty %}
 
-                        <td>
-                            {{ order.total }}
-                        </td>
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">
+                                No orders found.
+                            </td>
+                        </tr>
 
-                        <td>
+                        {% endfor %}
 
-                            <a href="{% url 'sales:order_detail' order.pk %}"
-                               class="btn btn-sm btn-outline-primary">
+                    </tbody>
 
-                                View
+                </table>
 
-                            </a>
-
-                            <a href="#" class="btn btn-sm btn-outline-primary">
-
-                                Edit
-
-                            </a>
-
-                        </td>
-
-                    </tr>
-
-                    {% empty %}
-
-                    <tr>
-
-                        <td colspan="7" class="text-center">
-
-                            No orders found.
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
+            </div>
 
         </div>
 
     </div>
 
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+$(document).ready(function () {
+
+    $('#ordersTable').DataTable({
+        pageLength: 25,
+        responsive: true,
+        order: [[0, "desc"]]
+    });
+
+});
+</script>
 
 {% endblock %}
