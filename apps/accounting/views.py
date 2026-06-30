@@ -132,9 +132,7 @@ def payment_create(request, transaction_id):
 class HawalaAccountListView(ListView):
 
     model = HawalaAccount
-
     template_name = "accounting/hawala_list.html"
-
     context_object_name = "accounts"
 
     def get_queryset(self):
@@ -143,18 +141,24 @@ class HawalaAccountListView(ListView):
 
         for account in accounts:
 
-            debit = account.transactions.aggregate(
-                total=Sum("debit")
-            )["total"] or 0
+            debit = (
+                account.transactions.filter(status="completed").aggregate(
+                    total=Sum("debit")
+                )["total"]
+                or Decimal("0.00")
+            )
 
-            credit = account.transactions.aggregate(
-                total=Sum("credit")
-            )["total"] or 0
+            credit = (
+                account.transactions.filter(status="completed").aggregate(
+                    total=Sum("credit")
+                )["total"]
+                or Decimal("0.00")
+            )
 
-            account.balance = debit - credit
+            # Balance = Credit - Debit
+            account.balance = credit - debit
 
         return accounts
-
 class HawalaAccountCreateView(CreateView):
 
     model = HawalaAccount
@@ -183,15 +187,15 @@ class HawalaDetailView(DetailView):
 
         account = self.object
 
-        total_debit = account.transactions.aggregate(
-            total=Sum("debit")
-        )["total"] or 0
-
         total_credit = account.transactions.aggregate(
             total=Sum("credit")
         )["total"] or 0
 
-        balance = total_debit - total_credit
+        total_debit = account.transactions.aggregate(
+            total=Sum("debit")
+        )["total"] or 0
+
+        balance = total_credit - total_debit
 
         context["transactions"] = account.transactions.all()
 
@@ -225,6 +229,12 @@ class HawalaTransactionCreateView(CreateView):
     def form_valid(self, form):
 
         form.instance.hawala_account = self.get_account()
+
+        if form.instance.credit is None:
+            form.instance.credit = Decimal("0")
+
+        if form.instance.debit is None:
+            form.instance.debit = Decimal("0")
 
         return super().form_valid(form)
 

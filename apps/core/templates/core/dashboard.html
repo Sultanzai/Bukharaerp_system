@@ -9,38 +9,696 @@ Dashboard
 <div class="page-header">
     <h2>Dashboard</h2>
 </div>
+<!--==================================================
 
-<div class="row g-4 mb-4">
+    SECTION 1 — BUSINESS OVERVIEW
 
-    <div class="col-md-3">
-        <div class="stat-card">
-            <h3>2,540</h3>
-            <span>Total Products</span>
+===================================================-->
+<div class="row g-4">
+
+    <!-- Investment -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Total Investment
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1">
+                            $ {{ financial.investment }}
+                        </h2>
+
+                        <small class="text-muted">
+                            Investor Capital
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-primary">
+
+                        <i class="bi bi-bank fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
-    <div class="col-md-3">
-        <div class="stat-card">
-            <h3>$125,450</h3>
-            <span>Inventory Value</span>
+    <!-- Sales -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Total Sales
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1">
+                            $ {{ financial.totalsales }}
+                        </h2>
+
+                        <small class="text-success">
+                            Revenue Generated
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-success">
+
+                        <i class="bi bi-cart-check fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
-    <div class="col-md-3">
-        <div class="stat-card">
-            <h3>$8,540</h3>
-            <span>Today's Sales</span>
+    <!-- Cash -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Cash on Hand
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1">
+                            $ {{ financial.cash }}
+                        </h2>
+
+                        <small class="text-muted">
+                            Available Cash
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-info">
+
+                        <i class="bi bi-cash-stack fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
-    <div class="col-md-3">
-        <div class="stat-card">
-            <h3>$24,600</h3>
-            <span>Receivables</span>
+    <!-- Receivable -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Receivables
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1">
+                            $ {{ financial.remainingsales }}
+                        </h2>
+
+                        <small class="text-warning">
+                            Pending Collection
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-warning">
+
+                        <i class="bi bi-wallet2 fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
+
+    </div>
+
+    <!-- Inventory -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Inventory Value
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1">
+                            $ {{ financial.inventory_value }}
+                        </h2>
+
+                        <small class="text-primary">
+                            Current Stock
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-primary">
+
+                        <i class="bi bi-box-seam fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Factory -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Factory Payables
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1">
+                            $ {{ financial.payables }}
+                        </h2>
+
+                        <small class="text-danger">
+                            Outstanding
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-danger">
+
+                        <i class="bi bi-building fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Expenses -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Expenses
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1">
+                            $ {{ financial.expenses }}
+                        </h2>
+
+                        <small class="text-danger">
+                            Operating Cost
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-danger">
+
+                        <i class="bi bi-receipt fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Profit -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Net Profit
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1 text-success">
+                            $ {{ financial.profit }}
+                        </h2>
+
+                        <small class="text-success">
+                            Business Earnings
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-success">
+
+                        <i class="bi bi-graph-up-arrow fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
+<br><br>
+
+
+<!--==================================================
+
+    SECTION 2 — CAPITAL DISTRIBUTION
+
+===================================================-->
+<div class="card border-0 shadow rounded-4 mb-4">
+
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h4 class="fw-bold mb-1">
+                    Capital Distribution
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Current allocation of business assets
+                </p>
+
+            </div>
+
+            <div class="text-end">
+
+                <small class="text-muted">
+                    Total Investment
+                </small>
+
+                <h2 class="fw-bold text-primary mb-0">
+                    $ {{ financial.investment }}
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="row g-4">
+
+            <!-- LEFT -->
+
+            <div class="col-lg-5">
+
+                <div class="row g-3">
+
+                    <div class="col-12">
+
+                        <div class="border rounded-4 p-3">
+
+                            <div class="d-flex justify-content-between">
+
+                                <div>
+
+                                    <small class="text-muted">
+                                        Inventory
+                                    </small>
+
+                                    <h5 class="fw-bold mt-1">
+                                        $ {{ financial.inventory_value }}
+                                    </h5>
+
+                                </div>
+
+                                <i class="bi bi-box-seam fs-2 text-primary"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="border rounded-4 p-3 h-100">
+
+                            <small class="text-muted">
+                                Cash
+                            </small>
+
+                            <h5 class="fw-bold mt-2">
+                                $ {{ financial.cash_on_hand }}
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="border rounded-4 p-3 h-100">
+
+                            <small class="text-muted">
+                                Hawala
+                            </small>
+
+                            <h5 class="fw-bold mt-2">
+                                $ {{ financial.hawala_total_balance }}
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="border rounded-4 p-3 h-100">
+
+                            <small class="text-muted">
+                                Receivables
+                            </small>
+
+                            <h5 class="fw-bold mt-2 text-warning">
+                                $ {{ financial.remainingsales }}
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="border rounded-4 p-3 h-100">
+
+                            <small class="text-muted">
+                                Expenses
+                            </small>
+
+                            <h5 class="fw-bold mt-2 text-danger">
+                                $ {{ financial.expenses }}
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <div class="bg-success bg-opacity-10 rounded-4 p-3">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <div>
+
+                                    <small class="text-success">
+                                        Net Profit
+                                    </small>
+
+                                    <h4 class="fw-bold text-success mb-0">
+                                        $ {{ financial.profit }}
+                                    </h4>
+
+                                </div>
+
+                                <i class="bi bi-graph-up-arrow fs-2 text-success"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-4">
+
+                <div class="d-flex justify-content-center align-items-center h-100">
+
+                    <canvas id="capitalChart" height="280"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ============================= -->
+<!-- SECTION 3 : PROFIT & LOSS -->
+<!-- ============================= -->
+
+<div class="card shadow-sm border-0 rounded-3 mb-4">
+
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h4 class="fw-semibold mb-1">
+                    Profit & Loss
+                </h4>
+
+                <small class="text-muted">
+                    Financial performance overview
+                </small>
+            </div>
+
+        </div>
+
+        <div class="row g-5 align-items-center">
+
+            <!-- LEFT -->
+
+            <div class="col-lg-5">
+
+                <div class="profit-flow">
+
+                    <!-- Revenue -->
+
+                    <div class="pnl-box revenue">
+
+                        <small class="text-muted">
+                            Revenue
+                        </small>
+
+                        <h3 class="fw-bold mb-0 text-success">
+                            $286,000
+                        </h3>
+
+                    </div>
+
+                    <div class="flow-arrow">
+                        ↓
+                    </div>
+
+                    <!-- COGS -->
+
+                    <div class="pnl-box cogs">
+
+                        <small class="text-muted">
+                            Cost of Goods Sold
+                        </small>
+
+                        <h4 class="fw-bold mb-0 text-danger">
+                            $181,000
+                        </h4>
+
+                    </div>
+
+                    <div class="flow-arrow">
+                        ↓
+                    </div>
+
+                    <!-- Gross -->
+
+                    <div class="pnl-box gross">
+
+                        <small class="text-muted">
+                            Gross Profit
+                        </small>
+
+                        <h3 class="fw-bold mb-0 text-primary">
+                            $105,000
+                        </h3>
+
+                    </div>
+
+                    <div class="flow-arrow">
+                        ↓
+                    </div>
+
+                    <!-- Expense -->
+
+                    <div class="pnl-box expense">
+
+                        <small class="text-muted">
+                            Operating Expenses
+                        </small>
+
+                        <h4 class="fw-bold mb-0">
+                            $18,500
+                        </h4>
+
+                    </div>
+
+                    <div class="flow-arrow">
+                        ↓
+                    </div>
+
+                    <!-- Net -->
+
+                    <div class="pnl-box net">
+
+                        <small class="text-muted">
+                            Net Profit
+                        </small>
+
+                        <h2 class="fw-bold mb-0 text-success">
+                            $86,500
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <div class="col-lg-7">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+
+                    <h5 class="mb-0 fw-semibold">
+                        Monthly Profit
+                    </h5>
+
+                    <span class="badge bg-success">
+                        +14%
+                    </span>
+
+                </div>
+
+                <div style="height:320px;">
+
+                    <canvas id="profitChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div class="row g-4">
 
@@ -172,5 +830,85 @@ Dashboard
     </div>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
 
+const ctx = document.getElementById('capitalChart');
+
+new Chart(ctx, {
+
+    type: 'doughnut',
+
+    data: {
+
+        labels: [
+
+            'Inventory',
+            'Cash',
+            'Hawala',
+            'Receivables',
+            'Expenses',
+            'Profit'
+
+        ],
+
+        datasets: [{
+
+            data: [
+
+                {{ financial.inventory_value|default:0 }},
+                {{ financial.cash_on_hand|default:0 }},
+                {{ financial.hawala_total_balance|default:0 }},
+                {{ financial.remainingsales|default:0 }},
+                {{ financial.expenses|default:0 }},
+                {{ financial.profit|default:0 }}
+
+            ],
+
+            backgroundColor: [
+
+                '#4F46E5',
+                '#22C55E',
+                '#06B6D4',
+                '#F59E0B',
+                '#EF4444',
+                '#10B981'
+
+            ],
+
+            borderWidth:0,
+            hoverOffset:12
+
+        }]
+
+    },
+
+    options: {
+
+        responsive:true,
+
+        cutout:'72%',
+
+        plugins:{
+
+            legend:{
+
+                position:'bottom',
+
+                labels:{
+
+                    usePointStyle:true,
+                    padding:20
+
+                }
+
+            }
+
+        }
+
+    }
+
+});
+
+</script>
 {% endblock %}

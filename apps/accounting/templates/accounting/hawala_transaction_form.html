@@ -51,17 +51,37 @@
 
             <div class="col-md-4 mb-3">
 
-                <label>Debit</label>
+                <label class="form-label">
 
-                {{ form.debit }}
+                    {{ form.credit.label }}
+
+                </label>
+
+                {{ form.credit }}
+
+                <div class="form-text">
+
+                    {{ form.credit.help_text }}
+
+                </div>
 
             </div>
 
             <div class="col-md-4 mb-3">
 
-                <label>Credit</label>
+                <label class="form-label">
 
-                {{ form.credit }}
+                    {{ form.debit.label }}
+
+                </label>
+
+                {{ form.debit }}
+
+                <div class="form-text">
+
+                    {{ form.debit.help_text }}
+
+                </div>
 
             </div>
 
