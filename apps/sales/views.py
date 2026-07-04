@@ -9,10 +9,10 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 
 from apps.accounting.models import Transaction, PaymentRecord
-from apps.products.models import ProductVariant
+from apps.products.models import ProductVariant, StockMovement
 from apps.sales.forms import CustomerForm, OrderForm
 from apps.sales.models import Customer, Order, OrderItem
-
+from django.db import transaction
 
 # ==========================================================
 # Customers
@@ -171,7 +171,6 @@ class OrderDetailView(DetailView):
             )
         )
 
-
 def order_create(request):
 
     if request.method == "POST":
@@ -180,116 +179,93 @@ def order_create(request):
 
         if form.is_valid():
 
-            order = form.save(commit=False)
-            order.status = "pending"
-            order.total = Decimal("0.00")
-            order.save()
-
             variant_ids = request.POST.getlist("variant_id[]")
             qtys = request.POST.getlist("qty[]")
             prices = request.POST.getlist("price[]")
 
-            grand_total = Decimal("0.00")
-
             if not (variant_ids and qtys and prices):
-                messages.error(request, "Order items are missing.")
-                return render(
-                    request,
-                    "sales/order_form.html",
-                    {"form": form}
-                )
+                messages.error(request, "Please add at least one item.")
+                return render(request, "sales/order_form.html", {"form": form})
 
-            for variant_id, qty, price in zip(
-                    variant_ids,
-                    qtys,
-                    prices):
+            try:
+                with transaction.atomic():
 
-                try:
+                    order = form.save(commit=False)
+                    order.status = "pending"
+                    order.total = Decimal("0.00")
+                    order.save()
 
-                    if not variant_id or not qty or not price:
-                        continue
+                    grand_total = Decimal("0.00")
 
-                    qty = int(qty)
+                    for variant_id, qty, price in zip(variant_ids, qtys, prices):
 
-                    price = Decimal(
-                        str(price).replace(",", "").strip()
+                        if not variant_id:
+                            continue
+
+                        qty = int(qty)
+                        price = Decimal(str(price).replace(",", "").strip())
+
+                        variant = ProductVariant.objects.select_for_update().get(pk=variant_id)
+
+                        available_stock = variant.stock
+
+                        if qty <= 0:
+                            raise ValueError(f"{variant.sku}: Invalid quantity")
+
+                        if qty > available_stock:
+                            raise ValueError(
+                                f"{variant.sku}: Only {available_stock} left in stock."
+                            )
+
+                        # ORDER ITEM
+                        line_total = qty * price
+
+                        OrderItem.objects.create(
+                            order=order,
+                            product_variant=variant,
+                            qty=qty,
+                            unit_price=price,
+                            total=line_total
+                        )
+
+                        grand_total += line_total
+
+                        # STOCK MOVEMENT (ONLY LOG, NO MANUAL UPDATE)
+                        StockMovement.objects.create(
+                            product_variant=variant,
+                            type="STOCK_OUT",
+                            qty=qty,
+                            notes=f"Order #{order.id}"
+                        )
+
+                    order.total = grand_total
+                    order.save(update_fields=["total"])
+
+                    Transaction.objects.create(
+                        type="incoming",
+                        party_type="customer",
+                        party_id=order.customer_id,
+                        reference_type="customer_order",
+                        reference_id=order.id,
+                        amount=order.total,
+                        status="pending",
+                        notes=order.notes
                     )
 
-                    if qty <= 0 or price <= 0:
-                        continue
+                messages.success(request, "Order created successfully.")
+                return redirect("sales:order_list")
 
-                    line_total = Decimal(qty) * price
-
-                    OrderItem.objects.create(
-                        order=order,
-                        product_variant_id=int(variant_id),
-                        qty=qty,
-                        unit_price=price,
-                        total=line_total
-                    )
-
-                    grand_total += line_total
-
-                except Exception as e:
-
-                    messages.error(
-                        request,
-                        f"Item error: {str(e)}"
-                    )
-
-                    return render(
-                        request,
-                        "sales/order_form.html",
-                        {"form": form}
-                    )
-
-            order.total = grand_total
-
-            order.save(
-                update_fields=["total"]
-            )
-
-            Transaction.objects.create(
-                type="incoming",
-                party_type="customer",
-                party_id=order.customer_id,
-                reference_type="customer_order",
-                reference_id=order.id,
-                amount=order.total,
-                status="pending",
-                notes=order.notes
-            )
-
-            messages.success(
-                request,
-                "Order created successfully."
-            )
-
-            return redirect(
-                "sales:order_list"
-            )
+            except Exception as e:
+                messages.error(request, str(e))
 
         else:
-
+            messages.error(request, "Form is invalid.")
             print(form.errors)
 
-            messages.error(
-                request,
-                "Form is invalid."
-            )
-
     else:
-
         form = OrderForm()
 
-    return render(
-        request,
-        "sales/order_form.html",
-        {
-            "form": form
-        }
-    )
-
+    return render(request, "sales/order_form.html", {"form": form})
 
 # ==========================================================
 # Ajax Search
@@ -356,13 +332,11 @@ def variant_search(request):
             "size": variant.size or "",
             "color": variant.color or "",
             "factory": variant.factory.name if variant.factory else "",
-            "stock": getattr(variant, "quantity", 0),
+            "stock": variant.stock,
             "price": str(variant.selling_price)
 
         })
 
-    return JsonResponse(
-        {
-            "results": results
-        }
-    )
+    return JsonResponse({
+        "results": results
+    })

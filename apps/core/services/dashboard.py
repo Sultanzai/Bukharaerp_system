@@ -1,4 +1,6 @@
 from decimal import Decimal
+from django.db.models import IntegerField, Q, Sum
+from django.db.models.functions import Coalesce
 
 from django.db.models import Sum, Case, When, F, Value, DecimalField, ExpressionWrapper
 
@@ -98,31 +100,11 @@ def financial_overview():
 
     inventory_value = Decimal("0.00")
 
-    variants = ProductVariant.objects.all()
-
-    for variant in variants:
-
-        qty = (
-            variant.stock_movements.aggregate(
-                stock=Sum("qty")
-            )["stock"]
-            or 0
-        )
-
-        inventory_value += qty * variant.cost_price
+    for variant in ProductVariant.objects.all():
+        inventory_value += Decimal(variant.stock) * variant.cost_price
 
     data["inventory_value"] = inventory_value
 
-    # ---------------------------------------------------
-    # Revenue
-    # ---------------------------------------------------
-
-    revenue = (
-        OrderItem.objects.aggregate(
-            total=Sum("total")
-        )["total"]
-        or Decimal("0.00")
-    )
 
     # ---------------------------------------------------
     # Cost Of Goods
@@ -137,12 +119,11 @@ def financial_overview():
         or Decimal("0.00")
     )
 
-    data["profit"] = revenue - cost - expenses
 
 
-# ---------------------------------------------------
-# Hawala Balance
-# ---------------------------------------------------
+    # ---------------------------------------------------
+    # Hawala Balance
+    # ---------------------------------------------------
 
     accounts = HawalaAccount.objects.all()
 
@@ -158,11 +139,38 @@ def financial_overview():
         )["total"]
         or Decimal("0.00")
     )
-    data["hawala_total_balance"] = total_hawala_balance
+    data["total_hawala_balance"] = total_hawala_balance
 
+    # -----------------------------------
+    # Revenue total sold amount
+    # -----------------------------------
+    revenue = OrderItem.objects.aggregate(
+        total=Coalesce(Sum("total"), Decimal("0.00"))
+    )["total"]
 
+    # -----------------------------------
+    # Cost of Goods Sold (COGS)
+    # -----------------------------------
+    cogs = OrderItem.objects.aggregate(
+        total=Coalesce(
+            Sum(
+                F("qty") * F("product_variant__cost_price"),
+                output_field=DecimalField()
+            ),
+            Decimal("0.00")
+        )
+    )["total"]
 
+    data["cogs"] = cogs 
 
+    # -----------------------------------
+    # Net Profit
+    # -----------------------------------
+    data["profit"] = revenue - cogs + total_hawala_balance - expenses - inventory_value
+    # -----------------------------------
+    # Cash on Hand
+    # -----------------------------------
+    data["cash_on_hand"] = investments - inventory_value + total_hawala_balance - expenses - cogs 
 
     
     return data

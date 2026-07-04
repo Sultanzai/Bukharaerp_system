@@ -1,5 +1,7 @@
 from django.db import models
 from apps.purchases.models import Factory
+from django.db.models import Sum, Q, F
+from django.db.models.functions import Coalesce
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -32,12 +34,6 @@ class Product(models.Model):
         on_delete=models.PROTECT,
         related_name="products"
     )
-
-    # factory = models.ForeignKey(
-    #     Factory,
-    #     on_delete=models.PROTECT,
-    #     related_name="products"
-    # )
 
     name = models.CharField(max_length=255)
     description = models.TextField( blank=True, null=True)
@@ -123,7 +119,23 @@ class ProductVariant(models.Model):
 
     class Meta:
         db_table = "product_variants"
-
+    @property
+    def stock(self):
+        return (
+            self.stock_movements.aggregate(
+                total=Coalesce(Sum(
+                    "qty",
+                    filter=Q(type__in=["OPENING", "STOCK_IN"])
+                ), 0)
+            )["total"]
+            -
+            self.stock_movements.aggregate(
+                total=Coalesce(Sum(
+                    "qty",
+                    filter=Q(type="STOCK_OUT")
+                ), 0)
+            )["total"]
+        )
     def __str__(self):
         return self.sku
     

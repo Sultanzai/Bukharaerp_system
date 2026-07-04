@@ -8,6 +8,10 @@
 
     {% csrf_token %}
 
+    <!-- ========================= -->
+    <!-- Order Information -->
+    <!-- ========================= -->
+
     <div class="card shadow-sm mb-3">
 
         <div class="card-header">
@@ -16,11 +20,13 @@
 
         <div class="card-body">
 
-            <div class="row">
+            <div class="row g-3">
 
-                <div class="col-md-4">
+                <div class="col-lg-4">
 
-                    <label class="form-label">Customer</label>
+                    <label class="form-label">
+                        Customer
+                    </label>
 
                     <select
                         name="customer"
@@ -31,9 +37,11 @@
 
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-lg-3">
 
-                    <label class="form-label">Order Type</label>
+                    <label class="form-label">
+                        Order Type
+                    </label>
 
                     <select
                         name="order_type"
@@ -55,14 +63,16 @@
 
                 </div>
 
-                <div class="col-md-5">
+                <div class="col-lg-5">
 
-                    <label class="form-label">Notes</label>
+                    <label class="form-label">
+                        Notes
+                    </label>
 
                     <textarea
                         name="notes"
-                        class="form-control"
-                        rows="1"></textarea>
+                        rows="2"
+                        class="form-control"></textarea>
 
                 </div>
 
@@ -73,16 +83,22 @@
     </div>
 
 
+    <!-- ========================= -->
+    <!-- Product Search -->
+    <!-- ========================= -->
+
     <div class="card shadow-sm mb-3">
 
         <div class="card-header">
 
             <div class="row">
 
-                <div class="col-md-8">
+                <div class="col-lg-9">
 
                     <label class="form-label">
-                        Search SKU / Product
+
+                        Search Product / SKU
+
                     </label>
 
                     <select
@@ -92,12 +108,14 @@
 
                 </div>
 
-                <div class="col-md-4 d-flex align-items-end">
+                <div class="col-lg-3 d-flex align-items-end">
 
                     <button
                         type="button"
-                        class="btn btn-success"
-                        id="add-item">
+                        id="add-item"
+                        class="btn btn-success w-100">
+
+                        <i class="bi bi-plus-circle"></i>
 
                         Add Item
 
@@ -109,71 +127,147 @@
 
         </div>
 
-        <div class="card-body">
+    </div>
 
-            <table class="table table-bordered table-striped">
 
-                <thead>
+    <!-- ========================= -->
+    <!-- Order Items -->
+    <!-- ========================= -->
 
-                <tr>
+    <div class="card shadow-sm mb-3">
 
-                    <th>SKU</th>
-                    <th>Product</th>
-                    <th>Size</th>
-                    <th>Color</th>
-                    <th>Factory</th>
-                    <th>Stock</th>
-                    <th width="120">Price</th>
-                    <th width="100">Qty</th>
-                    <th width="120">Total</th>
-                    <th width="80"></th>
+        <div class="card-body p-0">
 
-                </tr>
+            <div class="table-responsive">
 
-                </thead>
+                <table class="table table-bordered table-hover align-middle mb-0">
 
-                <tbody id="order-items">
+                    <thead class="table-light">
 
-                </tbody>
+                        <tr>
 
-            </table>
+                            <th width="120">
+                                SKU
+                            </th>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th width="90">
+                                Size
+                            </th>
+
+                            <th width="90">
+                                Color
+                            </th>
+
+                            <th width="150">
+                                Factory
+                            </th>
+
+                            <th width="100">
+                                Stock
+                            </th>
+
+                            <th width="110">
+                                Remaining
+                            </th>
+
+                            <th width="120">
+                                Price
+                            </th>
+
+                            <th width="100">
+                                Qty
+                            </th>
+
+                            <th width="120">
+                                Total
+                            </th>
+
+                            <th width="80">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="order-items">
+
+                        <tr id="empty-row">
+
+                            <td
+                                colspan="11"
+                                class="text-center text-muted py-4">
+
+                                No products added.
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
     </div>
 
 
+    <!-- ========================= -->
+    <!-- Footer -->
+    <!-- ========================= -->
+
     <div class="card shadow-sm">
 
         <div class="card-body">
 
-            <div class="row">
+            <div class="row align-items-center">
 
-                <div class="col-md-9"></div>
+                <div class="col-lg-6">
 
-                <div class="col-md-3">
+                    <button
+                        type="button"
+                        id="clear-items"
+                        class="btn btn-outline-danger">
 
-                    <h4>
+                        Clear Items
+
+                    </button>
+
+                </div>
+
+                <div class="col-lg-6 text-end">
+
+                    <h3 class="mb-3">
 
                         Grand Total :
 
-                        <span id="grand-total">
+                        <span
+                            id="grand-total"
+                            class="text-primary">
 
                             0.00
 
                         </span>
 
-                    </h4>
+                    </h3>
+
+                    <button
+                        class="btn btn-primary btn-lg">
+
+                        Save Order
+
+                    </button>
 
                 </div>
 
             </div>
-
-            <button class="btn btn-primary">
-
-                Save Order
-
-            </button>
 
         </div>
 
@@ -185,39 +279,38 @@
 
 {% endblock %}
 
-
 {% block extra_js %}
 
 <script>
 
-$(document).ready(function(){
+$(function () {
 
     let selectedVariant = null;
 
+    // ==========================
+    // Customer Search
+    // ==========================
 
     $('#customer-select').select2({
 
-        width:'100%',
-        placeholder:'Search Customer',
-        minimumInputLength:0,
+        width: '100%',
+        placeholder: 'Search Customer',
 
-        ajax:{
+        ajax: {
 
-            url:"{% url 'sales:customer_search' %}",
+            url: "{% url 'sales:customer_search' %}",
+            dataType: "json",
+            delay: 250,
 
-            dataType:'json',
-
-            delay:250,
-
-            data:function(params){
+            data: function (params) {
 
                 return {
-                    term:params.term || ''
+                    term: params.term || ''
                 };
 
             },
 
-            processResults:function(data){
+            processResults: function (data) {
 
                 return data;
 
@@ -227,30 +320,31 @@ $(document).ready(function(){
 
     });
 
+
+    // ==========================
+    // Variant Search
+    // ==========================
 
     $('#variant-search').select2({
 
-        width:'100%',
-        placeholder:'Search SKU / Product',
-        minimumInputLength:0,
+        width: '100%',
+        placeholder: 'Search SKU / Product',
 
-        ajax:{
+        ajax: {
 
-            url:"{% url 'sales:variant_search' %}",
+            url: "{% url 'sales:variant_search' %}",
+            dataType: 'json',
+            delay: 250,
 
-            dataType:'json',
-
-            delay:250,
-
-            data:function(params){
+            data: function (params) {
 
                 return {
-                    term:params.term || ''
+                    term: params.term || ''
                 };
 
             },
 
-            processResults:function(data){
+            processResults: function (data) {
 
                 return data;
 
@@ -261,23 +355,57 @@ $(document).ready(function(){
     });
 
 
-    $('#variant-search').on('select2:select', function(e){
+    $('#variant-search').on('select2:select', function (e) {
 
         selectedVariant = e.params.data;
 
     });
 
 
+    // ==========================
+    // Add Item
+    // ==========================
 
-    $('#add-item').click(function(){
+    $('#add-item').click(function () {
 
-        if(selectedVariant == null){
+        if (!selectedVariant) {
 
-            alert("Select a product first");
-
+            alert("Please select a product.");
             return;
 
         }
+
+        let stock = parseInt(selectedVariant.stock);
+
+        if (stock <= 0) {
+
+            alert("This item is out of stock.");
+            return;
+
+        }
+
+        // Prevent duplicate variant
+
+        let exists = false;
+
+        $('input[name="variant_id[]"]').each(function () {
+
+            if ($(this).val() == selectedVariant.id) {
+
+                exists = true;
+
+            }
+
+        });
+
+        if (exists) {
+
+            alert("This product has already been added.");
+            return;
+
+        }
+
+        $('#empty-row').remove();
 
         let total = parseFloat(selectedVariant.price).toFixed(2);
 
@@ -293,6 +421,7 @@ $(document).ready(function(){
                     type="hidden"
                     name="variant_id[]"
                     value="${selectedVariant.id}">
+
             </td>
 
             <td>${selectedVariant.product}</td>
@@ -303,14 +432,28 @@ $(document).ready(function(){
 
             <td>${selectedVariant.factory}</td>
 
-            <td>${selectedVariant.stock}</td>
+            <td class="stock">
+
+                ${stock}
+
+            </td>
+
+            <td>
+
+                <span class="remaining-stock">
+
+                    ${stock-1}
+
+                </span>
+
+            </td>
 
             <td>
 
                 <input
                     type="number"
-                    step="0.01"
                     class="form-control price"
+                    step="0.01"
                     name="price[]"
                     value="${selectedVariant.price}">
 
@@ -322,7 +465,9 @@ $(document).ready(function(){
                     type="number"
                     class="form-control qty"
                     name="qty[]"
-                    value="1">
+                    value="1"
+                    min="1"
+                    max="${stock}">
 
             </td>
 
@@ -340,7 +485,7 @@ $(document).ready(function(){
 
                 <button
                     type="button"
-                    class="btn btn-danger remove-row">
+                    class="btn btn-danger btn-sm remove-row">
 
                     Remove
 
@@ -359,12 +504,39 @@ $(document).ready(function(){
     });
 
 
+    // ==========================
+    // Qty / Price Changed
+    // ==========================
 
-    $(document).on('keyup change','.qty,.price',function(){
+    $(document).on('keyup change', '.qty,.price', function () {
 
         let row = $(this).closest('tr');
 
-        let qty = parseFloat(row.find('.qty').val()) || 0;
+        let stock = parseInt(row.find('.stock').text());
+
+        let qty = parseInt(row.find('.qty').val()) || 1;
+
+        if (qty < 1) {
+
+            qty = 1;
+
+            row.find('.qty').val(1);
+
+        }
+
+        if (qty > stock) {
+
+            qty = stock;
+
+            row.find('.qty').val(stock);
+
+            alert("Only " + stock + " item(s) available.");
+
+        }
+
+        let remaining = stock - qty;
+
+        row.find('.remaining-stock').text(remaining);
 
         let price = parseFloat(row.find('.price').val()) || 0;
 
@@ -377,29 +549,70 @@ $(document).ready(function(){
     });
 
 
+    // ==========================
+    // Remove Item
+    // ==========================
 
-    $(document).on('click','.remove-row',function(){
+    $(document).on('click', '.remove-row', function () {
 
         $(this).closest('tr').remove();
+
+        if ($('#order-items tr').length === 0) {
+
+            $('#order-items').html(
+
+                `<tr id="empty-row">
+                    <td colspan="11" class="text-center text-muted py-4">
+                        No products added.
+                    </td>
+                </tr>`
+
+            );
+
+        }
 
         calculateGrand();
 
     });
 
 
+    // ==========================
+    // Clear All
+    // ==========================
 
-    function calculateGrand(){
+    $('#clear-items').click(function () {
+
+        $('#order-items').html(
+
+            `<tr id="empty-row">
+                <td colspan="11" class="text-center text-muted py-4">
+                    No products added.
+                </td>
+            </tr>`
+
+        );
+
+        calculateGrand();
+
+    });
+
+
+    // ==========================
+    // Grand Total
+    // ==========================
+
+    function calculateGrand() {
 
         let grand = 0;
 
-        $('.line-total').each(function(){
+        $('.line-total').each(function () {
 
-            let value = $(this).text().replace(/,/g, '').trim();
-            grand += parseFloat(value) || 0;
+            grand += parseFloat($(this).text()) || 0;
 
         });
 
         $('#grand-total').text(grand.toFixed(2));
+
     }
 
 });

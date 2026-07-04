@@ -120,11 +120,9 @@ class ProductListView(ListView):
 
 
 class ProductVariantView(TemplateView):
-
     template_name = "products/variants.html"
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
 
         product = get_object_or_404(
@@ -133,15 +131,12 @@ class ProductVariantView(TemplateView):
         )
 
         context["product"] = product
-
         context["form"] = ProductVariantForm()
-
         context["variants"] = product.variants.all()
 
         return context
 
     def post(self, request, *args, **kwargs):
-
         product = get_object_or_404(
             Product,
             pk=self.kwargs["product_id"]
@@ -153,34 +148,22 @@ class ProductVariantView(TemplateView):
 
             with transaction.atomic():
 
-                variant = form.save(
-                    commit=False
-                )
-
+                variant = form.save(commit=False)
                 variant.product = product
 
+                opening_stock = form.cleaned_data.get("opening_stock") or 0
+
+                # ✅ IMPORTANT: set real stock
+                variant.quantity = opening_stock
                 variant.save()
 
-                opening_stock = form.cleaned_data[
-                    "opening_stock"
-                ]
-
+                # ✅ STOCK MOVEMENT (history only)
                 if opening_stock > 0:
-
                     StockMovement.objects.create(
-
                         product_variant=variant,
-
                         type="OPENING",
-
                         qty=opening_stock,
-
-                        # related_docs="MASTER_PRODUCT",
-
-                        # file_number=product.id,
-
                         notes="Opening Stock"
-
                     )
 
             return redirect(
@@ -189,15 +172,10 @@ class ProductVariantView(TemplateView):
             )
 
         return self.render_to_response({
-
             "product": product,
-
             "form": form,
-
             "variants": product.variants.all()
-
         })
-    
 
 
 
@@ -311,23 +289,21 @@ class ProductDetailView(TemplateView):
             pk=self.kwargs["product_id"]
         )
 
-        variants = ProductVariant.objects.filter(
-            product=product
-        ).select_related(
-            "factory"
-        ).annotate(
-            total_stock=Coalesce(
-                Sum("stock_movements__qty"),
-                0
-            )
+        variants = (
+            ProductVariant.objects
+            .filter(product=product)
+            .select_related("factory")
         )
 
-        stock_movements = StockMovement.objects.filter(
-            product_variant__product=product
-        ).select_related(
-            "product_variant"
-        ).order_by(
-            "-created_at"
+        stock_movements = (
+            StockMovement.objects
+            .filter(
+                product_variant__product=product
+            )
+            .select_related(
+                "product_variant"
+            )
+            .order_by("-created_at")
         )
 
         context["product"] = product

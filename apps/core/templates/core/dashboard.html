@@ -416,7 +416,7 @@ Dashboard
                         <div class="border rounded-4 p-3 h-100">
 
                             <small class="text-muted">
-                                Cash
+                                Investor capital Remaining
                             </small>
 
                             <h5 class="fw-bold mt-2">
@@ -436,7 +436,7 @@ Dashboard
                             </small>
 
                             <h5 class="fw-bold mt-2">
-                                $ {{ financial.hawala_total_balance }}
+                                $ {{ financial.total_hawala_balance }}
                             </h5>
 
                         </div>
@@ -448,11 +448,11 @@ Dashboard
                         <div class="border rounded-4 p-3 h-100">
 
                             <small class="text-muted">
-                                Receivables
+                                Cost of Good soldes
                             </small>
 
                             <h5 class="fw-bold mt-2 text-warning">
-                                $ {{ financial.remainingsales }}
+                                $ {{ financial.cogs }}
                             </h5>
 
                         </div>
@@ -846,7 +846,7 @@ new Chart(ctx, {
             'Inventory',
             'Cash',
             'Hawala',
-            'Receivables',
+            'Cost of goods sold',
             'Expenses',
             'Profit'
 
@@ -858,8 +858,8 @@ new Chart(ctx, {
 
                 {{ financial.inventory_value|default:0 }},
                 {{ financial.cash_on_hand|default:0 }},
-                {{ financial.hawala_total_balance|default:0 }},
-                {{ financial.remainingsales|default:0 }},
+                {{ financial.total_hawala_balance|default:0 }},
+                {{ financial.cogs|default:0 }},
                 {{ financial.expenses|default:0 }},
                 {{ financial.profit|default:0 }}
 
@@ -868,7 +868,7 @@ new Chart(ctx, {
             backgroundColor: [
 
                 '#4F46E5',
-                '#22C55E',
+                '#e9f32d',
                 '#06B6D4',
                 '#F59E0B',
                 '#EF4444',
