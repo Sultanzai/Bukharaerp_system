@@ -39,10 +39,15 @@
                     </div>
 
                     <div class="col-md-3">
+                        {{ form.weight.label_tag }}
+                        {{ form.weight }}
+                    </div>
+
+                    <div class="col-md-3">
                         {{ form.color.label_tag }}
                         {{ form.color }}
                     </div>
-
+                    
                     <div class="col-md-3">
                         {{ form.factory.label_tag }}
                         {{ form.factory }}
@@ -60,6 +65,7 @@
 
                     <div class="col-md-3 mt-3">
                         {{ form.opening_stock.label_tag }}
+                        <br>
                         {{ form.opening_stock }}
                     </div>
 
@@ -102,10 +108,12 @@
 
                         <th>SKU</th>
 
-                        <th>Color</th>
-
                         <th>Size</th>
-
+                        
+                        <th>Weight</th>
+                        
+                        <th>Color</th>
+                        
                         <th>Cost</th>
 
                         <th>Selling</th>
@@ -125,6 +133,7 @@
                         <td>{{ variant.id }}</td>
                         <td>{{ variant.sku }}</td>
                         <td>{{ variant.size }}</td>
+                        <td>{{ variant.weight }}</td>
                         <td>{{ variant.color }}</td>
                         <td>{{ variant.cost_price }}</td>
                         <td>{{ variant.selling_price }}</td>

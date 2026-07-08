@@ -79,6 +79,11 @@ class ProductVariant(models.Model):
         blank=True,
         null=True
     )
+    weight = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
 
     color = models.CharField(
         max_length=50,

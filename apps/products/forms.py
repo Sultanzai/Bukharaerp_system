@@ -105,6 +105,8 @@ class ProductVariantForm(forms.ModelForm):
 
             "size",
 
+            "weight",
+
             "color",
 
             "source_type",
@@ -126,6 +128,12 @@ class ProductVariantForm(forms.ModelForm):
             ),
 
             "size": forms.TextInput(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+            
+            "weight": forms.TextInput(
                 attrs={
                     "class": "form-control"
                 }
