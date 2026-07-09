@@ -4,6 +4,14 @@
 
 <div class="container-fluid">
 
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{% url 'hawala_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
 
         <h4>
@@ -267,6 +275,7 @@
                             <th>Reference</th>
                             <th>Status</th>
                             <th>Notes</th>
+                            <th>Delete</th>
 
                         </tr>
 
@@ -331,6 +340,29 @@
                                 {{ transaction.notes }}
 
                             </td>
+                                <td class="text-center" style="white-space: nowrap; width: 1%;">
+
+                                    <div class="d-inline-flex gap-1">
+
+                                        <form method="post"
+                                            action="{% url 'hawala_transaction_delete' account.pk transaction.pk %}"
+                                            onsubmit="return confirm('Are you sure you want to delete this transaction?');">
+
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-sm btn-outline-danger">
+
+                                                Delete
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
 
                         </tr>
 

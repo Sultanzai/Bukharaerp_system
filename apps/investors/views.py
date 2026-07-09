@@ -13,12 +13,13 @@ from django.views.generic import CreateView
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 from django.views.generic import ListView
-
+from django.contrib import messages
 from .models import Investor
 from .forms import InvestorTransactionForm
 from .models import Investor, InvestorTransaction
-
-
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
+from django.views.generic import UpdateView
 class InvestorListView(ListView):
 
     model = Investor
@@ -187,3 +188,70 @@ class InvestorTransactionCreateView(CreateView):
         context['current_balance'] = self.get_current_balance()
 
         return context
+
+
+
+class InvestorTransactionDeleteView(View):
+
+    def post(self, request, pk):
+
+        transaction = get_object_or_404(
+            InvestorTransaction,
+            pk=pk
+        )
+
+        investor_id = transaction.investor.id
+
+        transaction.delete()
+
+        messages.success(
+            request,
+            "Investor transaction deleted successfully."
+        )
+
+        return redirect(
+            "investor_detail",
+            pk=investor_id
+        )
+    
+
+
+class InvestorUpdateView(UpdateView):
+
+    model = Investor
+    form_class = InvestorForm
+    template_name = "investors/investor_form.html"
+    success_url = reverse_lazy("investor_list")
+
+    def form_valid(self, form):
+
+        messages.success(
+            self.request,
+            "Investor updated successfully."
+        )
+
+        return super().form_valid(form)
+
+
+class InvestorDeleteView(View):
+
+    def post(self, request, pk):
+
+        investor = get_object_or_404(
+            Investor,
+            pk=pk
+        )
+
+        investor_name = investor.name
+
+        # Deletes all related InvestorTransactions automatically
+        investor.delete()
+
+        messages.success(
+            request,
+            f'Investor "{investor_name}" deleted successfully.'
+        )
+
+        return redirect("investor_list")
+    
+

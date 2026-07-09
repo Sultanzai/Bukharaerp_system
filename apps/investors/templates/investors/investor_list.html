@@ -4,12 +4,29 @@
 
 <div class="container-fluid">
 
+    <!-- Top Navigation -->
+    <div class="mb-3">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Investor Management</h2>
+            <p class="text-muted mb-0">
+                Manage investor information and transactions.
+            </p>
+        </div>
+    </div>
+
     <div class="card shadow-sm">
 
         <div class="card-header d-flex justify-content-between align-items-center">
 
             <h4 class="mb-0">
-                Investors
+                Investors list 
             </h4>
 
             <a href="{% url 'investor_create' %}"
@@ -41,7 +58,7 @@
                             <th>Profit</th>
                             <th>Balance</th>
                             <th>Status</th>
-                            <th width="100">Action</th>
+                            <th width="220">Actions</th>
 
                         </tr>
 
@@ -68,59 +85,52 @@
                             <td>{{ investor.total_profit }}</td>
 
                             <td>
-
-                                <strong>
-
-                                    {{ investor.balance }}
-
-                                </strong>
-
+                                <strong>{{ investor.balance }}</strong>
                             </td>
 
                             <td>
-
                                 {% if investor.is_active %}
-
-                                    <span class="badge bg-success">
-
-                                        Active
-
-                                    </span>
-
+                                    <span class="badge bg-success">Active</span>
                                 {% else %}
-
-                                    <span class="badge bg-danger">
-
-                                        Inactive
-
-                                    </span>
-
+                                    <span class="badge bg-danger">Inactive</span>
                                 {% endif %}
-
                             </td>
 
-                            <td>
+                            <td class="text-center" style="white-space: nowrap; width: 1%;">
+                                <div class="d-inline-flex gap-1">
 
-                                <a href="{% url 'investor_detail' investor.id %}"
-                                   class="btn btn-sm btn-outline-primary">
+                                    <a href="{% url 'investor_detail' investor.pk %}"
+                                    class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
 
-                                    View
+                                    <a href="{% url 'investor_update' investor.pk %}"
+                                    class="btn btn-sm btn-outline-secondary">
+                                        Edit
+                                    </a>
 
-                                </a>
+                                    <form method="post"
+                                        action="{% url 'investor_delete' investor.pk %}"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Delete this investor and all related transactions?');">
 
+                                        {% csrf_token %}
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
-
                         </tr>
 
                         {% empty %}
 
                         <tr>
 
-                            <td colspan="10"
-                                class="text-center">
-
+                            <td colspan="10" class="text-center">
                                 No investors found.
-
                             </td>
 
                         </tr>
@@ -141,15 +151,23 @@
 
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 
 <script>
-$(function () {
+$(document).ready(function () {
+
     $('#investorTable').DataTable({
         responsive: true,
-        pageLength: 10,
-        order: [[0, 'desc']]
+        pageLength: 25,
+        order: [[0, 'desc']],
+        columnDefs: [
+            {
+                orderable: false,
+                targets: [9]   // View button column
+            }
+        ]
     });
+
 });
 </script>
 

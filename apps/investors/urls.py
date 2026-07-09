@@ -1,7 +1,7 @@
 # apps/investors/urls.py
 
 from django.urls import include, path
-from .views import InvestorListView, InvestorCreateView
+from .views import InvestorDeleteView, InvestorListView, InvestorCreateView, InvestorTransactionDeleteView, InvestorUpdateView
 from .views import (
     InvestorListView,
     InvestorCreateView,
@@ -32,5 +32,20 @@ urlpatterns = [
     InvestorTransactionCreateView.as_view(),
     name='investor_transaction_create'
     ),
+    path(
+        'transaction/<int:pk>/delete/',
+        InvestorTransactionDeleteView.as_view(),
+        name='transaction_delete'
+    ),
+    path(
+        "<int:pk>/update/",
+        InvestorUpdateView.as_view(),
+        name="investor_update",
+    ),
 
+    path(
+        "<int:pk>/delete/",
+        InvestorDeleteView.as_view(),
+        name="investor_delete",
+    ),
 ]

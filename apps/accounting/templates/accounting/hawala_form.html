@@ -4,6 +4,14 @@
 
 <div class="container-fluid">
 
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{% url 'hawala_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
 <form method="post">
 
 {% csrf_token %}
@@ -14,7 +22,7 @@
 
         <h4>
 
-            Add Hawala Account
+            Hawala Account
 
         </h4>
 

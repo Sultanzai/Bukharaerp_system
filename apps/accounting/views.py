@@ -1,7 +1,7 @@
 # apps/accounting/views.py
 
 from django.urls import reverse_lazy
-from django.views.generic import ListView
+from django.views.generic import ListView, View
 from django.views.generic import DetailView
 from django.views.generic import ListView, CreateView
 from apps.sales.models import Order
@@ -14,9 +14,15 @@ from django.db.models import Sum
 from .models import HawalaTransaction, Transaction
 from .models import PaymentRecord
 from .forms import HawalaTransactionForm, PaymentRecordForm
-
-from .forms import HawalaAccountForm
+from django.views.generic import (
+    ListView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
 from .models import HawalaAccount
+from .forms import HawalaAccountForm
+
 
 class TransactionListView(ListView):
     model = Transaction
@@ -128,7 +134,6 @@ def payment_create(request, transaction_id):
         'accounting/payment_form.html',
         context
     )
-
 class HawalaAccountListView(ListView):
 
     model = HawalaAccount
@@ -155,21 +160,39 @@ class HawalaAccountListView(ListView):
                 or Decimal("0.00")
             )
 
-            # Balance = Credit - Debit
             account.balance = credit - debit
 
         return accounts
+
+
 class HawalaAccountCreateView(CreateView):
 
     model = HawalaAccount
-
     form_class = HawalaAccountForm
-
     template_name = "accounting/hawala_form.html"
-
     success_url = reverse_lazy("hawala_list")
 
 
+class HawalaAccountUpdateView(UpdateView):
+
+    model = HawalaAccount
+    form_class = HawalaAccountForm
+    template_name = "accounting/hawala_form.html"
+    success_url = reverse_lazy("hawala_list")
+
+
+class HawalaAccountDeleteView(View):
+
+    def post(self, request, pk):
+
+        account = get_object_or_404(
+            HawalaAccount,
+            pk=pk
+        )
+
+        account.delete()
+
+        return redirect("hawala_list")
 
 
 
@@ -259,3 +282,25 @@ class HawalaTransactionCreateView(CreateView):
         context["account"] = self.get_account()
 
         return context
+
+class HawalaTransactionDeleteView(View):
+
+    def post(self, request, account_pk, transaction_pk):
+
+        account = get_object_or_404(
+            HawalaAccount,
+            pk=account_pk
+        )
+
+        transaction = get_object_or_404(
+            HawalaTransaction,
+            pk=transaction_pk,
+            hawala_account=account
+        )
+
+        transaction.delete()
+
+        return redirect(
+            "hawala_detail",
+            pk=account.pk
+        )
