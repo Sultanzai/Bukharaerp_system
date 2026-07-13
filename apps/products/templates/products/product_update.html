@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Update Product
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ==========================
+        Master Product
+    =========================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+                Update Master Product
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="form_type"
+                    value="product"
+                >
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Category
+                        </label>
+
+                        {{ product_form.category }}
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Product Name
+                        </label>
+
+                        {{ product_form.name }}
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Product Belonging To
+                        </label>
+
+                        {{ product_form.belongto }}
+
+                    </div>
+
+                    <div class="col-md-10 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Description
+                        </label>
+
+                        {{ product_form.description }}
+
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Active
+                        </label>
+
+                        <div class="pt-2">
+
+                            {{ product_form.active }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Update Product
+                        </button>
+
+                        <a
+                            href="{% url 'products:products-home' %}"
+                            class="btn btn-secondary"
+                        >
+                            Back
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+ 
+
+    <!-- ==========================
+        Variant List
+    =========================== -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                Update Product Variants
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-striped">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>SKU</th>
+
+                        <th>Color</th>
+
+                        <th>Size</th>
+
+                        <th>Factory</th>
+
+                        <th>Cost</th>
+
+                        <th>Selling</th>
+
+                        <th class="text-center">
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for variant in variants %}
+
+                    <tr>
+
+                        <td>{{ variant.id }}</td>
+
+                        <td>{{ variant.sku }}</td>
+
+                        <td>{{ variant.color }}</td>
+
+                        <td>{{ variant.size }}</td>
+
+                        <td>{{ variant.factory }}</td>
+
+                        <td>{{ variant.cost_price }}</td>
+
+                        <td>{{ variant.selling_price }}</td>
+
+                        <td
+                            class="text-center"
+                            style="white-space: nowrap; width:1%;"
+                        >
+
+                            <div class="d-inline-flex gap-1">
+
+                                <a
+                                    href="?variant={{ variant.id }}"
+                                    class="btn btn-sm btn-outline-secondary"
+                                >
+                                    Edit
+                                </a>
+
+                                <form
+                                method="post"
+                                action="{% url 'products:variant-delete' variant.id %}"
+                                class="d-inline"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Delete this variant?');"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="text-center"
+                        >
+
+                            No Variants Found
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

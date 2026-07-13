@@ -218,14 +218,48 @@ $(document).ready(function () {
                         </a>
 
                     </td>
-                    <td>
-                        <a
-                            href="{% url 'products:product-detail' product.id %}"
-                            class="btn btn-sm btn-outline-primary"
-                        >
-                            View
-                        </a>
-                    </td>
+                   <td
+                        class="text-center"
+                        style="white-space: nowrap; width: 1%;"
+                    >
+
+                        <div class="d-inline-flex gap-1">
+
+                            <a
+                                href="{% url 'products:product-detail' product.id %}"
+                                class="btn btn-sm btn-outline-primary"
+                            >
+                                View
+                            </a>
+
+                            <a
+                                href="{% url 'products:product-update' product.id %}"
+                                class="btn btn-sm btn-outline-secondary"
+                            >
+                                Edit
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{% url 'products:product-delete' product.id %}"
+                                class="d-inline"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Are you sure you want to delete this product?\n\nAll product variants and stock movements will also be deleted.');"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>                           
 
                 </tr>
 

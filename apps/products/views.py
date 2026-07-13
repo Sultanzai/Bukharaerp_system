@@ -1,16 +1,18 @@
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, View
 from django.shortcuts import redirect
 from .models import Category, ProductVariant, StockMovement
-from .forms import CategoryForm
+from .forms import CategoryForm, ProductForm, ProductVariantForm
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.db.models import Prefetch, Sum
 from django.db.models.functions import Coalesce 
+from django.views import View
+
+from django.urls import reverse
 
 from apps.products.models import Product
-from .forms import ProductForm, ProductVariantForm
 
 
 class ProductHomeView(TemplateView):
@@ -115,6 +117,127 @@ class ProductListView(ListView):
     ).order_by("name")
 
 
+class ProductDeleteView(View):
+
+    def post(self, request, pk):
+
+        product = get_object_or_404(
+            Product,
+            pk=pk
+        )
+
+        product.delete()
+
+        return redirect(
+            "products:products-home"
+        )
+
+class ProductUpdateView(TemplateView):
+
+    template_name = "products/product_update.html"
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        product = get_object_or_404(
+            Product,
+            pk=self.kwargs["pk"]
+        )
+
+        context["product"] = product
+
+        context["product_form"] = ProductForm(
+            instance=product
+        )
+
+        variant_id = self.request.GET.get("variant")
+
+        if variant_id:
+
+            variant = get_object_or_404(
+                ProductVariant,
+                pk=variant_id,
+                product=product
+            )
+
+            context["variant_form"] = ProductVariantForm(
+                instance=variant
+            )
+
+            context["editing_variant"] = variant
+
+        else:
+
+            context["variant_form"] = ProductVariantForm()
+
+            context["editing_variant"] = None
+
+        context["variants"] = product.variants.all()
+
+        return context
+
+
+    def post(self, request, *args, **kwargs):
+
+        product = get_object_or_404(
+            Product,
+            pk=self.kwargs["pk"]
+        )
+
+        form_type = request.POST.get("form_type")
+
+
+        if form_type == "product":
+
+            form = ProductForm(
+                request.POST,
+                instance=product
+            )
+
+            if form.is_valid():
+
+                form.save()
+
+            return redirect(
+                "products:product-update",
+                pk=product.id
+            )
+
+
+        variant_id = request.POST.get("variant_id")
+
+        if variant_id:
+
+            variant = get_object_or_404(
+                ProductVariant,
+                pk=variant_id,
+                product=product
+            )
+
+            form = ProductVariantForm(
+                request.POST,
+                instance=variant
+            )
+
+        else:
+
+            form = ProductVariantForm(request.POST)
+
+
+        if form.is_valid():
+
+            variant = form.save(commit=False)
+
+            variant.product = product
+
+            variant.save()
+
+        return redirect(
+            "products:product-update",
+            pk=product.id
+        )
+
 
 
 
@@ -176,6 +299,28 @@ class ProductVariantView(TemplateView):
             "form": form,
             "variants": product.variants.all()
         })
+
+
+
+
+class ProductVariantDeleteView(View):
+
+    def post(self, request, pk):
+
+        variant = get_object_or_404(
+            ProductVariant,
+            pk=pk
+        )
+
+        product_id = variant.product.id
+
+        variant.delete()
+
+        return redirect(
+            "products:product-update",
+            pk=product_id
+        )
+
 
 
 
