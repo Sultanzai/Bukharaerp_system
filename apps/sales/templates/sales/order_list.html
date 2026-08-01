@@ -112,10 +112,17 @@
                                     View
                                 </a>
 
-                                <a href="#"
-                                   class="btn btn-sm btn-outline-secondary">
-                                    Edit
-                                </a>
+                               <form method="post" action="{% url 'sales:order_delete' order.id %}"
+                                class="d-inline"
+                                onsubmit="return confirm('Delete this order Will delete all associated data?');">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </button>
+                            </form>
 
                             </td>
 

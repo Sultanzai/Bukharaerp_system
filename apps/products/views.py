@@ -237,6 +237,12 @@ class ProductUpdateView(TemplateView):
             "products:product-update",
             pk=product.id
         )
+            
+        context = self.get_context_data()
+
+        context["variant_form"] = form
+
+        return self.render_to_response(context)
 
 
 

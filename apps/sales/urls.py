@@ -2,13 +2,16 @@ from django import views
 from django.urls import path
 
 from apps.sales.views import (
+    CustomerDeleteView,
     CustomerDetailView,
     CustomerListView,
     CustomerCreateView,
+    CustomerUpdateView,
     OrderDetailView,
     OrderListView,
     order_create,
     customer_search,
+    order_delete,
     variant_search
 )
 
@@ -48,6 +51,20 @@ urlpatterns = [
     ),
 
     path(
+        "customers/<int:pk>/update/",
+        CustomerUpdateView.as_view(),
+        name="customer_update",
+    ),
+
+    path(
+        "customers/<int:pk>/delete/",
+        CustomerDeleteView.as_view(),
+        name="customer_delete",
+    ),
+
+
+
+    path(
         "variant-search/",
         variant_search,
         name="variant_search"
@@ -62,4 +79,10 @@ urlpatterns = [
         CustomerDetailView.as_view(),
         name="customer_detail"
     ),
+
+    path(
+        "orders/<int:pk>/delete/",
+        order_delete,
+        name="order_delete",
+    ),  
 ]

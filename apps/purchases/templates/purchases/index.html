@@ -62,8 +62,7 @@
                             <th>Status</th>
                             <th>Created</th>
                             <th width="110">Purchase Orders</th>
-                            <th width="80">Edit</th>
-                            <th width="90">Delete</th>
+                            <th width="80">Action</th>
                         </tr>
 
                     </thead>
@@ -115,21 +114,30 @@
 
                             </td>
 
-                            <td>
+                            <td class="text-center" style="white-space: nowrap; width: 1%;">
 
-                                <a href="#"
-                                   class="btn btn-sm btn-outline-secondary">
-                                    Edit
-                                </a>
+                                <div class="d-inline-flex gap-1">
 
-                            </td>
+                                    <a href="{% url 'purchases:factory-update' factory.id %}"
+                                    class="btn btn-sm btn-outline-secondary">
+                                        Edit
+                                    </a>
 
-                            <td>
+                                    <form method="post"
+                                        action="{% url 'purchases:factory-delete' factory.id %}"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Delete this factory?');">
 
-                                <a href="#"
-                                   class="btn btn-sm btn-outline-danger">
-                                    Delete
-                                </a>
+                                        {% csrf_token %}
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger">
+                                            Delete
+                                        </button>
+
+                                    </form>
+
+                                </div>
 
                             </td>
 

@@ -116,7 +116,145 @@ Update Product
 
     </div>
 
+<!-- ==========================
+    Variant Form
+=========================== -->
 
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h4 class="mb-0">
+
+            {% if editing_variant %}
+                Update Variant
+            {% else %}
+                Add Variant
+            {% endif %}
+
+        </h4>
+
+        {% if editing_variant %}
+
+        <a href="{% url 'products:product-update' product.id %}"
+           class="btn btn-sm btn-outline-secondary">
+
+            Cancel
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="form_type"
+                value="variant"
+            >
+
+            {% if editing_variant %}
+
+            <input
+                type="hidden"
+                name="variant_id"
+                value="{{ editing_variant.id }}"
+            >
+
+            {% endif %}
+
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+                        SKU
+                    </label>
+
+                    {{ variant_form.sku }}
+
+                </div>
+
+                <div class="col-md-2 mb-3">
+
+                    <label class="form-label">
+                        Size
+                    </label>
+
+                    {{ variant_form.size }}
+
+                </div>
+
+                <div class="col-md-2 mb-3">
+
+                    <label class="form-label">
+                        Color
+                    </label>
+
+                    {{ variant_form.color }}
+
+                </div>
+
+                <div class="col-md-2 mb-3">
+
+                    <label class="form-label">
+                        Factory
+                    </label>
+
+                    {{ variant_form.factory }}
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+                        Cost Price
+                    </label>
+
+                    {{ variant_form.cost_price }}
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+                        Selling Price
+                    </label>
+
+                    {{ variant_form.selling_price }}
+
+                </div>
+
+                <div class="col-12">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        {% if editing_variant %}
+                            Update Variant
+                        {% else %}
+                            Add Variant
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
  
 
     <!-- ==========================
@@ -192,11 +330,11 @@ Update Product
 
                             <div class="d-inline-flex gap-1">
 
-                                <a
-                                    href="?variant={{ variant.id }}"
-                                    class="btn btn-sm btn-outline-secondary"
-                                >
+                                <a href="{% url 'products:product-update' product.id %}?variant={{ variant.id }}"
+                                class="btn btn-sm btn-outline-secondary">
+
                                     Edit
+
                                 </a>
 
                                 <form

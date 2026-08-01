@@ -7,13 +7,18 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
-
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
+from django.views.generic import UpdateView
 from apps.accounting.models import Transaction, PaymentRecord
 from apps.products.models import ProductVariant, StockMovement
 from apps.sales.forms import CustomerForm, OrderForm
 from apps.sales.models import Customer, Order, OrderItem
 from django.db import transaction
-
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.views.decorators.http import require_POST
 # ==========================================================
 # Customers
 # ==========================================================
@@ -64,6 +69,60 @@ class CustomerCreateView(CreateView):
     form_class = CustomerForm
     template_name = "sales/customer_form.html"
     success_url = reverse_lazy("sales:customer_list")
+
+
+
+
+class CustomerUpdateView(UpdateView):
+
+    model = Customer
+    form_class = CustomerForm
+    template_name = "sales/customer_form.html"
+    success_url = reverse_lazy("sales:customer_list")
+
+    def form_valid(self, form):
+
+        messages.success(
+            self.request,
+            "Customer updated successfully."
+        )
+
+        return super().form_valid(form)
+
+
+class CustomerDeleteView(View):
+
+    def post(self, request, pk):
+
+        customer = get_object_or_404(
+            Customer,
+            pk=pk
+        )
+
+        if customer.orders.exists():
+
+            messages.error(
+                request,
+                "This customer cannot be deleted because they have sales orders."
+            )
+
+            return redirect(
+                "sales:customer_list"
+            )
+
+        customer.delete()
+
+        messages.success(
+            request,
+            "Customer deleted successfully."
+        )
+
+        return redirect(
+            "sales:customer_list"
+        )
+
+
+
 
 
 class CustomerDetailView(DetailView):
@@ -340,3 +399,28 @@ def variant_search(request):
     return JsonResponse({
         "results": results
     })
+
+
+@require_POST
+def order_delete(request, pk):
+
+    order = get_object_or_404(
+        Order,
+        pk=pk
+    )
+
+    # Delete the accounting transaction
+    Transaction.objects.filter(
+        reference_id=order.id,
+        party_type="customer"
+    ).delete()
+
+    # Deletes all OrderItems automatically
+    order.delete()
+
+    messages.success(
+        request,
+        "Order deleted successfully."
+    )
+
+    return redirect("sales:order_list")

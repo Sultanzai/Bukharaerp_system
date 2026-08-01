@@ -3,9 +3,12 @@ from django.urls import path
 from apps.core import views
 
 from .views import (
+    FactoryDeleteView,
     FactoryListView,
     FactoryCreateView,
+    FactoryUpdateView,
     factory_purchase_orders,
+    purchase_order_delete,
     purchase_order_detail,
     purchase_order_create,
 )
@@ -27,6 +30,19 @@ urlpatterns = [
     ),
 
     path(
+        "factories/<int:pk>/update/",
+        FactoryUpdateView.as_view(),
+        name="factory-update",
+    ),
+
+    path(
+        "factories/<int:pk>/delete/",
+        FactoryDeleteView.as_view(),
+        name="factory-delete",
+    ),
+
+
+    path(
         "factory/<int:factory_id>/purchase-orders/",
         factory_purchase_orders,
         name="factory_purchase_orders"
@@ -42,5 +58,11 @@ urlpatterns = [
         "purchase-orders/<int:pk>/",
         purchase_order_detail,
         name="purchase_order_detail"
+    ),
+
+    path(
+        "purchase-orders/<int:pk>/delete/",
+        purchase_order_delete,
+        name="purchase_order_delete",
     ),
 ]

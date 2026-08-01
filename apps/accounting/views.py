@@ -95,21 +95,45 @@ def payment_create(request, transaction_id):
 
             payment.save()
 
+
+
             total_paid = (
                 transaction.payments.aggregate(
-                    total=Sum('paid_amount')
-                )['total']
-                or Decimal('0')
+                    total=Sum("paid_amount")
+                )["total"]
+                or Decimal("0")
             )
 
             remaining_amount = transaction.amount - total_paid
 
-            if remaining_amount <= Decimal('0'):
-                transaction.status = 'completed'
-            else:
-                transaction.status = 'pending'
+            if remaining_amount <= Decimal("0"):
 
-            transaction.save()
+                transaction.status = "completed"
+                transaction.save(update_fields=["status"])
+
+                if transaction.reference_type == "customer_order":
+
+                    Order.objects.filter(
+                        pk=transaction.reference_id
+                    ).update(
+                        status="completed"
+                    )
+
+            else:
+
+                transaction.status = "pending"
+                transaction.save(update_fields=["status"])
+
+                if transaction.reference_type == "customer_order":
+
+                    Order.objects.filter(
+                        pk=transaction.reference_id
+                    ).update(
+                        status="pending"
+                    )
+
+
+
 
             return redirect(
                 'transaction_detail',
@@ -134,6 +158,8 @@ def payment_create(request, transaction_id):
         'accounting/payment_form.html',
         context
     )
+
+    
 class HawalaAccountListView(ListView):
 
     model = HawalaAccount

@@ -1,6 +1,12 @@
 from django.urls import reverse_lazy
 
 from apps.accounting.models import Transaction
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
+from django.views.generic import UpdateView
+from django.db.models.deletion import ProtectedError
+from django.views.decorators.http import require_POST
 
 from .models import PurchaseOrder, PurchaseOrderItem
 from .forms import PurchaseOrderItemForm
@@ -47,6 +53,53 @@ class FactoryCreateView(CreateView):
     success_url = reverse_lazy(
         "purchases:factories"
     )
+
+
+class FactoryUpdateView(UpdateView):
+
+    model = Factory
+    form_class = FactoryForm
+    template_name = "purchases/create.html"
+
+    success_url = reverse_lazy(
+        "purchases:factories"
+    )
+
+    def form_valid(self, form):
+
+        messages.success(
+            self.request,
+            "Factory updated successfully."
+        )
+
+        return super().form_valid(form)
+
+class FactoryDeleteView(View):
+
+    def post(self, request, pk):
+
+        factory = get_object_or_404(
+            Factory,
+            pk=pk
+        )
+
+        try:
+
+            factory.delete()
+
+            messages.success(
+                request,
+                "Factory deleted successfully."
+            )
+
+        except ProtectedError:
+
+            messages.error(
+                request,
+                "This factory cannot be deleted because it has purchase orders."
+            )
+
+        return redirect("purchases:factories")
 
 
 def factory_purchase_orders(request, factory_id):
@@ -168,6 +221,37 @@ def purchase_order_create(request, factory_id):
         request,
         "purchases/purchase_order_form.html",
         context
+    )
+
+
+
+@require_POST
+def purchase_order_delete(request, pk):
+
+    purchase_order = get_object_or_404(
+        PurchaseOrder,
+        pk=pk
+    )
+
+    factory_id = purchase_order.factory.id
+
+    # Delete the accounting transaction
+    Transaction.objects.filter(
+        reference_id=purchase_order.id,
+        party_type="factory"
+    ).delete()
+
+    # Deletes the purchase order and all PurchaseOrderItems
+    purchase_order.delete()
+
+    messages.success(
+        request,
+        "Purchase Order deleted successfully."
+    )
+
+    return redirect(
+        "purchases:factory_purchase_orders",
+        factory_id=factory_id
     )
 
 

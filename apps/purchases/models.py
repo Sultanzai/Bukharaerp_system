@@ -77,7 +77,7 @@ class PurchaseOrder(models.Model):
 
     factory = models.ForeignKey(
         Factory,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         related_name="purchase_orders"
     )
 
