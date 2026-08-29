@@ -1,0 +1,602 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Business Reports</h2>
+            <p class="text-muted mb-0">
+                Select a report to view detailed analytics and export data.
+            </p>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- DASHBOARD REPORTS -->
+    <!-- ========================================================= -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-speedometer2 me-2"></i>
+                Dashboard Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="border rounded p-3 text-center">
+                        <h6>Total Revenue</h6>
+                        <h4 class="fw-bold text-success">--</h4>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="border rounded p-3 text-center">
+                        <h6>Total Expenses</h6>
+                        <h4 class="fw-bold text-danger">--</h4>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="border rounded p-3 text-center">
+                        <h6>Net Profit</h6>
+                        <h4 class="fw-bold text-primary">--</h4>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="border rounded p-3 text-center">
+                        <h6>Inventory Value</h6>
+                        <h4 class="fw-bold">--</h4>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-primary">Revenue Report</a>
+                <a href="#" class="btn btn-outline-primary">Profit Report</a>
+                <a href="#" class="btn btn-outline-primary">Expense Analysis</a>
+                <a href="#" class="btn btn-outline-primary">Inventory Value</a>
+                <a href="#" class="btn btn-outline-primary">Business Summary</a>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- INVESTOR -->
+    <!-- ========================================================= -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-people-fill me-2"></i>
+                Investor Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-3">
+                    <div class="border rounded p-3 text-center">
+                        <h6>Total Investors</h6>
+                        <h4>{{ total_investors }}</h4>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="border rounded p-3 text-center">
+                        <h6>Total Investment</h6>
+                        <h4>$ {{ total_investment }}</h4>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="border rounded p-3 text-center">
+                        <h6>Total Profit Shared</h6>
+                        <h4>$ {{ total_profit_shared }}</h4>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="border rounded p-3 text-center">
+                        <h6>Outstanding Amount</h6>
+                        <h4>$ {{ outstanding_amount }}</h4>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-success">Investor List</a>
+                <a href="#" class="btn btn-outline-success">Investment Report</a>
+                <a href="#" class="btn btn-outline-success">Profit Share</a>
+                <a href="#" class="btn btn-outline-success">Withdrawals</a>
+                <a href="#" class="btn btn-outline-success">Current Balance</a>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- HAWALA -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-bank me-2"></i>
+                Hawala Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Amount Credited</h6>
+                    <h4>$ {{ total_hawala_received }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Amount Debited</h6>
+                    <h4>$ {{ total_hawala_paid }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Current Balance</h6>
+                    <h4>$ {{ total_hawala_balance }}</h4>
+                </div>
+            </div>
+
+        </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-info">Company Statement</a>
+                <a href="#" class="btn btn-outline-info">Received Report</a>
+                <a href="#" class="btn btn-outline-info">Payment Report</a>
+                <a href="#" class="btn btn-outline-info">Outstanding Balance</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- PRODUCTS -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-warning">
+            <h5 class="mb-0">
+                <i class="bi bi-box-seam me-2"></i>
+                Product Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+           <div class="row g-3 mb-4">
+
+            <div class="col-md-3">
+                <div class="border rounded p-3 text-center">
+                    <h6>Total Products</h6>
+                    <h4>{{ total_products }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="border rounded p-3 text-center">
+                    <h6>Total Variants</h6>
+                    <h4>{{ total_variants }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="border rounded p-3 text-center">
+                    <h6>Inventory Qty</h6>
+                    <h4>{{ inventory_qty }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="border rounded p-3 text-center">
+                    <h6>Inventory Value</h6>
+                    <h4>$ {{ inventory_value }}</h4>
+                </div>
+            </div>
+
+        </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-warning">Inventory Report</a>
+                <a href="#" class="btn btn-outline-warning">Stock Movement</a>
+                <a href="#" class="btn btn-outline-warning">Low Stock</a>
+                <a href="#" class="btn btn-outline-warning">Product Profit</a>
+                <a href="#" class="btn btn-outline-warning">Unsold Products</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- CUSTOMER -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">
+                Customer Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Total Customers</h6>
+                    <h4>{{ total_customers }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Total Sales</h6>
+                    <h4>$ {{ totalsales }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Receivables</h6>
+                    <h4>$ {{ remainingsales }}</h4>
+                </div>
+            </div>
+
+        </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-secondary">Customer Statement</a>
+                <a href="#" class="btn btn-outline-secondary">Purchase History</a>
+                <a href="#" class="btn btn-outline-secondary">Top Customers</a>
+                <a href="#" class="btn btn-outline-secondary">Outstanding Customers</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- FACTORY -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                Factory Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+          <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Total Factories</h6>
+                    <h4>{{ total_factories }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Total Purchases</h6>
+                    <h4>{{ total_purchases }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Outstanding</h6>
+                    <h4>{{ factory_outstanding }}</h4>
+                </div>
+            </div>
+
+        </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-dark">Purchase Summary</a>
+                <a href="#" class="btn btn-outline-dark">Factory Statement</a>
+                <a href="#" class="btn btn-outline-dark">Purchase History</a>
+                <a href="#" class="btn btn-outline-dark">Top Suppliers</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SALES -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                Sales Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-3"><div class="border rounded p-3 text-center"><h6>Total Orders</h6><h4>--</h4></div></div>
+
+                <div class="col-md-3"><div class="border rounded p-3 text-center"><h6>Total Revenue</h6><h4>--</h4></div></div>
+
+                <div class="col-md-3"><div class="border rounded p-3 text-center"><h6>Pending Orders</h6><h4>--</h4></div></div>
+
+                <div class="col-md-3"><div class="border rounded p-3 text-center"><h6>Completed Orders</h6><h4>--</h4></div></div>
+
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-danger">Sales Report</a>
+                <a href="#" class="btn btn-outline-danger">Profit by Order</a>
+                <a href="#" class="btn btn-outline-danger">Sales by Product</a>
+                <a href="#" class="btn btn-outline-danger">Sales by Customer</a>
+                <a href="#" class="btn btn-outline-danger">Monthly Sales</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TRANSACTIONS -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                Transaction Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-4"><div class="border rounded p-3 text-center"><h6>Total Transactions</h6><h4>--</h4></div></div>
+
+                <div class="col-md-4"><div class="border rounded p-3 text-center"><h6>Total Paid</h6><h4>--</h4></div></div>
+
+                <div class="col-md-4"><div class="border rounded p-3 text-center"><h6>Remaining</h6><h4>--</h4></div></div>
+
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-primary">Payment Report</a>
+                <a href="#" class="btn btn-outline-primary">Payment History</a>
+                <a href="#" class="btn btn-outline-primary">Collections</a>
+                <a href="#" class="btn btn-outline-primary">Pending Payments</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- EXPENSE -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-warning">
+            <h5 class="mb-0">
+                Expense Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-6"><div class="border rounded p-3 text-center"><h6>Total Expenses</h6><h4>--</h4></div></div>
+
+                <div class="col-md-6"><div class="border rounded p-3 text-center"><h6>Monthly Expenses</h6><h4>--</h4></div></div>
+
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-warning">Expense Summary</a>
+                <a href="#" class="btn btn-outline-warning">Expense Categories</a>
+                <a href="#" class="btn btn-outline-warning">Expense Trend</a>
+                <a href="#" class="btn btn-outline-warning">Expense Ledger</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- PROFIT & LOSS -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                Profit & Loss
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-3"><div class="border rounded p-3 text-center"><h6>Revenue</h6><h4>--</h4></div></div>
+
+                <div class="col-md-3"><div class="border rounded p-3 text-center"><h6>COGS</h6><h4>--</h4></div></div>
+
+                <div class="col-md-3"><div class="border rounded p-3 text-center"><h6>Gross Profit</h6><h4>--</h4></div></div>
+
+                <div class="col-md-3"><div class="border rounded p-3 text-center"><h6>Net Profit</h6><h4>--</h4></div></div>
+
+            </div>
+
+            <a href="#" class="btn btn-outline-success">
+                Profit & Loss Statement
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- INVENTORY VALUE -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                Inventory Valuation
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-6"><div class="border rounded p-3 text-center"><h6>Total Inventory Value</h6><h4>--</h4></div></div>
+
+                <div class="col-md-6"><div class="border rounded p-3 text-center"><h6>Total Quantity</h6><h4>--</h4></div></div>
+
+            </div>
+
+            <a href="#" class="btn btn-outline-info">
+                Inventory Valuation Report
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- CASH FLOW -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">
+                Cash Flow Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-4"><div class="border rounded p-3 text-center"><h6>Money In</h6><h4>--</h4></div></div>
+
+                <div class="col-md-4"><div class="border rounded p-3 text-center"><h6>Money Out</h6><h4>--</h4></div></div>
+
+                <div class="col-md-4"><div class="border rounded p-3 text-center"><h6>Ending Balance</h6><h4>--</h4></div></div>
+
+            </div>
+
+            <a href="#" class="btn btn-outline-secondary">
+                Cash Flow Statement
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- DAILY BUSINESS -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                Daily Business Report
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-2"><div class="border rounded p-3 text-center"><h6>Orders</h6><h4>--</h4></div></div>
+
+                <div class="col-md-2"><div class="border rounded p-3 text-center"><h6>Revenue</h6><h4>--</h4></div></div>
+
+                <div class="col-md-2"><div class="border rounded p-3 text-center"><h6>Expenses</h6><h4>--</h4></div></div>
+
+                <div class="col-md-2"><div class="border rounded p-3 text-center"><h6>Profit</h6><h4>--</h4></div></div>
+
+                <div class="col-md-2"><div class="border rounded p-3 text-center"><h6>Collections</h6><h4>--</h4></div></div>
+
+                <div class="col-md-2"><div class="border rounded p-3 text-center"><h6>Customers</h6><h4>--</h4></div></div>
+
+            </div>
+
+            <a href="#" class="btn btn-outline-dark">
+                Daily Report
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

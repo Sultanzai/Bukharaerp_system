@@ -14,3 +14,11 @@ class DashboardView(TemplateView):
         context["financial"] = financial_overview()
 
         return context
+    
+class ReportView(TemplateView):
+    template_name = "core/reports.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(financial_overview())
+        return context
