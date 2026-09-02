@@ -27,3 +27,434 @@
     align-items:center;
     border-radius:8px;
 }
+
+
+
+
+/* =========================================================
+   TOP NAVBAR
+========================================================= */
+
+.top-navbar {
+    width: 100%;
+
+    height: 64px;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    padding: 0 20px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    position: relative;
+
+    z-index: 1000;
+
+    overflow: visible !important;
+}
+
+
+/* =========================================================
+   LEFT SECTION
+========================================================= */
+
+.top-navbar .left-section {
+    display: flex !important;
+    align-items: center !important;
+
+    height: 100%;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   SIDEBAR TOGGLE BUTTON
+========================================================= */
+
+.top-navbar .menu-toggle {
+    width: 40px;
+    height: 40px;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #374151;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.top-navbar .menu-toggle:hover {
+    background: #f3f4f6;
+
+    color: #111827;
+}
+
+
+.top-navbar .menu-toggle:focus {
+    outline: none;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   RIGHT SECTION
+========================================================= */
+
+.top-navbar .right-section {
+    display: flex !important;
+    align-items: center !important;
+
+    justify-content: flex-end !important;
+
+    flex-direction: row !important;
+
+    gap: 6px;
+
+    height: 100%;
+
+    margin-left: auto;
+
+    flex-shrink: 0;
+
+    overflow: visible !important;
+}
+
+
+/* =========================================================
+   NOTIFICATION / MESSAGE BUTTONS
+========================================================= */
+
+.top-navbar .icon-btn {
+    width: 40px;
+    height: 40px;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #4b5563;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.top-navbar .icon-btn:hover {
+    background: #f3f4f6;
+
+    color: #111827;
+}
+
+
+.top-navbar .icon-btn:focus {
+    outline: none;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   USER PROFILE WRAPPER
+========================================================= */
+
+.top-navbar .user-profile-wrapper {
+    position: relative;
+
+    margin-left: 6px;
+}
+
+
+/* =========================================================
+   USER PROFILE BUTTON
+========================================================= */
+
+.top-navbar button.user-profile {
+
+    display: flex !important;
+    align-items: center !important;
+
+    gap: 9px !important;
+
+    width: auto !important;
+    height: 42px !important;
+
+    margin: 0 !important;
+
+    padding: 4px 9px !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    border-radius: 8px !important;
+
+    color: #333 !important;
+
+    font-size: 14px !important;
+
+    font-weight: 600 !important;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+
+.top-navbar button.user-profile:hover {
+    background: #f5f6f8 !important;
+}
+
+
+.top-navbar button.user-profile:focus {
+    outline: none !important;
+
+    box-shadow: none !important;
+
+    background: #f5f6f8 !important;
+}
+
+
+/* Remove Bootstrap's default arrow */
+
+.top-navbar button.user-profile::after {
+    display: none !important;
+}
+
+
+/* =========================================================
+   USER AVATAR
+========================================================= */
+
+.top-navbar .user-avatar {
+    width: 34px !important;
+    height: 34px !important;
+
+    min-width: 34px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+
+    border-radius: 50% !important;
+
+    background: #eef1f5 !important;
+
+    color: #374151 !important;
+
+    font-size: 17px !important;
+}
+
+
+/* =========================================================
+   USER NAME
+========================================================= */
+
+.top-navbar .user-name {
+    display: block !important;
+
+    max-width: 140px !important;
+
+    color: #333 !important;
+
+    white-space: nowrap !important;
+
+    overflow: hidden !important;
+
+    text-overflow: ellipsis !important;
+}
+
+
+/* =========================================================
+   PROFILE ARROW
+========================================================= */
+
+.top-navbar .profile-arrow {
+    font-size: 11px;
+
+    margin-left: 1px;
+
+    transition: transform 0.2s ease;
+}
+
+
+.top-navbar .user-profile.show .profile-arrow {
+    transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   PROFILE DROPDOWN
+========================================================= */
+
+.top-navbar .user-dropdown {
+
+    min-width: 250px !important;
+
+    margin-top: 8px !important;
+
+    padding: 8px !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #e5e7eb !important;
+
+    border-radius: 12px !important;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.10) !important;
+
+    z-index: 1050 !important;
+}
+
+
+/* =========================================================
+   USER INFO
+========================================================= */
+
+.top-navbar .user-info {
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    gap: 10px !important;
+
+    padding: 10px 8px !important;
+}
+
+
+.top-navbar .user-info-avatar {
+
+    width: 42px !important;
+    height: 42px !important;
+
+    min-width: 42px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    border-radius: 50% !important;
+
+    background: #eef1f5 !important;
+
+    color: #333 !important;
+
+    font-size: 20px !important;
+}
+
+
+.top-navbar .user-info-name {
+
+    font-size: 14px !important;
+
+    font-weight: 600 !important;
+
+    color: #222 !important;
+}
+
+
+.top-navbar .user-info-email {
+
+    margin-top: 2px;
+
+    font-size: 12px !important;
+
+    color: #777 !important;
+
+    max-width: 160px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   DROPDOWN ITEMS
+========================================================= */
+
+.top-navbar .user-dropdown .dropdown-item {
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    gap: 10px !important;
+
+    padding: 9px 10px !important;
+
+    border-radius: 7px !important;
+
+    font-size: 14px !important;
+}
+
+
+.top-navbar .user-dropdown .dropdown-item:hover {
+
+    background: #f5f6f8 !important;
+}
+
+
+.top-navbar .user-dropdown .dropdown-item i {
+
+    width: 18px;
+
+    font-size: 16px;
+}
+
+
+/* Logout */
+
+.top-navbar .user-dropdown .text-danger {
+
+    color: #dc3545 !important;
+}
+
+
+.top-navbar .user-dropdown .text-danger:hover {
+
+    background: #fff1f2 !important;
+
+    color: #dc3545 !important;
+}

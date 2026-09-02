@@ -22,6 +22,7 @@ urlpatterns = [
 
     # Dashboard
     path('', include('apps.core.urls')),
+    path('users/', include('apps.users.urls')),
     path('products/', include('apps.products.urls')),
     path('purchases/', include('apps.purchases.urls')),
     path('sales/', include('apps.sales.urls')),

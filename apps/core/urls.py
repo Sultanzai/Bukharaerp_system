@@ -3,6 +3,8 @@
 from django.urls import path
 from .views import DashboardView, ReportView
 
+app_name = "core"
+
 urlpatterns = [
     path('', DashboardView.as_view(), name='dashboard'),
     path("reports/", ReportView.as_view(), name="reports"),

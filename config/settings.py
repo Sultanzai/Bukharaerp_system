@@ -81,6 +81,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# USERS Model informations
+
+LOGIN_URL = "users:login"
+LOGIN_REDIRECT_URL = "core:dashboard"
+LOGOUT_REDIRECT_URL = "users:login"
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

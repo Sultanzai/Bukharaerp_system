@@ -1,24 +1,142 @@
 <nav class="top-navbar">
 
+    <!-- LEFT SIDE -->
     <div class="left-section">
-        <button class="menu-toggle" id="menuToggle">
-            <i class="bi bi-list"></i>
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            title="Toggle Sidebar"
+            aria-label="Toggle Sidebar"
+        >
+            <i class="bi bi-layout-sidebar-inset"></i>
         </button>
+
     </div>
 
+
+    <!-- RIGHT SIDE -->
     <div class="right-section">
 
-        <button class="icon-btn">
+        <!-- Notifications -->
+        <button
+            class="icon-btn"
+            type="button"
+            title="Notifications"
+            aria-label="Notifications"
+        >
             <i class="bi bi-bell"></i>
         </button>
 
-        <button class="icon-btn">
+
+        <!-- Messages -->
+        <button
+            class="icon-btn"
+            type="button"
+            title="Messages"
+            aria-label="Messages"
+        >
             <i class="bi bi-envelope"></i>
         </button>
 
-        <div class="user-profile">
-            Admin
+
+        <!-- User Profile -->
+        {% if request.user.is_authenticated %}
+
+        <div class="dropdown user-profile-wrapper">
+
+            <button
+                class="user-profile"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+
+                <span class="user-avatar">
+                    <i class="bi bi-person"></i>
+                </span>
+
+                <span class="user-name">
+                    {% if request.user.get_full_name %}
+                        {{ request.user.get_full_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </span>
+
+                <i class="bi bi-chevron-down profile-arrow"></i>
+
+            </button>
+
+
+            <!-- Profile Dropdown -->
+            <ul class="dropdown-menu dropdown-menu-end user-dropdown">
+
+                <li class="user-info">
+
+                    <div class="user-info-avatar">
+                        <i class="bi bi-person"></i>
+                    </div>
+
+                    <div>
+
+                        <div class="user-info-name">
+                            {% if request.user.get_full_name %}
+                                {{ request.user.get_full_name }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+                        </div>
+
+                        <div class="user-info-email">
+
+                            {% if request.user.email %}
+                                {{ request.user.email }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </li>
+
+
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+
+
+                <!-- My Profile -->
+                <li>
+                    <a
+                        class="dropdown-item"
+                        href="{% url 'users:profile' %}"
+                    >
+                        <i class="bi bi-person-circle"></i>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+
+
+                <!-- Logout -->
+                <li>
+                    <a
+                        class="dropdown-item text-danger"
+                        href="{% url 'users:logout' %}"
+                    >
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+
+            </ul>
+
         </div>
+
+        {% endif %}
 
     </div>
 
