@@ -121,7 +121,6 @@ class PurchaseOrder(models.Model):
         blank=True,
         null=True
     )
-
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

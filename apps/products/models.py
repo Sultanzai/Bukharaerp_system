@@ -2,7 +2,7 @@ from django.db import models
 from apps.purchases.models import Factory
 from django.db.models import Sum, Q, F
 from django.db.models.functions import Coalesce
-
+from django.conf import settings
 class Category(models.Model):
     name = models.CharField(max_length=100)
 
@@ -165,7 +165,13 @@ class StockMovement(models.Model):
         blank=True,
         null=True
     )
-
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='stock_movements_added'
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )

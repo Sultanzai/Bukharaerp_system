@@ -92,7 +92,7 @@ def payment_create(request, transaction_id):
             payment = form.save(commit=False)
 
             payment.transaction = transaction
-
+            payment.added_by = request.user
             payment.save()
 
 
@@ -278,7 +278,8 @@ class HawalaTransactionCreateView(CreateView):
     def form_valid(self, form):
 
         form.instance.hawala_account = self.get_account()
-
+        form.instance.added_by = self.request.user
+        
         if form.instance.credit is None:
             form.instance.credit = Decimal("0")
 

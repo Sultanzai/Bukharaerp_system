@@ -292,7 +292,8 @@ class ProductVariantView(TemplateView):
                         product_variant=variant,
                         type="OPENING",
                         qty=opening_stock,
-                        notes="Opening Stock"
+                        notes="Opening Stock",
+                        added_by=request.user
                     )
 
             return redirect(
@@ -417,7 +418,9 @@ class StockInView(TemplateView):
 
                     qty=int(qty),
 
-                    notes=notes
+                    notes=notes,
+
+                    added_by=request.user
 
                 )
 

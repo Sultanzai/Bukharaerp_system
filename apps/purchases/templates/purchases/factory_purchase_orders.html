@@ -45,6 +45,7 @@
                         <th>Subtotal</th>
                         <th>Expenses</th>
                         <th>Total</th>
+                        <th>Added By</th>
                         <th>Actions</th>
                         <th>Delete</th>
                     </tr>
@@ -61,6 +62,8 @@
                         <td>${{ po.subtotal }}</td>
                         <td>${{ po.transport_tax_expenses_cost }}</td>
                         <td>${{ po.total }}</td>
+
+                        <td>{{ po.created_by.username }}</td>
                         <td>
                             <a href="{% url 'purchases:purchase_order_detail' po.id %}" class="btn btn-primary btn-sm">
                                 View

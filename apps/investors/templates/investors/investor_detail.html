@@ -182,6 +182,7 @@
                             <th>Reference</th>
                             <th>Status</th>
                             <th>Notes</th>
+                            <th>Added By</th>
                             <th>Delete</th>
 
                         </tr>
@@ -225,6 +226,14 @@
                             <td>
                                 {{ transaction.notes }}
                             </td>
+                            <td>
+                                {% if transaction.added_by %}
+                                    {{ transaction.added_by.get_full_name|default:transaction.added_by.username }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
                             <td>
                             <form method="post"
                                 action="{% url 'transaction_delete' transaction.id %}"

@@ -1,7 +1,7 @@
 # apps/investors/models.py
 
 from django.db import models
-
+from django.conf import settings
 
 class Investor(models.Model):
 
@@ -118,7 +118,14 @@ class InvestorTransaction(models.Model):
         choices=STATUS_CHOICES,
         default='completed'
     )
-
+    # User Who add this transaction
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='investor_transactions_added'
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )

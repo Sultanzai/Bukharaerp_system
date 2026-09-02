@@ -196,7 +196,9 @@ def purchase_order_create(request, factory_id):
 
             status='pending',
 
-            notes=f'Purchase Order {purchase_order.po_number}'
+            notes=f'Purchase Order {purchase_order.po_number}',
+
+            added_by=request.user if request.user.is_authenticated else None
         )
 
             return redirect(

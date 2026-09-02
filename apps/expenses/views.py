@@ -68,7 +68,9 @@ def expense_create(request):
         form = ExpenseForm(request.POST)
 
         if form.is_valid():
-            form.save()
+            expense = form.save(commit=False)
+            expense.added_by = request.user if request.user.is_authenticated else None
+            expense.save()
             return redirect('expenses:expense_list')
 
     else:

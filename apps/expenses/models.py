@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 
 class ExpenseCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -37,6 +37,14 @@ class Expense(models.Model):
     notes = models.TextField(
         blank=True,
         null=True
+    )
+
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='expenses_added'
     )
 
     created_at = models.DateTimeField(

@@ -6,7 +6,7 @@
 
     <!-- Top Navigation -->
     <div class="mb-3">
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
             Back
         </a>
@@ -63,6 +63,7 @@
                             <th>Category</th>
                             <th>Date</th>
                             <th>Notes</th>
+                            <th>Added By</th>
                             <th width="100">Delete</th>
                         </tr>
 
@@ -87,6 +88,8 @@
                             <td>{{ e.expense_date|date:"d M Y" }}</td>
 
                             <td>{{ e.notes|default:"-" }}</td>
+
+                            <td>{{ e.added_by.username|default:"-" }}</td>
 
                             <td>
 

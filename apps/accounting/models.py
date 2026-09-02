@@ -1,6 +1,6 @@
 # apps/accounting/models.py
-
 from django.db import models
+from django.conf import settings
 from decimal import Decimal
 from django.db.models import Sum
 
@@ -62,7 +62,13 @@ class Transaction(models.Model):
         blank=True,
         null=True
     )
-
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='transactions_added'
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -138,7 +144,13 @@ class PaymentRecord(models.Model):
         blank=True,
         null=True
     )
-
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='payment_records_added'
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -315,7 +327,13 @@ class HawalaTransaction(models.Model):
         choices=STATUS_CHOICES,
         default="completed"
     )
-
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='hawala_transactions_added'
+    )
     created_at = models.DateTimeField(
         auto_now_add=True
     )

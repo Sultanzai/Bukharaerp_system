@@ -308,7 +308,8 @@ def order_create(request):
                         reference_id=order.id,
                         amount=order.total,
                         status="pending",
-                        notes=order.notes
+                        notes=order.notes,
+                        added_by=request.user
                     )
 
                 messages.success(request, "Order created successfully.")

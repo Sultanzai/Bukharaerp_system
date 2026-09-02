@@ -6,7 +6,7 @@
 
     <!-- Top Navigation -->
     <div class="mb-3">
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i>
             Back
         </a>
@@ -52,6 +52,7 @@
                             <th>Remaining</th>
                             <th>Status</th>
                             <th>Notes</th>
+                            <th>Added By</th>
                             <th>Created</th>
                             <th>View</th>
                             <th>Payment</th>
@@ -117,6 +118,14 @@
 
                             <td>
                                 {{ transaction.notes|default:"-" }}
+                            </td>
+
+                            <td>
+                                {% if transaction.added_by %}
+                                    {{ transaction.added_by.get_full_name|default:transaction.added_by.username }}
+                                {% else %}
+                                    —
+                                {% endif %}
                             </td>
 
                             <td>

@@ -217,6 +217,7 @@ Product Detail
                         <th>Type</th>
                         <th>Qty</th>
                         <th>Notes</th>
+                        <th>Added By</th>
 
                     </tr>
 
@@ -237,13 +238,26 @@ Product Detail
                         </td>
 
                         <td>
+                            {% if movement.type == "OPENING" %}
+                                <span class="badge bg-success">
+                                    {{ movement.type }}
+                                </span>
 
-                            <span class="badge bg-primary">
+                            {% elif movement.type == "STOCK_IN" %}
+                                <span class="badge bg-warning text-dark">
+                                    {{ movement.type }}
+                                </span>
 
-                                {{ movement.type }}
+                            {% elif movement.type == "STOCK_OUT" %}
+                                <span class="badge bg-danger">
+                                    {{ movement.type }}
+                                </span>
 
-                            </span>
-
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    {{ movement.type }}
+                                </span>
+                            {% endif %}
                         </td>
 
                         <td>
@@ -252,6 +266,10 @@ Product Detail
 
                         <td>
                             {{ movement.notes }}
+                        </td>
+
+                        <td>
+                            {{ movement.added_by.username }}
                         </td>
 
                     </tr>

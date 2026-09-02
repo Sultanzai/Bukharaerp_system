@@ -177,6 +177,7 @@
                         <th>Code Number</th>
                         <th>Date</th>
                         <th>Notes</th>
+                        <th>Added By</th>
                         <th>Delete</th>
                     </tr>
 
@@ -195,6 +196,13 @@
                         <td>{{ payment.code_number }}</td>
                         <td>{{ payment.payment_date }}</td>
                         <td>{{ payment.notes }}</td>
+                        <td>
+                            {% if payment.added_by %}
+                                {{ payment.added_by.get_full_name|default:payment.added_by.username }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
                         <td>
                             <button type="submit" class="btn btn-sm btn-danger">
                                 Delete

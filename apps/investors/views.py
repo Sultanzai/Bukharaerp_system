@@ -167,6 +167,8 @@ class InvestorTransactionCreateView(CreateView):
     def form_valid(self, form):
 
         form.instance.investor = self.get_investor()
+        
+        form.instance.added_by = self.request.user
 
         return super().form_valid(form)
 
