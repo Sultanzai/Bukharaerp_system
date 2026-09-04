@@ -1,3 +1,7 @@
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.urls import reverse_lazy
 
 from apps.accounting.models import Transaction
@@ -36,7 +40,7 @@ from .forms import (
 )
 
 
-class FactoryListView(ListView):
+class FactoryListView(LoginRequiredMixin, ListView):
 
     model = Factory
     template_name = "purchases/index.html"
@@ -44,7 +48,7 @@ class FactoryListView(ListView):
     queryset = Factory.objects.order_by("-id")
 
 
-class FactoryCreateView(CreateView):
+class FactoryCreateView(LoginRequiredMixin, CreateView):
 
     model = Factory
     form_class = FactoryForm
@@ -55,7 +59,7 @@ class FactoryCreateView(CreateView):
     )
 
 
-class FactoryUpdateView(UpdateView):
+class FactoryUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Factory
     form_class = FactoryForm
@@ -74,7 +78,7 @@ class FactoryUpdateView(UpdateView):
 
         return super().form_valid(form)
 
-class FactoryDeleteView(View):
+class FactoryDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
 
@@ -101,7 +105,7 @@ class FactoryDeleteView(View):
 
         return redirect("purchases:factories")
 
-
+@login_required
 def factory_purchase_orders(request, factory_id):
 
     factory = get_object_or_404(
@@ -124,7 +128,7 @@ def factory_purchase_orders(request, factory_id):
         context
     )
 
-
+@login_required
 def purchase_order_create(request, factory_id):
 
     factory = get_object_or_404(
@@ -226,7 +230,7 @@ def purchase_order_create(request, factory_id):
     )
 
 
-
+@login_required
 @require_POST
 def purchase_order_delete(request, pk):
 
@@ -258,7 +262,7 @@ def purchase_order_delete(request, pk):
 
 
 
-
+@login_required
 def purchase_order_detail(request, pk):
 
     purchase_order = get_object_or_404(

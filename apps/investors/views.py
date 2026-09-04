@@ -1,4 +1,6 @@
 # apps/investors/views.py
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView
@@ -20,7 +22,7 @@ from .models import Investor, InvestorTransaction
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import UpdateView
-class InvestorListView(ListView):
+class InvestorListView(LoginRequiredMixin, ListView):
 
     model = Investor
     template_name = 'investors/investor_list.html'
@@ -58,7 +60,7 @@ class InvestorListView(ListView):
 
         return investors
 
-class InvestorCreateView(CreateView):
+class InvestorCreateView(LoginRequiredMixin, CreateView):
 
     model = Investor
 
@@ -69,7 +71,7 @@ class InvestorCreateView(CreateView):
     success_url = reverse_lazy('investor_list')
 
 
-class InvestorDetailView(DetailView):
+class InvestorDetailView(LoginRequiredMixin, DetailView):
 
     model = Investor
 
@@ -117,7 +119,7 @@ class InvestorDetailView(DetailView):
         return context
     
 
-class InvestorTransactionCreateView(CreateView):
+class InvestorTransactionCreateView(LoginRequiredMixin, CreateView):
 
     model = InvestorTransaction
 
@@ -193,7 +195,7 @@ class InvestorTransactionCreateView(CreateView):
 
 
 
-class InvestorTransactionDeleteView(View):
+class InvestorTransactionDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
 
@@ -218,7 +220,7 @@ class InvestorTransactionDeleteView(View):
     
 
 
-class InvestorUpdateView(UpdateView):
+class InvestorUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Investor
     form_class = InvestorForm
@@ -235,7 +237,7 @@ class InvestorUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class InvestorDeleteView(View):
+class InvestorDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
 

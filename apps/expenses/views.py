@@ -1,3 +1,7 @@
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from .forms import ExpenseCategoryForm
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Expense, ExpenseCategory
@@ -16,6 +20,7 @@ def expense_category_list(request):
 # -------------------------
 # CATEGORY CREATE
 # -------------------------
+@login_required
 def expense_category_create(request):
     if request.method == 'POST':
         form = ExpenseCategoryForm(request.POST)
@@ -33,6 +38,7 @@ def expense_category_create(request):
 
 
 # Deleting a category
+@login_required
 def expense_category_delete(request, pk):
     category = get_object_or_404(ExpenseCategory, pk=pk)
 
@@ -49,6 +55,7 @@ def expense_category_delete(request, pk):
 # -------------------------
 # EXPENSE LIST
 # -------------------------
+@login_required
 def expense_list(request):
     expenses = Expense.objects.select_related('category').all().order_by('-id')
 
@@ -60,6 +67,7 @@ def expense_list(request):
 # -------------------------
 # CREATE EXPENSE
 # -------------------------
+@login_required
 def expense_create(request):
 
     categories = ExpenseCategory.objects.all()
@@ -85,6 +93,7 @@ def expense_create(request):
 # -------------------------
 # DELETE EXPENSE
 # -------------------------
+@login_required
 def expense_delete(request, pk):
 
     expense = get_object_or_404(Expense, pk=pk)

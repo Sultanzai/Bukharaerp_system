@@ -1,4 +1,6 @@
 # apps/accounting/views.py
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View
@@ -24,13 +26,13 @@ from .models import HawalaAccount
 from .forms import HawalaAccountForm
 
 
-class TransactionListView(ListView):
+class TransactionListView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = 'accounting/transaction_list.html'
     context_object_name = 'transactions'
 
 
-class TransactionDetailView(DetailView):
+class TransactionDetailView(LoginRequiredMixin, DetailView):
     model = Transaction
     template_name = 'accounting/transaction_detail.html'
     context_object_name = 'transaction'
@@ -64,6 +66,7 @@ class TransactionDetailView(DetailView):
 
 
 # Add Payment view
+@login_required
 def payment_create(request, transaction_id):
 
     transaction = get_object_or_404(
@@ -160,7 +163,7 @@ def payment_create(request, transaction_id):
     )
 
     
-class HawalaAccountListView(ListView):
+class HawalaAccountListView(LoginRequiredMixin, ListView):
 
     model = HawalaAccount
     template_name = "accounting/hawala_list.html"
@@ -191,7 +194,7 @@ class HawalaAccountListView(ListView):
         return accounts
 
 
-class HawalaAccountCreateView(CreateView):
+class HawalaAccountCreateView(LoginRequiredMixin, CreateView):
 
     model = HawalaAccount
     form_class = HawalaAccountForm
@@ -199,7 +202,7 @@ class HawalaAccountCreateView(CreateView):
     success_url = reverse_lazy("hawala_list")
 
 
-class HawalaAccountUpdateView(UpdateView):
+class HawalaAccountUpdateView(LoginRequiredMixin, UpdateView):
 
     model = HawalaAccount
     form_class = HawalaAccountForm
@@ -207,7 +210,7 @@ class HawalaAccountUpdateView(UpdateView):
     success_url = reverse_lazy("hawala_list")
 
 
-class HawalaAccountDeleteView(View):
+class HawalaAccountDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
 
@@ -222,7 +225,7 @@ class HawalaAccountDeleteView(View):
 
 
 
-class HawalaDetailView(DetailView):
+class HawalaDetailView(LoginRequiredMixin, DetailView):
 
     model = HawalaAccount
 
@@ -257,7 +260,7 @@ class HawalaDetailView(DetailView):
         return context
     
 
-class HawalaTransactionCreateView(CreateView):
+class HawalaTransactionCreateView(LoginRequiredMixin, CreateView):
 
     model = HawalaTransaction
 
@@ -310,7 +313,7 @@ class HawalaTransactionCreateView(CreateView):
 
         return context
 
-class HawalaTransactionDeleteView(View):
+class HawalaTransactionDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, account_pk, transaction_pk):
 

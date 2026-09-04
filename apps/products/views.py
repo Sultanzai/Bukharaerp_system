@@ -1,3 +1,6 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.views.generic import ListView, TemplateView, View
 from django.shortcuts import redirect
 from .models import Category, ProductVariant, StockMovement
@@ -15,7 +18,7 @@ from django.urls import reverse
 from apps.products.models import Product
 
 
-class ProductHomeView(TemplateView):
+class ProductHomeView(LoginRequiredMixin, TemplateView):
 
     template_name = "products/index.html"
 
@@ -33,7 +36,7 @@ class ProductHomeView(TemplateView):
 
         return context
 
-class MasterProductView(TemplateView):
+class MasterProductView(LoginRequiredMixin, TemplateView):
 
     template_name = "products/product_form.html"
 
@@ -72,7 +75,7 @@ class MasterProductView(TemplateView):
         return self.render_to_response(context)
     
 
-class CategoryView(TemplateView):
+class CategoryView(LoginRequiredMixin, TemplateView):
 
     template_name = "products/categories.html"
 
@@ -96,7 +99,7 @@ class CategoryView(TemplateView):
         return redirect("products:products-home")
     
     
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
 
@@ -105,7 +108,7 @@ class ProductCreateView(CreateView):
     success_url = "/products/"
 
 
-class ProductListView(ListView):
+class ProductListView(LoginRequiredMixin, ListView):
     model = Product
 
     template_name = "products/index.html"
@@ -117,7 +120,7 @@ class ProductListView(ListView):
     ).order_by("name")
 
 
-class ProductDeleteView(View):
+class ProductDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
 
@@ -132,7 +135,7 @@ class ProductDeleteView(View):
             "products:products-home"
         )
 
-class ProductUpdateView(TemplateView):
+class ProductUpdateView(LoginRequiredMixin, TemplateView):
 
     template_name = "products/product_update.html"
 
@@ -248,7 +251,7 @@ class ProductUpdateView(TemplateView):
 
 
 
-class ProductVariantView(TemplateView):
+class ProductVariantView(LoginRequiredMixin, TemplateView):
     template_name = "products/variants.html"
 
     def get_context_data(self, **kwargs):
@@ -310,7 +313,7 @@ class ProductVariantView(TemplateView):
 
 
 
-class ProductVariantDeleteView(View):
+class ProductVariantDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
 
@@ -332,7 +335,7 @@ class ProductVariantDeleteView(View):
 
 
 
-class StockMovementView(TemplateView):
+class StockMovementView(LoginRequiredMixin, TemplateView):
 
     template_name = "products/stock_movement.html"
 
@@ -365,7 +368,7 @@ class StockMovementView(TemplateView):
 
 
 
-class StockInView(TemplateView):
+class StockInView(LoginRequiredMixin, TemplateView):
 
     template_name = "products/stock_in.html"
 
@@ -430,7 +433,7 @@ class StockInView(TemplateView):
 
 
 
-class ProductDetailView(TemplateView):
+class ProductDetailView(LoginRequiredMixin, TemplateView):
 
     template_name = "products/product_detail.html"
 
