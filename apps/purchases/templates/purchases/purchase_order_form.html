@@ -4,232 +4,609 @@
 
 <div class="container-fluid">
 
-<div class="card">
+    <div class="card">
 
-<div class="card-header">
-    <h4>Create Purchase Order</h4>
-</div>
-
-<div class="card-body">
-
-<form method="post">
-    {% csrf_token %}
-
-    <h5>Purchase Order Information</h5>
-
-    <div class="row">
-        <div class="mb-3">
-            <label class="form-label">
-                {{ form.po_number.label }}
-            </label>
-            {{ form.po_number }}
+        <div class="card-header">
+            <h4>Create Purchase Order</h4>
         </div>
-        <div class="mb-3">
-            <label class="form-label">
-                {{ form.order_date.label }}
-            </label>
-            {{ form.order_date }}
+
+        <div class="card-body">
+
+            <form method="post" id="purchaseOrderForm">
+
+                {% csrf_token %}
+
+                <!-- ============================= -->
+                <!-- PURCHASE ORDER INFORMATION -->
+                <!-- ============================= -->
+
+                <h5>Purchase Order Information</h5>
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            {{ form.po_number.label }}
+                        </label>
+
+                        {{ form.po_number }}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            {{ form.order_date.label }}
+                        </label>
+
+                        {{ form.order_date }}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            {{ form.expected_date.label }}
+                        </label>
+
+                        {{ form.expected_date }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-2">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            {{ form.status.label }}
+                        </label>
+
+                        {{ form.status }}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            {{ form.transport_tax_expenses_cost.label }}
+                        </label>
+
+                        {{ form.transport_tax_expenses_cost }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-2">
+
+                    <div class="col-md-12 mb-3">
+
+                        <label class="form-label">
+                            {{ form.notes.label }}
+                        </label>
+
+                        {{ form.notes }}
+
+                    </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- ============================= -->
+                <!-- PURCHASE ORDER ITEMS -->
+                <!-- ============================= -->
+
+                <h5>Purchase Order Items</h5>
+
+                {{ formset.management_form }}
+
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th style="min-width: 160px;">
+                                    Product Code
+                                </th>
+
+                                <th style="min-width: 200px;">
+                                    Product Name
+                                </th>
+
+                                <th style="width: 120px;">
+                                    Qty
+                                </th>
+
+                                <th style="width: 150px;">
+                                    Price
+                                </th>
+
+                                <th style="width: 150px;">
+                                    Amount
+                                </th>
+
+                                <th style="width: 100px;">
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="item-table-body">
+
+                            {% for item_form in formset %}
+
+                            <tr class="item-row">
+
+                                <td>
+                                    {{ item_form.product_code }}
+                                </td>
+
+
+                                <td>
+                                    {{ item_form.product_name }}
+                                </td>
+
+
+                                <td class="qty-cell">
+                                    {{ item_form.quantity }}
+                                </td>
+
+
+                                <td class="price-cell">
+                                    {{ item_form.price }}
+                                </td>
+
+
+                                <td class="amount-cell">
+                                    0.00
+                                </td>
+
+
+                                <td>
+
+                                    <button type="button"
+                                    class="btn btn-danger btn-sm remove-row">
+                                        Remove
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- ============================= -->
+                <!-- EMPTY FORM TEMPLATE -->
+                <!-- ============================= -->
+
+                <table style="display:none;">
+
+                    <tbody id="empty-form">
+
+                        <tr class="item-row">
+
+                            <td>
+                                {{ formset.empty_form.product_code }}
+                            </td>
+
+
+                            <td>
+                                {{ formset.empty_form.product_name }}
+                            </td>
+
+
+                            <td>
+                                {{ formset.empty_form.quantity }}
+                            </td>
+
+
+                            <td>
+                                {{ formset.empty_form.price }}
+                            </td>
+
+
+                            <td class="amount-cell">
+                                0.00
+                            </td>
+
+
+                            <td>
+
+                                <button type="button"
+                                        class="btn btn-danger btn-sm remove-row">
+                                    Remove
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+
+                <!-- ADD ITEM -->
+
+                <button type="button"
+                        class="btn btn-primary mb-3"
+                        id="add-row">
+
+                    <i class="bi bi-plus-lg"></i>
+                    Add Item
+
+                </button>
+
+
+                <!-- ============================= -->
+                <!-- TOTALS -->
+                <!-- ============================= -->
+
+                <div class="row mt-4">
+
+                    <div class="col-md-4 ms-auto">
+
+                        <table class="table">
+
+                            <tr>
+
+                                <th>
+                                    Subtotal
+                                </th>
+
+                                <td id="subtotal">
+                                    0.00
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Transport Cost
+                                </th>
+
+                                <td id="transport">
+
+                                    {{ form.transport_tax_expenses_cost.value|default:0 }}
+
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Total
+                                </th>
+
+                                <td id="total">
+                                    0.00
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ============================= -->
+                <!-- BUTTONS -->
+                <!-- ============================= -->
+
+                <button type="submit"
+                        class="btn btn-success">
+
+                    <i class="bi bi-check-lg"></i>
+                    Save
+
+                </button>
+
+
+                <a href="{% url 'purchases:factory_purchase_orders' factory.id %}"
+                   class="btn btn-secondary">
+
+                    <i class="bi bi-x-lg"></i>
+                    Cancel
+
+                </a>
+
+            </form>
+
         </div>
-        <div class="mb-3">
-            <label class="form-label">
-                {{ form.expected_date.label }}
-            </label>
-            {{ form.expected_date }}
-        </div>
+
     </div>
 
-    <div class="row mt-2">
-        <div class="mb-3">
-            <label class="form-label">
-                {{ form.status.label }}
-            </label>
-            {{ form.status }}
-        </div>
-        <div class="mb-3">
-            <label class="form-label">
-                {{ form.transport_tax_expenses_cost.label }}
-            </label>
-            {{ form.transport_tax_expenses_cost }}
-        </div>
-    </div>
-
-    <div class="row mt-2">
-        <div class="mb-3">
-            <label class="form-label">
-                {{ form.notes.label }}
-            </label>
-            {{ form.notes }}
-        </div>
-    </div>
-
-    <hr>
-
-    <h5>Purchase Order Items</h5>
-
-    {{ formset.management_form }}
-
-    <table class="table table-bordered">
-
-        <thead>
-            <tr>
-                <th>Product Code</th>
-                <th>Product Name</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-
-        <tbody id="item-table-body">
-
-            {% for form in formset %}
-
-            <tr class="item-row">
-                <td>{{ form.product_code }}</td>
-                <td>{{ form.product_name }}</td>
-                <td class="qty-cell">{{ form.quantity }}</td>
-                <td class="price-cell">{{ form.price }}</td>
-                <td class="amount-cell">0.00</td>
-                <td>
-                    <button type="button" class="btn btn-danger remove-row">X</button>
-                </td>
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-    <!-- EMPTY FORM TEMPLATE (IMPORTANT) -->
-    <table style="display:none;">
-        <tbody id="empty-form">
-            <tr class="item-row">
-                <td>{{ formset.empty_form.product_code }}</td>
-                <td>{{ formset.empty_form.product_name }}</td>
-                <td>{{ formset.empty_form.quantity }}</td>
-                <td>{{ formset.empty_form.price }}</td>
-                <td class="amount-cell">0.00</td>
-                <td>
-                    <button type="button" class="btn btn-danger remove-row">X</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <button type="button" class="btn btn-primary mb-3" id="add-row">
-        + Add Item
-    </button>
-
-    <!-- TOTALS -->
-    <div class="row mt-4">
-        <div class="col-md-4 ms-auto">
-
-            <table class="table">
-
-                <tr>
-                    <th>Subtotal</th>
-                    <td id="subtotal">0.00</td>
-                </tr>
-
-                <tr>
-                    <th>Transport Cost</th>
-                    <td id="transport">
-                        {{ form.transport_tax_expenses_cost.value|default:0 }}
-                    </td>
-                </tr>
-
-                <tr>
-                    <th>Total</th>
-                    <td id="total">0.00</td>
-                </tr>
-
-            </table>
-
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-success">
-        Save
-    </button>
-
-    <a href="{% url 'purchases:factory_purchase_orders' factory.id %}"
-       class="btn btn-secondary">
-        Cancel
-    </a>
-
-</form>
-
 </div>
-</div>
-</div>
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================================== -->
 
 <script>
 
-function updateTotals() {
+document.addEventListener("DOMContentLoaded", function () {
 
-    let subtotal = 0;
-
-    document.querySelectorAll(".item-row").forEach(row => {
-
-        let qtyInput = row.querySelector("input[name$='quantity']");
-        let priceInput = row.querySelector("input[name$='price']");
-        let amountCell = row.querySelector(".amount-cell");
-
-        let qty = parseFloat(qtyInput?.value || 0);
-        let price = parseFloat(priceInput?.value || 0);
-
-        let amount = qty * price;
-
-        amountCell.innerText = amount.toFixed(2);
-
-        subtotal += amount;
-    });
-
-    document.getElementById("subtotal").innerText = subtotal.toFixed(2);
-
-    let transport = parseFloat(
-        document.getElementById("id_transport_tax_expenses_cost")?.value || 0
-    );
-
-    let total = subtotal + transport;
-
-    document.getElementById("total").innerText = total.toFixed(2);
-}
+    const tableBody = document.getElementById("item-table-body");
+    const addButton = document.getElementById("add-row");
+    const emptyForm = document.getElementById("empty-form");
+    const totalForms = document.getElementById("id_items-TOTAL_FORMS");
+    const purchaseOrderForm = document.getElementById("purchaseOrderForm");
 
 
-// ADD ROW
-document.getElementById("add-row").addEventListener("click", function () {
+    /* =====================================================
+       UPDATE TOTALS
+    ===================================================== */
 
-    let formIdx = document.getElementById("id_items-TOTAL_FORMS");
+    function updateTotals() {
 
-    let newRowHtml = document.getElementById("empty-form").innerHTML.replace(/__prefix__/g, formIdx.value);
+        let subtotal = 0;
 
-    document.getElementById("item-table-body").insertAdjacentHTML("beforeend", newRowHtml);
+        document.querySelectorAll("#item-table-body .item-row").forEach(function (row) {
 
-    formIdx.value = parseInt(formIdx.value) + 1;
+            const qtyInput = row.querySelector("input[name$='quantity']");
+            const priceInput = row.querySelector("input[name$='price']");
+            const amountCell = row.querySelector(".amount-cell");
 
-});
+            if (!qtyInput || !priceInput || !amountCell) {
+                return;
+            }
+
+            const qty = parseFloat(qtyInput.value) || 0;
+            const price = parseFloat(priceInput.value) || 0;
+
+            const amount = qty * price;
+
+            amountCell.innerText = amount.toFixed(2);
+
+            subtotal += amount;
+
+        });
 
 
-// REMOVE ROW
-document.addEventListener("click", function (e) {
+        document.getElementById("subtotal").innerText =
+            subtotal.toFixed(2);
 
-    if (e.target.classList.contains("remove-row")) {
-        e.target.closest("tr").remove();
-        updateTotals();
+
+        const transportInput =
+            document.getElementById("id_transport_tax_expenses_cost");
+
+        const transport =
+            parseFloat(transportInput?.value) || 0;
+
+
+        document.getElementById("transport").innerText =
+            transport.toFixed(2);
+
+
+        const total = subtotal + transport;
+
+        document.getElementById("total").innerText =
+            total.toFixed(2);
+
     }
 
-});
+
+    /* =====================================================
+       REINDEX FORMSET
+       
+       This is the important fix.
+    ===================================================== */
+
+    function reindexForms() {
+
+        const rows =
+            tableBody.querySelectorAll(".item-row");
 
 
-// LIVE CALCULATION
-document.addEventListener("input", function () {
+        rows.forEach(function (row, index) {
+
+            row.querySelectorAll("input, select, textarea").forEach(function (input) {
+
+                if (input.name) {
+
+                    input.name =
+                        input.name.replace(
+                            /items-\d+-/,
+                            "items-" + index + "-"
+                        );
+
+                }
+
+
+                if (input.id) {
+
+                    input.id =
+                        input.id.replace(
+                            /items-\d+-/,
+                            "items-" + index + "-"
+                        );
+
+                }
+
+            });
+
+
+            row.querySelectorAll("label").forEach(function (label) {
+
+                if (label.htmlFor) {
+
+                    label.htmlFor =
+                        label.htmlFor.replace(
+                            /items-\d+-/,
+                            "items-" + index + "-"
+                        );
+
+                }
+
+            });
+
+        });
+
+
+        totalForms.value = rows.length;
+
+    }
+
+
+    /* =====================================================
+       ADD NEW ROW
+    ===================================================== */
+
+    addButton.addEventListener("click", function () {
+
+        const formIndex =
+            parseInt(totalForms.value);
+
+
+        let newRowHtml =
+            emptyForm.innerHTML.replace(
+                /__prefix__/g,
+                formIndex
+            );
+
+
+        tableBody.insertAdjacentHTML(
+            "beforeend",
+            newRowHtml
+        );
+
+
+        totalForms.value =
+            formIndex + 1;
+
+
+        updateTotals();
+
+    });
+
+
+    /* =====================================================
+       REMOVE ROW
+    ===================================================== */
+
+    document.addEventListener("click", function (event) {
+
+        const removeButton =
+            event.target.closest(".remove-row");
+
+
+        if (!removeButton) {
+            return;
+        }
+
+
+        const row =
+            removeButton.closest(".item-row");
+
+
+        if (!row) {
+            return;
+        }
+
+
+        row.remove();
+
+
+        /*
+         * IMPORTANT:
+         *
+         * After removing a row we re-number all remaining
+         * forms so Django receives:
+         *
+         * items-0
+         * items-1
+         * items-2
+         *
+         * instead of:
+         *
+         * items-0
+         * items-2
+         * items-3
+         */
+
+        reindexForms();
+
+
+        updateTotals();
+
+    });
+
+
+    /* =====================================================
+       LIVE CALCULATION
+    ===================================================== */
+
+    document.addEventListener("input", function (event) {
+
+        if (
+            event.target.matches(
+                "input[name$='quantity'], input[name$='price'], #id_transport_tax_expenses_cost"
+            )
+        ) {
+
+            updateTotals();
+
+        }
+
+    });
+
+
+    /* =====================================================
+       BEFORE SAVE
+       
+       Make absolutely sure Django receives the correct
+       TOTAL_FORMS value and sequential indexes.
+    ===================================================== */
+
+    purchaseOrderForm.addEventListener("submit", function () {
+
+        reindexForms();
+
+        updateTotals();
+
+    });
+
+
+    /* =====================================================
+       INITIAL CALCULATION
+    ===================================================== */
+
     updateTotals();
-});
 
-updateTotals();
+});
 
 </script>
 

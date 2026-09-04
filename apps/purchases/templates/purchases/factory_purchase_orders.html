@@ -1,106 +1,314 @@
 {% extends 'base.html' %}
 
+{% block title %}
+Purchase Orders - {{ factory.name }}
+{% endblock %}
+
+
 {% block content %}
 
 <div class="container-fluid">
+
     <!-- Back -->
     <div class="mb-3">
-        <a href="{% url 'purchases:factories' %}" class="btn btn-outline-secondary">
+
+        <a
+            href="{% url 'purchases:factories' %}"
+            class="btn btn-outline-secondary"
+        >
             <i class="bi bi-arrow-left"></i>
             Back
         </a>
+
     </div>
+
+
+    <!-- Purchase Orders Card -->
     <div class="card shadow-sm">
 
         <div class="card-header d-flex justify-content-between align-items-center">
 
             <div>
+
                 <h4 class="mb-0">
                     Purchase Orders
                 </h4>
 
-                <small>
+                <small class="text-muted">
+
                     Factory:
-                    <strong>{{ factory.name }}</strong>
+
+                    <strong>
+                        {{ factory.name }}
+                    </strong>
+
                 </small>
+
             </div>
 
-            <a href="{% url 'purchases:purchase_order_create' factory.id %}"
-               class="btn btn-primary">
+
+            <a
+                href="{% url 'purchases:purchase_order_create' factory.id %}"
+                class="btn btn-primary"
+            >
+                <i class="bi bi-plus-circle"></i>
                 Add Purchase Order
             </a>
 
         </div>
 
+
         <div class="card-body">
 
-            <table class="table table-bordered table-striped">
+            <div class="table-responsive">
 
-                <thead>
-                    <tr>
-                        <th>PO Number</th>
-                        <th>Order Date</th>
-                        <th>Expected Date</th>
-                        <th>Status</th>
-                        <th>Subtotal</th>
-                        <th>Expenses</th>
-                        <th>Total</th>
-                        <th>Added By</th>
-                        <th>Actions</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
+                <table
+                    id="purchaseOrdersTable"
+                    class="table table-bordered table-hover table-striped align-middle"
+                >
 
-                <tbody>
+                    <thead class="table-light">
 
-                    {% for po in purchase_orders %}
-                    <tr>
-                        <td>{{ po.po_number }}</td>
-                        <td>{{ po.order_date }}</td>
-                        <td>{{ po.expected_date }}</td>
-                        <td>{{ po.get_status_display }}</td>
-                        <td>${{ po.subtotal }}</td>
-                        <td>${{ po.transport_tax_expenses_cost }}</td>
-                        <td>${{ po.total }}</td>
+                        <tr>
 
-                        <td>{{ po.created_by.username }}</td>
-                        <td>
-                            <a href="{% url 'purchases:purchase_order_detail' po.id %}" class="btn btn-primary btn-sm">
-                                View
-                            </a>
-                        </td>
-                        <td>
-                           <form method="post"
-                                action="{% url 'purchases:purchase_order_delete' po.id %}"
-                                class="d-inline"
-                                onsubmit="return confirm('Delete this purchase order will delete all associated data?');">
+                            <th>PO Number</th>
 
-                                {% csrf_token %}
+                            <th>Order Date</th>
 
-                                <button type="submit"
-                                        class="btn btn-sm btn-outline-danger">
-                                    Delete
-                                </button>
+                            <th>Expected Date</th>
 
-                            </form>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center">
-                            No Purchase Orders Found
-                        </td>
-                    </tr>
-                    {% endfor %}
+                            <th>Status</th>
 
-                </tbody>
+                            <th>Subtotal</th>
 
-            </table>
+                            <th>Expenses</th>
+
+                            <th>Total</th>
+
+                            <th>Added By</th>
+
+                            <th>Actions</th>
+
+                            <th>Delete</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for po in purchase_orders %}
+
+                        <tr>
+
+
+                            <!-- PO Number -->
+                            <td>
+
+                                <strong>
+                                    {{ po.po_number }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- Order Date -->
+                            <td>
+                                {{ po.order_date|date:"Y-m-d" }}
+                            </td>
+
+
+                            <!-- Expected Date -->
+                            <td>
+
+                                {% if po.expected_date %}
+
+                                    {{ po.expected_date|date:"Y-m-d" }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Status -->
+                            <td>
+
+                                {% if po.status == 'pending' %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        {{ po.get_status_display }}
+                                    </span>
+
+                                {% elif po.status == 'completed' %}
+
+                                    <span class="badge bg-success">
+                                        {{ po.get_status_display }}
+                                    </span>
+
+                                {% elif po.status == 'cancelled' %}
+
+                                    <span class="badge bg-danger">
+                                        {{ po.get_status_display }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        {{ po.get_status_display }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Subtotal -->
+                            <td>
+                                ${{ po.subtotal }}
+                            </td>
+
+
+                            <!-- Expenses -->
+                            <td>
+                                ${{ po.transport_tax_expenses_cost }}
+                            </td>
+
+
+                            <!-- Total -->
+                            <td>
+
+                                <strong>
+                                    ${{ po.total }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- Added By -->
+                            <td>
+
+                                {% if po.created_by %}
+
+                                    {{ po.created_by.get_full_name|default:po.created_by.username }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Actions -->
+                            <td>
+
+                                <a
+                                    href="{% url 'purchases:purchase_order_detail' po.id %}"
+                                    class="btn btn-sm btn-outline-primary"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                    View
+                                </a>
+
+                            </td>
+
+
+                            <!-- Delete -->
+                            <td>
+
+                                <form
+                                    method="post"
+                                    action="{% url 'purchases:purchase_order_delete' po.id %}"
+                                    class="d-inline"
+                                    onsubmit="return confirm('Delete this purchase order will delete all associated data?');"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-sm btn-outline-danger"
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
     </div>
 
 </div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+$(document).ready(function () {
+
+    $('#purchaseOrdersTable').DataTable({
+
+        pageLength: 25,
+
+        responsive: true,
+
+        order: [[1, 'desc']],
+
+        language: {
+
+            emptyTable: "No Purchase Orders Found.",
+
+            zeroRecords: "No matching Purchase Orders found.",
+
+            search: "Search:",
+
+            lengthMenu: "Show _MENU_ purchase orders",
+
+            info: "Showing _START_ to _END_ of _TOTAL_ purchase orders",
+
+            infoEmpty: "Showing 0 to 0 of 0 purchase orders",
+
+            paginate: {
+
+                first: "First",
+
+                last: "Last",
+
+                next: "Next",
+
+                previous: "Previous"
+
+            }
+
+        }
+
+    });
+
+});
+
+</script>
 
 {% endblock %}

@@ -1,61 +1,97 @@
 {% extends 'base.html' %}
 
+{% block title %}
+Order Management
+{% endblock %}
+
+
 {% block content %}
 
 <div class="container-fluid">
 
     <!-- Top Navigation -->
     <div class="mb-3">
-        <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
+
+        <a
+            href="{% url 'core:dashboard' %}"
+            class="btn btn-outline-secondary"
+        >
             <i class="bi bi-arrow-left"></i>
             Back
         </a>
+
     </div>
 
+
+    <!-- Page Header -->
     <div class="page-header d-flex justify-content-between align-items-center mb-4">
+
         <div>
-            <h2 class="mb-1">Order Management</h2>
+
+            <h2 class="mb-1">
+                Order Management
+            </h2>
+
             <p class="text-muted mb-0">
                 Manage customer orders and their statuses.
             </p>
+
         </div>
+
     </div>
 
+
+    <!-- Orders Card -->
     <div class="card shadow-sm">
 
         <div class="card-header d-flex justify-content-between align-items-center">
 
             <h4 class="mb-0">
-                Orders list 
+                Orders List
             </h4>
 
-            <a href="{% url 'sales:order_create' %}"
-               class="btn btn-primary">
+            <a
+                href="{% url 'sales:order_create' %}"
+                class="btn btn-primary"
+            >
+                <i class="bi bi-plus-circle"></i>
                 Add Order
             </a>
 
         </div>
 
+
         <div class="card-body">
 
             <div class="table-responsive">
 
-                <table id="ordersTable"
-                       class="table table-bordered table-hover table-striped align-middle">
+                <table
+                    id="ordersTable"
+                    class="table table-bordered table-hover table-striped align-middle"
+                >
 
                     <thead class="table-light">
 
                         <tr>
+
                             <th>Date</th>
+
                             <th>Customer</th>
+
                             <th>Type</th>
+
                             <th>Status</th>
+
                             <th>Items</th>
+
                             <th>Total</th>
-                            <th width="150">Actions</th>
+
+                            <th>Actions</th>
+
                         </tr>
 
                     </thead>
+
 
                     <tbody>
 
@@ -63,77 +99,123 @@
 
                         <tr>
 
+
+                            <!-- Date -->
                             <td>
                                 {{ order.created_at|date:"Y-m-d" }}
                             </td>
 
+
+                            <!-- Customer -->
                             <td>
-                                {{ order.customer }}
+                                <strong>
+                                    {{ order.customer }}
+                                </strong>
                             </td>
 
+
+                            <!-- Order Type -->
                             <td>
                                 {{ order.get_order_type_display }}
                             </td>
 
+
+                            <!-- Status -->
                             <td>
 
                                 {% if order.status == "pending" %}
-                                    <span class="badge bg-warning">Pending</span>
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
 
                                 {% elif order.status == "confirmed" %}
-                                    <span class="badge bg-primary">Confirmed</span>
+
+                                    <span class="badge bg-primary">
+                                        Confirmed
+                                    </span>
 
                                 {% elif order.status == "completed" %}
-                                    <span class="badge bg-success">Completed</span>
+
+                                    <span class="badge bg-success">
+                                        Completed
+                                    </span>
 
                                 {% elif order.status == "cancelled" %}
-                                    <span class="badge bg-danger">Cancelled</span>
+
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
 
                                 {% else %}
+
                                     <span class="badge bg-secondary">
                                         {{ order.status }}
                                     </span>
+
                                 {% endif %}
 
                             </td>
 
+
+                            <!-- Items -->
                             <td>
                                 {{ order.item_count }}
                             </td>
 
+
+                            <!-- Total -->
                             <td>
-                                {{ order.total }}
+                                <strong>
+                                    $ {{ order.total }}
+                                </strong>
                             </td>
 
-                            <td>
 
-                                <a href="{% url 'sales:order_detail' order.pk %}"
-                                   class="btn btn-sm btn-outline-primary">
-                                    View
-                                </a>
+                            <!-- Actions -->
+                            <td
+                                class="text-center"
+                                style="white-space: nowrap; width: 1%;"
+                            >
 
-                               <form method="post" action="{% url 'sales:order_delete' order.id %}"
-                                class="d-inline"
-                                onsubmit="return confirm('Delete this order Will delete all associated data?');">
+                                <div class="d-inline-flex gap-1">
 
-                                {% csrf_token %}
 
-                                <button type="submit"
-                                        class="btn btn-sm btn-outline-danger">
-                                    Delete
-                                </button>
-                            </form>
+                                    <!-- View -->
+                                    <a
+                                        href="{% url 'sales:order_detail' order.pk %}"
+                                        class="btn btn-sm btn-outline-primary"
+                                    >
+                                        <i class="bi bi-eye"></i>
+                                        View
+                                    </a>
+
+
+                                    <!-- Delete -->
+                                    <form
+                                        method="post"
+                                        action="{% url 'sales:order_delete' order.id %}"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Delete this order? This will delete all associated data.');"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                        >
+                                            <i class="bi bi-trash"></i>
+                                            Delete
+                                        </button>
+
+                                    </form>
+
+                                </div>
 
                             </td>
 
-                        </tr>
 
-                        {% empty %}
-
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-3">
-                                No orders found.
-                            </td>
                         </tr>
 
                         {% endfor %}
@@ -152,18 +234,53 @@
 
 {% endblock %}
 
+
 {% block extra_js %}
 
 <script>
+
 $(document).ready(function () {
 
     $('#ordersTable').DataTable({
+
         pageLength: 25,
+
         responsive: true,
-        order: [[0, "desc"]]
+
+        order: [[0, "desc"]],
+
+        language: {
+
+            emptyTable: "No orders found.",
+
+            zeroRecords: "No matching orders found.",
+
+            search: "Search:",
+
+            lengthMenu: "Show _MENU_ orders",
+
+            info: "Showing _START_ to _END_ of _TOTAL_ orders",
+
+            infoEmpty: "Showing 0 to 0 of 0 orders",
+
+            paginate: {
+
+                first: "First",
+
+                last: "Last",
+
+                next: "Next",
+
+                previous: "Previous"
+
+            }
+
+        }
+
     });
 
 });
+
 </script>
 
 {% endblock %}

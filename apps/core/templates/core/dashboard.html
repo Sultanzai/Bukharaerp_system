@@ -96,46 +96,7 @@ Dashboard
 
     </div>
 
-    <!-- Cash -->
-
-    <div class="col-xl-3 col-md-6">
-
-        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <div>
-
-                        <small class="text-muted">
-                            Cash on Hand
-                        </small>
-
-                        <h2 class="fw-bold mt-2 mb-1">
-                            $ {{ financial.cash }}
-                        </h2>
-
-                        <small class="text-muted">
-                            Available Cash
-                        </small>
-
-                    </div>
-
-                    <div class="icon-circle text-info">
-
-                        <i class="bi bi-cash-stack fs-4"></i>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
+ 
     <!-- Receivable -->
 
     <div class="col-xl-3 col-md-6">
@@ -175,7 +136,7 @@ Dashboard
         </div>
 
     </div>
-
+    
     <!-- Inventory -->
 
     <div class="col-xl-3 col-md-6">
@@ -216,6 +177,46 @@ Dashboard
 
     </div>
 
+   <!-- Purchase Orders -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100 dashboard-card">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+                            Total Purchase Orders
+                        </small>
+
+                        <h2 class="fw-bold mt-2 mb-1">
+                            $ {{ financial.total_payables }}
+                        </h2>
+
+                        <small class="text-danger">
+                             Purchase Orders
+                        </small>
+
+                    </div>
+
+                    <div class="icon-circle text-danger">
+
+                        <i class="bi bi-building fs-4"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <!-- Factory -->
 
     <div class="col-xl-3 col-md-6">
@@ -229,7 +230,7 @@ Dashboard
                     <div>
 
                         <small class="text-muted">
-                            Factory Payables
+                            Factory Purchase Order Payables
                         </small>
 
                         <h2 class="fw-bold mt-2 mb-1">
@@ -393,8 +394,35 @@ Dashboard
 
                                 <div>
 
+                                    <small class="text-danger">
+                                        Total Purchase Orders 
+                                    </small>
+
+                                    <h5 class="fw-bold mt-1">
+                                        $ {{ financial.total_payables }}
+                                    </h5>
+
+                                </div>
+                                <div class="icon-circle text-danger"> 
+                                    <i class="bi bi-building fs-4"></i> 
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <div class="border rounded-4 p-3">
+
+                            <div class="d-flex justify-content-between">
+
+                                <div>
+
                                     <small class="text-muted">
-                                        Inventory
+                                        Inventory Value
                                     </small>
 
                                     <h5 class="fw-bold mt-1">
@@ -526,216 +554,29 @@ Dashboard
 </div>
 
 
-<!-- ============================= -->
-<!-- SECTION 3 : PROFIT & LOSS -->
-<!-- ============================= -->
-
-<div class="card shadow-sm border-0 rounded-3 mb-4">
-
-    <div class="card-body">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <div>
-                <h4 class="fw-semibold mb-1">
-                    Profit & Loss
-                </h4>
-
-                <small class="text-muted">
-                    Financial performance overview
-                </small>
-            </div>
-
-        </div>
-
-        <div class="row g-5 align-items-center">
-
-            <!-- LEFT -->
-
-            <div class="col-lg-5">
-
-                <div class="profit-flow">
-
-                    <!-- Revenue -->
-
-                    <div class="pnl-box revenue">
-
-                        <small class="text-muted">
-                            Revenue
-                        </small>
-
-                        <h3 class="fw-bold mb-0 text-success">
-                            $000,000
-                        </h3>
-
-                    </div>
-
-                    <div class="flow-arrow">
-                        ↓
-                    </div>
-
-                    <!-- COGS -->
-
-                    <div class="pnl-box cogs">
-
-                        <small class="text-muted">
-                            Cost of Goods Sold
-                        </small>
-
-                        <h4 class="fw-bold mb-0 text-danger">
-                            $000,000
-                        </h4>
-
-                    </div>
-
-                    <div class="flow-arrow">
-                        ↓
-                    </div>
-
-                    <!-- Gross -->
-
-                    <div class="pnl-box gross">
-
-                        <small class="text-muted">
-                            Gross Profit
-                        </small>
-
-                        <h3 class="fw-bold mb-0 text-primary">
-                            $000,000
-                        </h3>
-
-                    </div>
-
-                    <div class="flow-arrow">
-                        ↓
-                    </div>
-
-                    <!-- Expense -->
-
-                    <div class="pnl-box expense">
-
-                        <small class="text-muted">
-                            Operating Expenses
-                        </small>
-
-                        <h4 class="fw-bold mb-0">
-                            $000,000
-                        </h4>
-
-                    </div>
-
-                    <div class="flow-arrow">
-                        ↓
-                    </div>
-
-                    <!-- Net -->
-
-                    <div class="pnl-box net">
-
-                        <small class="text-muted">
-                            Net Profit
-                        </small>
-
-                        <h2 class="fw-bold mb-0 text-success">
-                            $000,000
-                        </h2>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- RIGHT -->
-
-            <div class="col-lg-7">
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-
-                    <h5 class="mb-0 fw-semibold">
-                        Monthly Profit
-                    </h5>
-
-                    <span class="badge bg-success">
-                        +14%
-                    </span>
-
-                </div>
-
-                <div style="height:320px;">
-
-                    <canvas id="profitChart"></canvas>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 <div class="row g-4">
 
-    <div class="col-lg-8">
+    <div class="col-lg-12">
 
         <div class="card dashboard-card">
 
             <div class="card-header">
-                Monthly Sales
-            </div>
-
-            <div class="card-body">
-
-                <div class="chart-placeholder">
-                    Sales Chart Area
+                <div>
+                    <h5 class="mb-0">Monthly Sales</h5>
+                    <small class="text-muted">
+                        Sales revenue by month
+                    </small>
                 </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-lg-4">
-
-        <div class="card dashboard-card">
-
-            <div class="card-header">
-                Inventory Summary
             </div>
 
             <div class="card-body">
 
-                <p>Warehouse Stock : 1250</p>
-                <p>Reserved Stock : 220</p>
-                <p>Low Stock Items : 18</p>
-                <p>Out Of Stock : 6</p>
+                <div style="height: 350px;">
+                    <canvas id="monthlySalesChart"></canvas>
+                </div>
 
             </div>
 
@@ -907,6 +748,111 @@ new Chart(ctx, {
         }
 
     }
+
+});
+
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const salesData = {{ monthly_sales|safe }};
+
+    const labels = salesData.map(item => item.month);
+    const values = salesData.map(item => item.total);
+
+    const ctx = document.getElementById("monthlySalesChart");
+
+    new Chart(ctx, {
+
+        type: "line",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [
+
+                {
+                    label: "Sales",
+
+                    data: values,
+
+                    tension: 0.35,
+
+                    fill: true,
+
+                    borderWidth: 2,
+
+                    pointRadius: 4,
+
+                    pointHoverRadius: 6
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            interaction: {
+                intersect: false,
+                mode: "index"
+            },
+
+            plugins: {
+
+                legend: {
+                    display: true
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            return "Sales: " +
+                                new Intl.NumberFormat().format(
+                                    context.raw
+                                );
+
+                        }
+
+                    }
+
+                }
+
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        callback: function(value) {
+
+                            return new Intl.NumberFormat().format(value);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
 
 });
 

@@ -12,6 +12,7 @@
         </a>
     </div>
 
+    <!-- Page Header -->
     <div class="page-header d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">Transaction Management</h2>
@@ -21,12 +22,13 @@
         </div>
     </div>
 
+    <!-- Transaction Card -->
     <div class="card shadow-sm">
 
         <div class="card-header d-flex justify-content-between align-items-center">
 
             <h4 class="mb-0">
-                Transactions list 
+                Transactions List
             </h4>
 
         </div>
@@ -66,94 +68,167 @@
 
                         <tr>
 
-                            <td>{{ transaction.id }}</td>
-                            <td>{{ transaction.reference_id }}</td>
-                            <td>{{ transaction.get_reference_type_display }}</td>
+                            <!-- 1. ID -->
+                            <td>
+                                {{ transaction.id }}
+                            </td>
 
+                            <!-- 2. User ID -->
+                            <td>
+                                {{ transaction.reference_id }}
+                            </td>
+
+                            <!-- 3. User Name -->
+                            <td>
+                                {{ transaction.get_reference_type_display }}
+                            </td>
+
+                            <!-- 4. Type -->
                             <td>
                                 {% if transaction.type == 'incoming' %}
-                                    <span class="badge bg-success">Incoming</span>
+
+                                    <span class="badge bg-success">
+                                        Incoming
+                                    </span>
+
+                                {% elif transaction.type == 'outgoing' %}
+
+                                    <span class="badge bg-danger">
+                                        Outgoing
+                                    </span>
+
                                 {% else %}
-                                    <span class="badge bg-danger">Outgoing</span>
+
+                                    <span class="badge bg-secondary">
+                                        {{ transaction.get_type_display }}
+                                    </span>
+
                                 {% endif %}
                             </td>
 
-                            <td>{{ transaction.get_party_type_display }}</td>
+                            <!-- 5. Party Name -->
+                            <td>
+                                {{ transaction.get_party_type_display }}
+                            </td>
 
-                            <td>{{ transaction.party_id }}</td>
+                            <!-- 6. Party ID -->
+                            <td>
+                                {{ transaction.party_id }}
+                            </td>
 
+                            <!-- 7. Amount -->
                             <td>
                                 $ {{ transaction.amount }}
                             </td>
 
+                            <!-- 8. Paid -->
                             <td>
                                 <span class="text-success">
                                     $ {{ transaction.paid_amount }}
                                 </span>
                             </td>
 
+                            <!-- 9. Remaining -->
                             <td>
+
                                 {% if transaction.remaining_amount > 0 %}
+
                                     <span class="text-danger">
                                         $ {{ transaction.remaining_amount }}
                                     </span>
+
                                 {% else %}
+
                                     <span class="text-success">
-                                        0.00
+                                        $ 0.00
                                     </span>
+
                                 {% endif %}
+
                             </td>
 
+                            <!-- 10. Status -->
                             <td>
+
                                 {% if transaction.status == 'completed' %}
-                                    <span class="badge bg-success">Completed</span>
+
+                                    <span class="badge bg-success">
+                                        Completed
+                                    </span>
 
                                 {% elif transaction.status == 'pending' %}
-                                    <span class="badge bg-warning">Pending</span>
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+                                {% elif transaction.status == 'cancelled' %}
+
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
 
                                 {% else %}
-                                    <span class="badge bg-danger">Cancelled</span>
+
+                                    <span class="badge bg-secondary">
+                                        {{ transaction.get_status_display }}
+                                    </span>
+
                                 {% endif %}
+
                             </td>
 
+                            <!-- 11. Notes -->
                             <td>
                                 {{ transaction.notes|default:"-" }}
                             </td>
 
+                            <!-- 12. Added By -->
                             <td>
+
                                 {% if transaction.added_by %}
+
                                     {{ transaction.added_by.get_full_name|default:transaction.added_by.username }}
+
                                 {% else %}
+
                                     —
+
                                 {% endif %}
+
                             </td>
 
+                            <!-- 13. Created -->
                             <td>
                                 {{ transaction.created_at|date:"Y-m-d" }}
                             </td>
 
+                            <!-- 14. View -->
                             <td>
+
                                 <a href="{% url 'transaction_detail' transaction.id %}"
                                    class="btn btn-sm btn-outline-primary">
+
+                                    <i class="bi bi-eye"></i>
                                     View
+
                                 </a>
+
                             </td>
 
+                            <!-- 15. Payment -->
                             <td>
+
                                 <a href="{% url 'payment_create' transaction.id %}"
                                    class="btn btn-sm btn-outline-success">
+
+                                    <i class="bi bi-cash-coin"></i>
                                     Payment
+
                                 </a>
+
                             </td>
 
-                        </tr>
-
-                        {% empty %}
-
-                        <tr>
-                            <td colspan="14" class="text-center text-muted py-3">
-                                No transactions found.
-                            </td>
                         </tr>
 
                         {% endfor %}
@@ -172,18 +247,42 @@
 
 {% endblock %}
 
+
 {% block extra_js %}
 
 <script>
+
 $(document).ready(function () {
 
     $('#transactionsTable').DataTable({
+
         pageLength: 25,
+
         responsive: true,
-        order: [[0, "desc"]]
+
+        order: [
+            [0, "desc"]
+        ],
+
+        language: {
+            emptyTable: "No transactions found.",
+            zeroRecords: "No matching transactions found.",
+            search: "Search:",
+            lengthMenu: "Show _MENU_ transactions",
+            info: "Showing _START_ to _END_ of _TOTAL_ transactions",
+            infoEmpty: "Showing 0 to 0 of 0 transactions",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+
     });
 
 });
+
 </script>
 
 {% endblock %}

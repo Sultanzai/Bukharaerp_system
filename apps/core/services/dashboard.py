@@ -1,3 +1,5 @@
+from django.db.models.functions import TruncMonth
+
 from decimal import Decimal
 from django.db.models import IntegerField, Q, Sum
 from django.db.models.functions import Coalesce
@@ -96,6 +98,21 @@ def financial_overview():
     data["payables"] = payable
 
     # ---------------------------------------------------
+    # Factory Payables
+    # ---------------------------------------------------
+
+    total_payable = Decimal("0.00")
+
+    for transaction in Transaction.objects.filter(
+        party_type="factory",
+    ):
+        total_payable += transaction.amount
+
+    data["total_payables"] = total_payable
+
+    data["total_payables"] = total_payable
+
+    # ---------------------------------------------------
     # Inventory Value
     # ---------------------------------------------------
 
@@ -168,11 +185,14 @@ def financial_overview():
     # -----------------------------------
     # Net Profit
     # -----------------------------------
-    data["profit"] = revenue - cogs + total_hawala_balance - expenses - inventory_value
+    data["profit"] = revenue - total_payable + total_hawala_balance - expenses
     # -----------------------------------
     # Cash on Hand
     # -----------------------------------
-    data["cash_on_hand"] = investments - inventory_value + total_hawala_balance - expenses - cogs 
+    data["cash_on_hand"] = investments  + total_hawala_balance - expenses - total_payable 
+    
+
+
 
 
 
