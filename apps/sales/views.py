@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from django.contrib import messages
-from django.db.models import Count, Sum, Q, DecimalField
+from django.db.models import Count, Sum, Q, DecimalField, Prefetch
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -19,6 +19,7 @@ from django.db import transaction
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_POST
+
 # ==========================================================
 # Customers
 # ==========================================================
@@ -215,21 +216,78 @@ class OrderListView(ListView):
 
 
 class OrderDetailView(DetailView):
+
     model = Order
     template_name = "sales/order_detail.html"
     context_object_name = "order"
 
     def get_queryset(self):
+
         return (
             Order.objects
             .select_related("customer")
             .prefetch_related(
                 "items",
                 "items__product_variant",
-                "items__product_variant__product"
+                "items__product_variant__product",
+                "items__product_variant__factory",
             )
         )
 
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        order = self.object
+
+        # Find the accounting transaction belonging to this order
+        transaction = (
+            Transaction.objects
+            .filter(
+                reference_type="customer_order",
+                reference_id=order.id
+            )
+            .prefetch_related(
+                Prefetch(
+                    "payments",
+                    queryset=PaymentRecord.objects
+                    .select_related("added_by")
+                    .order_by("-payment_date", "-created_at")
+                )
+            )
+            .first()
+        )
+
+        context["transaction"] = transaction
+
+        if transaction:
+
+            payments = transaction.payments.all()
+
+            total_paid = (
+                payments.aggregate(
+                    total=Sum("paid_amount")
+                )["total"]
+                or Decimal("0.00")
+            )
+
+            remaining_amount = (
+                transaction.amount - total_paid
+            )
+
+        else:
+
+            payments = PaymentRecord.objects.none()
+
+            total_paid = Decimal("0.00")
+
+            remaining_amount = order.total
+
+        context["payments"] = payments
+        context["total_paid"] = total_paid
+        context["remaining_amount"] = remaining_amount
+
+        return context
 def order_create(request):
 
     if request.method == "POST":
@@ -425,3 +483,80 @@ def order_delete(request, pk):
     )
 
     return redirect("sales:order_list")
+
+
+
+
+# ==========================================================
+# Order Invoice
+# ==========================================================
+class OrderInvoiceView(DetailView):
+    model = Order
+    template_name = "sales/order_invoice.html"
+    context_object_name = "order"
+
+    def get_queryset(self):
+        return (
+            Order.objects
+            .select_related("customer")
+            .prefetch_related(
+                "items",
+                "items__product_variant",
+                "items__product_variant__product",
+                "items__product_variant__factory",
+            )
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        order = self.object
+
+        transaction = (
+            Transaction.objects
+            .filter(
+                reference_type="customer_order",
+                reference_id=order.id
+            )
+            .prefetch_related(
+                Prefetch(
+                    "payments",
+                    queryset=PaymentRecord.objects
+                    .select_related("added_by")
+                    .order_by(
+                        "-payment_date",
+                        "-created_at"
+                    )
+                )
+            )
+            .first()
+        )
+
+        context["transaction"] = transaction
+
+        if transaction:
+            payments = transaction.payments.all()
+
+            total_paid = (
+                payments.aggregate(
+                    total=Sum("paid_amount")
+                )["total"]
+                or Decimal("0.00")
+            )
+
+            remaining_amount = (
+                transaction.amount - total_paid
+            )
+
+        else:
+            payments = PaymentRecord.objects.none()
+
+            total_paid = Decimal("0.00")
+
+            remaining_amount = order.total
+
+        context["payments"] = payments
+        context["total_paid"] = total_paid
+        context["remaining_amount"] = remaining_amount
+
+        return context

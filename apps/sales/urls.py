@@ -1,4 +1,3 @@
-from django import views
 from django.urls import path
 
 from apps.sales.views import (
@@ -9,41 +8,28 @@ from apps.sales.views import (
     CustomerUpdateView,
     OrderDetailView,
     OrderListView,
+    OrderInvoiceView,
     order_create,
     customer_search,
     order_delete,
-    variant_search
+    variant_search,
 )
 
 app_name = "sales"
 
 urlpatterns = [
+    path("", OrderListView.as_view(), name="order_list"),
 
-    # Orders
-    path(
-        "",
-        OrderListView.as_view(),
-        name="order_list",
-    ),
+    path("create/", order_create, name="order_create"),
 
-    path(
-        "create/",
-        order_create,
-        name="order_create",
-    ),
-
-    # Customers
-    path(
-        "customers/",
-        CustomerListView.as_view(),
-        name="customer_list",
-    ),
+    path("customers/", CustomerListView.as_view(), name="customer_list"),
 
     path(
         "customers/create/",
         CustomerCreateView.as_view(),
-        name="customer_create",
+        name="customer_create"
     ),
+
     path(
         "customer-search/",
         customer_search,
@@ -53,27 +39,33 @@ urlpatterns = [
     path(
         "customers/<int:pk>/update/",
         CustomerUpdateView.as_view(),
-        name="customer_update",
+        name="customer_update"
     ),
 
     path(
         "customers/<int:pk>/delete/",
         CustomerDeleteView.as_view(),
-        name="customer_delete",
+        name="customer_delete"
     ),
-
-
 
     path(
         "variant-search/",
         variant_search,
         name="variant_search"
     ),
+
     path(
         "orders/<int:pk>/",
         OrderDetailView.as_view(),
         name="order_detail"
     ),
+
+    path(
+        "orders/<int:pk>/invoice/",
+        OrderInvoiceView.as_view(),
+        name="order_invoice"
+    ),
+
     path(
         "customers/<int:pk>/",
         CustomerDetailView.as_view(),
@@ -83,6 +75,6 @@ urlpatterns = [
     path(
         "orders/<int:pk>/delete/",
         order_delete,
-        name="order_delete",
-    ),  
+        name="order_delete"
+    ),
 ]
