@@ -11,6 +11,7 @@ from .views import (
     purchase_order_delete,
     purchase_order_detail,
     purchase_order_create,
+    purchase_order_print,
 )
 
 app_name = "purchases"
@@ -64,5 +65,10 @@ urlpatterns = [
         "purchase-orders/<int:pk>/delete/",
         purchase_order_delete,
         name="purchase_order_delete",
+    ),
+    path(
+        "purchase-orders/<int:pk>/print/",
+        purchase_order_print,
+        name="purchase_order_print"
     ),
 ]

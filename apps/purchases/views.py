@@ -159,12 +159,6 @@ def purchase_order_create(request, factory_id):
             formset.instance = purchase_order
             formset.save()
 
-
-            # NOW attach the formset to the saved PO
-            formset.instance = purchase_order
-
-            formset.save()
-
             subtotal = 0
 
             for item in purchase_order.items.all():
@@ -192,7 +186,7 @@ def purchase_order_create(request, factory_id):
 
             party_id=factory.id,
 
-            reference_type=f'Purchase Order {factory.name}',
+            reference_type='purchase_order',
 
             reference_id=purchase_order.id,
 
@@ -266,26 +260,47 @@ def purchase_order_delete(request, pk):
 def purchase_order_detail(request, pk):
 
     purchase_order = get_object_or_404(
-        PurchaseOrder.objects.select_related(
-            "factory"
-        ).prefetch_related(
-            "items"
-        ),
+        PurchaseOrder.objects
+        .select_related("factory")
+        .prefetch_related("items"),
         pk=pk
     )
 
     context = {
-
         "purchase_order": purchase_order,
-
         "factory": purchase_order.factory,
-
-        "items": purchase_order.items.all()
-
+        "items": purchase_order.items.all(),
     }
 
     return render(
         request,
         "purchases/purchase_order_detail.html",
+        context
+    )
+
+
+# ==========================================================
+# Purchase Order Print
+# ==========================================================
+
+@login_required
+def purchase_order_print(request, pk):
+
+    purchase_order = get_object_or_404(
+        PurchaseOrder.objects
+        .select_related("factory")
+        .prefetch_related("items"),
+        pk=pk
+    )
+
+    context = {
+        "purchase_order": purchase_order,
+        "factory": purchase_order.factory,
+        "items": purchase_order.items.all(),
+    }
+
+    return render(
+        request,
+        "purchases/purchase_order_print.html",
         context
     )

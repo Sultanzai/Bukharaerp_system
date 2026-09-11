@@ -5,527 +5,881 @@
 
     <meta charset="UTF-8">
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>
         Invoice - Order #{{ order.id }}
     </title>
 
+
     <style>
+
+        /* ==================================================
+           PAGE
+        ================================================== */
 
         @page {
             size: A4;
             margin: 15mm;
         }
 
+
         * {
             box-sizing: border-box;
         }
 
+
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
-            color: #222;
             margin: 0;
             padding: 0;
-            background: #fff;
+            background: #f1f3f5;
+            color: #212529;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
         }
+
+
+        /* ==================================================
+           PRINT CONTROLS
+        ================================================== */
+
+        .print-controls {
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+
+        .print-controls button {
+            border: none;
+            background: #0d6efd;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+
+        .print-controls button:hover {
+            background: #0b5ed7;
+        }
+
+
+        /* ==================================================
+           A4 DOCUMENT
+        ================================================== */
 
         .invoice-container {
-            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 30px;
         }
 
-        .header {
-            width: 100%;
+
+        .invoice-page {
+            background: #ffffff;
+            padding: 40px;
+            min-height: 1100px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+        }
+
+
+        /* ==================================================
+           DOCUMENT HEADER
+        ================================================== */
+
+        .document-header {
+            border-bottom: 2px solid #212529;
+            padding-bottom: 20px;
             margin-bottom: 25px;
         }
 
-        .company {
-            width: 60%;
-            float: left;
-        }
-
-        .invoice-title {
-            width: 40%;
-            float: right;
-            text-align: right;
-        }
 
         .company-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 27px;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
+
 
         .company-info {
-            color: #666;
-            line-height: 1.5;
+            color: #6c757d;
+            line-height: 1.6;
+            font-size: 13px;
         }
 
-        .invoice-title h1 {
-            margin: 0;
-            font-size: 30px;
+
+        .document-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: right;
             letter-spacing: 1px;
         }
 
-        .invoice-number {
-            margin-top: 8px;
-            color: #555;
-        }
 
-        .clear {
-            clear: both;
-        }
-
-        .divider {
-            border-top: 2px solid #222;
-            margin: 15px 0 20px;
-        }
-
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-        }
-
-        .info-table td {
-            vertical-align: top;
-            padding: 5px 0;
-        }
-
-        .info-label {
-            font-weight: bold;
-            color: #555;
-            width: 100px;
-        }
-
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .items-table th {
-            background: #222;
-            color: white;
-            padding: 9px 7px;
-            text-align: left;
-            font-size: 11px;
-        }
-
-        .items-table td {
-            border-bottom: 1px solid #ddd;
-            padding: 9px 7px;
-            vertical-align: middle;
-        }
-
-        .text-right {
+        .document-number {
             text-align: right;
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 5px;
         }
 
-        .text-center {
-            text-align: center;
-        }
 
-        .summary-wrapper {
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .summary {
-            width: 42%;
-            margin-left: auto;
-            border-collapse: collapse;
-        }
-
-        .summary td {
-            padding: 7px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .summary .grand-total td {
-            font-size: 15px;
-            font-weight: bold;
-            border-top: 2px solid #222;
-            border-bottom: 2px solid #222;
-        }
-
-        .paid {
-            color: #198754;
-            font-weight: bold;
-        }
-
-        .remaining {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .payment-section {
-            margin-top: 30px;
-        }
+        /* ==================================================
+           SECTION TITLES
+        ================================================== */
 
         .section-title {
             font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 7px;
+            margin-bottom: 15px;
         }
 
-        .payments-table {
-            width: 100%;
-            border-collapse: collapse;
+
+        /* ==================================================
+           CUSTOMER / ORDER INFORMATION
+        ================================================== */
+
+        .info-box {
+            margin-bottom: 14px;
         }
 
-        .payments-table th {
-            background: #f1f1f1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 3px;
         }
 
-        .payments-table td {
-            padding: 8px;
-            border: 1px solid #ddd;
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
         }
 
-        .notes {
-            margin-top: 25px;
-            padding: 12px;
-            background: #f7f7f7;
-            border-left: 3px solid #222;
+
+        .customer-name {
+            font-size: 16px;
+            font-weight: 700;
         }
 
-        .footer {
-            margin-top: 45px;
-            padding-top: 12px;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            color: #777;
-            font-size: 10px;
-        }
+
+        /* ==================================================
+           STATUS
+        ================================================== */
 
         .status {
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-weight: bold;
+            padding: 4px 9px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
         }
+
 
         .status-pending {
             background: #fff3cd;
             color: #856404;
         }
 
+
         .status-completed {
             background: #d1e7dd;
             color: #0f5132;
+        }
+
+
+        .status-other {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+
+        /* ==================================================
+           ITEMS TABLE
+        ================================================== */
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+
+
+        .items-table th {
+            background: #212529;
+            color: #ffffff;
+            border: 1px solid #212529;
+            padding: 10px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+
+        .items-table td {
+            border: 1px solid #dee2e6;
+            padding: 9px 8px;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+
+        .items-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+
+        .text-center {
+            text-align: center;
+        }
+
+
+        .text-right {
+            text-align: right;
+        }
+
+
+        /* ==================================================
+           FINANCIAL SUMMARY
+        ================================================== */
+
+        .summary-wrapper {
+            margin-top: 22px;
+        }
+
+
+        .summary-table {
+            width: 350px;
+            margin-left: auto;
+            border-collapse: collapse;
+        }
+
+
+        .summary-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+
+        .summary-table .grand-total td {
+            font-size: 16px;
+            font-weight: 700;
+            border-top: 2px solid #212529;
+        }
+
+
+        .paid {
+            color: #198754;
+            font-weight: 700;
+        }
+
+
+        .remaining {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+
+        /* ==================================================
+           PAYMENT HISTORY
+        ================================================== */
+
+        .payment-section {
+            margin-top: 30px;
+        }
+
+
+        .payments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+
+        .payments-table th {
+            background: #f1f3f5;
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+
+        .payments-table td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           NOTES
+        ================================================== */
+
+        .notes-section {
+            margin-top: 28px;
+        }
+
+
+        .notes-box {
+            border: 1px solid #dee2e6;
+            border-left: 3px solid #212529;
+            padding: 12px 14px;
+            background: #f8f9fa;
+            line-height: 1.6;
+            min-height: 60px;
+        }
+
+
+        /* ==================================================
+           FOOTER
+        ================================================== */
+
+        .document-footer {
+            border-top: 1px solid #dee2e6;
+            margin-top: 40px;
+            padding-top: 15px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+
+        /* ==================================================
+           PRINT
+        ================================================== */
+
+        @media print {
+
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+
+
+            body {
+                background: #ffffff !important;
+            }
+
+
+            .print-controls {
+                display: none !important;
+            }
+
+
+            .invoice-container {
+                max-width: none;
+                margin: 0;
+            }
+
+
+            .invoice-page {
+                min-height: auto;
+                padding: 0;
+                box-shadow: none !important;
+            }
+
+
+            .items-table th {
+                background: #212529 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+
+            .items-table tbody tr:nth-child(even) {
+                background: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+
+            .payments-table th {
+                background: #f1f3f5 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+
+            .notes-box {
+                background: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+
+            tr {
+                page-break-inside: avoid;
+            }
+
+
+            .payment-section,
+            .notes-section {
+                page-break-inside: avoid;
+            }
+
         }
 
     </style>
 
 </head>
 
+
 <body>
+
+
+<!-- ======================================================
+     PRINT CONTROLS
+======================================================= -->
+
+<div class="print-controls">
+
+    <div style="
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: flex-end;
+    ">
+
+        <button onclick="window.print()">
+
+            🖨 Print / Save PDF
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     A4 INVOICE
+======================================================= -->
 
 <div class="invoice-container">
 
-    <!-- ==================================================
-         HEADER
-    =================================================== -->
+    <div class="invoice-page">
 
-    <div class="header">
 
-        <div class="company">
+        <!-- ==================================================
+             HEADER
+        ================================================== -->
 
-            <div class="company-name">
-                Bukhara Enterprise System
-            </div>
+        <div class="document-header">
 
-            <div class="company-info">
-                Company Address<br>
-                Kabul, Afghanistan<br>
-                Phone: +93 XXX XXX XXX<br>
-                Email: info@example.com
-            </div>
+            <table style="width: 100%; border-collapse: collapse;">
+
+                <tr>
+
+                    <td style="
+                        width: 60%;
+                        vertical-align: top;
+                    ">
+
+                        <div class="company-name">
+                            Bukhara Enterprise System
+                        </div>
+
+                        <div class="company-info">
+
+                            Company Address
+                            <br>
+
+                            Kabul, Afghanistan
+                            <br>
+
+                            Phone: +93 XXX XXX XXX
+                            <br>
+
+                            Email: info@example.com
+
+                        </div>
+
+                    </td>
+
+
+                    <td style="
+                        width: 40%;
+                        vertical-align: top;
+                    ">
+
+                        <div class="document-title">
+                            INVOICE
+                        </div>
+
+                        <div class="document-number">
+
+                            Invoice #:
+                            INV-{{ order.id }}
+
+                        </div>
+
+                        <div class="document-number">
+
+                            Order #:
+                            ORD-{{ order.id }}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </table>
 
         </div>
 
-        <div class="invoice-title">
 
-            <h1>
-                INVOICE
-            </h1>
+        <!-- ==================================================
+             CUSTOMER / ORDER INFORMATION
+        ================================================== -->
 
-            <div class="invoice-number">
-                Invoice #: INV-{{ order.id }}
-            </div>
+        <div class="section-title">
 
-            <div class="invoice-number">
-                Order #: ORD-{{ order.id }}
-            </div>
+            Customer & Order Information
 
         </div>
 
-        <div class="clear"></div>
 
-    </div>
-
-    <div class="divider"></div>
-
-
-    <!-- ==================================================
-         CUSTOMER / ORDER INFORMATION
-    =================================================== -->
-
-    <table class="info-table">
-
-        <tr>
-
-            <td style="width: 50%;">
-
-                <strong>Bill To</strong>
-
-                <br><br>
-
-                <strong>
-                    {{ order.customer }}
-                </strong>
-
-            </td>
-
-            <td style="width: 50%;">
-
-                <table>
-
-                    <tr>
-                        <td class="info-label">
-                            Order Date:
-                        </td>
-
-                        <td>
-                            {{ order.created_at|date:"d M Y" }}
-                        </td>
-                    </tr>
-
-                    <tr>
-
-                        <td class="info-label">
-                            Order Type:
-                        </td>
-
-                        <td>
-                            {{ order.get_order_type_display }}
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td class="info-label">
-                            Status:
-                        </td>
-
-                        <td>
-
-                            {% if order.status == "pending" %}
-
-                                <span class="status status-pending">
-                                    Pending
-                                </span>
-
-                            {% elif order.status == "completed" %}
-
-                                <span class="status status-completed">
-                                    Completed
-                                </span>
-
-                            {% else %}
-
-                                {{ order.status }}
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                </table>
-
-            </td>
-
-        </tr>
-
-    </table>
-
-
-    <!-- ==================================================
-         ITEMS
-    =================================================== -->
-
-    <div class="section-title">
-        Order Items
-    </div>
-
-    <table class="items-table">
-
-        <thead>
+        <table style="
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        ">
 
             <tr>
 
-                <th style="width: 12%;">
-                    SKU
-                </th>
+                <!-- CUSTOMER -->
 
-                <th style="width: 25%;">
-                    Product
-                </th>
+                <td style="
+                    width: 50%;
+                    vertical-align: top;
+                    padding-right: 25px;
+                ">
 
-                <th style="width: 12%;">
-                    Size
-                </th>
+                    <div class="info-box">
 
-                <th style="width: 12%;">
-                    Color
-                </th>
+                        <div class="info-label">
+                            Bill To
+                        </div>
 
-                <th style="width: 9%;" class="text-center">
-                    Qty
-                </th>
+                        <div class="customer-name">
 
-                <th style="width: 15%;" class="text-right">
-                    Unit Price
-                </th>
+                            {{ order.customer }}
 
-                <th style="width: 15%;" class="text-right">
-                    Total
-                </th>
+                        </div>
 
-            </tr>
+                    </div>
 
-        </thead>
-
-        <tbody>
-
-        {% for item in order.items.all %}
-
-            <tr>
-
-                <td>
-                    {{ item.product_variant.sku }}
                 </td>
 
-                <td>
-                    {{ item.product_variant.product }}
-                </td>
 
-                <td>
-                    {{ item.product_variant.size|default:"-" }}
-                </td>
+                <!-- ORDER -->
 
-                <td>
-                    {{ item.product_variant.color|default:"-" }}
-                </td>
+                <td style="
+                    width: 50%;
+                    vertical-align: top;
+                ">
 
-                <td class="text-center">
-                    {{ item.qty }}
-                </td>
+                    <table style="
+                        width: 100%;
+                        border-collapse: collapse;
+                    ">
 
-                <td class="text-right">
-                    {{ item.unit_price|floatformat:2 }}
-                </td>
+                        <tr>
 
-                <td class="text-right">
-                    {{ item.total|floatformat:2 }}
-                </td>
+                            <td style="
+                                padding: 4px 0;
+                                width: 120px;
+                                color: #6c757d;
+                            ">
+                                Order Date
+                            </td>
 
-            </tr>
+                            <td style="
+                                padding: 4px 0;
+                                font-weight: 500;
+                            ">
 
-        {% empty %}
+                                {{ order.created_at|date:"d M Y" }}
 
-            <tr>
+                            </td>
 
-                <td colspan="7" class="text-center">
-                    No items found.
-                </td>
-
-            </tr>
-
-        {% endfor %}
-
-        </tbody>
-
-    </table>
+                        </tr>
 
 
-    <!-- ==================================================
-         FINANCIAL SUMMARY
-    =================================================== -->
+                        <tr>
 
-    <div class="summary-wrapper">
+                            <td style="
+                                padding: 4px 0;
+                                color: #6c757d;
+                            ">
+                                Order Type
+                            </td>
 
-        <table class="summary">
+                            <td style="
+                                padding: 4px 0;
+                                font-weight: 500;
+                            ">
 
-            <tr>
+                                {{ order.get_order_type_display }}
 
-                <td>
-                    Subtotal
-                </td>
+                            </td>
 
-                <td class="text-right">
-                    {{ order.total|floatformat:2 }}
-                </td>
+                        </tr>
 
-            </tr>
 
-            <tr class="grand-total">
+                        <tr>
 
-                <td>
-                    Grand Total
-                </td>
+                            <td style="
+                                padding: 4px 0;
+                                color: #6c757d;
+                            ">
+                                Status
+                            </td>
 
-                <td class="text-right">
-                    {{ order.total|floatformat:2 }}
-                </td>
+                            <td style="padding: 4px 0;">
 
-            </tr>
+                                {% if order.status == "pending" %}
 
-            <tr>
+                                    <span class="status status-pending">
+                                        Pending
+                                    </span>
 
-                <td>
-                    Total Paid
-                </td>
+                                {% elif order.status == "completed" %}
 
-                <td class="text-right paid">
-                    {{ total_paid|floatformat:2 }}
-                </td>
+                                    <span class="status status-completed">
+                                        Completed
+                                    </span>
 
-            </tr>
+                                {% else %}
 
-            <tr>
+                                    <span class="status status-other">
+                                        {{ order.status }}
+                                    </span>
 
-                <td>
-                    Remaining
-                </td>
+                                {% endif %}
 
-                <td class="text-right remaining">
-                    {{ remaining_amount|floatformat:2 }}
+                            </td>
+
+                        </tr>
+
+                    </table>
+
                 </td>
 
             </tr>
 
         </table>
 
-    </div>
+
+        <!-- ==================================================
+             ITEMS
+        ================================================== -->
+
+        <div class="section-title">
+
+            Order Items
+
+        </div>
 
 
-    <!-- ==================================================
-         PAYMENTS
-    =================================================== -->
+        <table class="items-table">
 
-    {% if payments %}
+            <thead>
+
+                <tr>
+
+                    <th style="width: 13%;">
+                        SKU
+                    </th>
+
+                    <th style="width: 25%;">
+                        Product
+                    </th>
+
+                    <th style="width: 12%;">
+                        Size
+                    </th>
+
+                    <th style="width: 12%;">
+                        Color
+                    </th>
+
+                    <th
+                        style="width: 9%;"
+                        class="text-center"
+                    >
+                        Qty
+                    </th>
+
+                    <th
+                        style="width: 14%;"
+                        class="text-right"
+                    >
+                        Unit Price
+                    </th>
+
+                    <th
+                        style="width: 15%;"
+                        class="text-right"
+                    >
+                        Total
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in order.items.all %}
+
+                <tr>
+
+                    <td>
+                        {{ item.product_variant.sku }}
+                    </td>
+
+                    <td>
+                        {{ item.product_variant.product }}
+                    </td>
+
+                    <td>
+                        {{ item.product_variant.size|default:"-" }}
+                    </td>
+
+                    <td>
+                        {{ item.product_variant.color|default:"-" }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ item.qty }}
+                    </td>
+
+                    <td class="text-right">
+                        {{ item.unit_price|floatformat:2 }}
+                    </td>
+
+                    <td class="text-right">
+                        {{ item.total|floatformat:2 }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="text-center"
+                    >
+                        No items found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <!-- ==================================================
+             FINANCIAL SUMMARY
+        ================================================== -->
+
+        <div class="summary-wrapper">
+
+            <table class="summary-table">
+
+                <tr>
+
+                    <td>
+                        Subtotal
+                    </td>
+
+                    <td class="text-right">
+
+                        {{ order.total|floatformat:2 }}
+
+                    </td>
+
+                </tr>
+
+
+                <tr class="grand-total">
+
+                    <td>
+                        Grand Total
+                    </td>
+
+                    <td class="text-right">
+
+                        {{ order.total|floatformat:2 }}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Total Paid
+                    </td>
+
+                    <td class="text-right paid">
+
+                        {{ total_paid|floatformat:2 }}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Remaining
+                    </td>
+
+                    <td class="text-right remaining">
+
+                        {{ remaining_amount|floatformat:2 }}
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+
+        <!-- ==================================================
+             PAYMENT HISTORY
+        ================================================== -->
+
+        {% if payments %}
 
         <div class="payment-section">
 
             <div class="section-title">
+
                 Payment History
+
             </div>
+
 
             <table class="payments-table">
 
@@ -533,29 +887,30 @@
 
                     <tr>
 
-                        <th>
+                        <th style="width: 15%;">
                             Date
                         </th>
 
-                        <th>
+                        <th style="width: 17%;">
                             Amount
                         </th>
 
-                        <th>
+                        <th style="width: 20%;">
                             Payment Method
                         </th>
 
-                        <th>
+                        <th style="width: 20%;">
                             Code / Reference
                         </th>
 
-                        <th>
+                        <th style="width: 28%;">
                             Notes
                         </th>
 
                     </tr>
 
                 </thead>
+
 
                 <tbody>
 
@@ -567,20 +922,28 @@
                             {{ payment.payment_date|date:"d M Y" }}
                         </td>
 
-                        <td>
+                        <td class="text-right">
+
                             {{ payment.paid_amount|floatformat:2 }}
+
                         </td>
 
                         <td>
+
                             {{ payment.get_payment_method_display }}
+
                         </td>
 
                         <td>
+
                             {{ payment.code_number|default:"-" }}
+
                         </td>
 
                         <td>
+
                             {{ payment.notes|default:"-" }}
+
                         </td>
 
                     </tr>
@@ -593,45 +956,55 @@
 
         </div>
 
-    {% endif %}
+        {% endif %}
 
 
-    <!-- ==================================================
-         NOTES
-    =================================================== -->
+        <!-- ==================================================
+             NOTES
+        ================================================== -->
 
-    {% if order.notes %}
+        {% if order.notes %}
 
-        <div class="notes">
+        <div class="notes-section">
 
-            <strong>
+            <div class="section-title">
+
                 Notes
-            </strong>
 
-            <br>
+            </div>
 
-            {{ order.notes }}
+
+            <div class="notes-box">
+
+                {{ order.notes|linebreaksbr }}
+
+            </div>
 
         </div>
 
-    {% endif %}
+        {% endif %}
 
 
-    <!-- ==================================================
-         FOOTER
-    =================================================== -->
+        <!-- ==================================================
+             FOOTER
+        ================================================== -->
 
-    <div class="footer">
+        <div class="document-footer">
 
-        Thank you for your business.
+            Thank you for your business.
 
-        <br>
+            <br>
 
-        This invoice was generated by the Bukhara Enterprise System system.
+            This invoice was generated by the
+            Bukhara Enterprise System.
+
+        </div>
+
 
     </div>
 
 </div>
+
 
 </body>
 
