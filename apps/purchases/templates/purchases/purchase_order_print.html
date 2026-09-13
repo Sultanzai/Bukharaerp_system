@@ -253,22 +253,24 @@
 
 <div class="print-controls">
 
-    <div class="d-flex justify-content-between">
-
-        <a
-            href="{% url 'purchases:purchase_order_detail' purchase_order.id %}"
-            class="btn btn-secondary"
-        >
-            <i class="bi bi-arrow-left"></i>
-            Back
-        </a>
+    <div class="print-controls align-baseline d-flex justify-content-end gap-2">
 
         <button
-            onclick="window.print()"
+            type="button"
             class="btn btn-primary"
+            onclick="window.print()"
         >
             <i class="bi bi-printer"></i>
-            Print / Save PDF
+            Print Statement
+        </button>
+
+        <button
+            type="button"
+            class="btn btn-outline-secondary"
+            onclick="window.close()"
+        >
+            <i class="bi bi-x-lg"></i>
+            Close
         </button>
 
     </div>

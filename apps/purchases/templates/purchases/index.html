@@ -172,13 +172,26 @@ Factory Management
                             <!-- Purchase Orders -->
                             <td>
 
-                                <a
-                                    href="{% url 'purchases:factory_purchase_orders' factory.id %}"
-                                    class="btn btn-sm btn-outline-primary"
-                                >
-                                    <i class="bi bi-receipt"></i>
-                                    View POs
-                                </a>
+                                <div class="d-inline-flex gap-1">
+
+                                    <a
+                                        href="{% url 'purchases:factory_purchase_orders' factory.id %}"
+                                        class="btn btn-sm btn-outline-primary"
+                                    >
+                                        <i class="bi bi-receipt"></i>
+                                        View POs
+                                    </a>
+
+                                    <a
+                                        href="{% url 'core:factory_statement' factory.id %}"
+                                        target="_blank"
+                                        class="btn btn-sm btn-outline-secondary"
+                                    >
+                                        <i class="bi bi-file-earmark-text"></i>
+                                        Statement
+                                    </a>
+
+                                </div>
 
                             </td>
 

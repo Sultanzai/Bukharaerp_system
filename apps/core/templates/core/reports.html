@@ -186,6 +186,55 @@
 
     </div>
 
+    
+    <!-- ========================================================= -->
+    <!-- CUSTOMER -->
+    <!-- ========================================================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">
+                Customer Reports
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Total Customers</h6>
+                    <h4>{{ total_customers }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Total Sales</h6>
+                    <h4>$ {{ totalsales }}</h4>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 text-center">
+                    <h6>Receivables</h6>
+                    <h4>$ {{ remainingsales }}</h4>
+                </div>
+            </div>
+
+        </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a href="#" class="btn btn-outline-secondary">Customer Statement</a>
+                <a href="#" class="btn btn-outline-secondary">Purchase History</a>
+            </div>
+
+        </div>
+
+    </div>
 
     <!-- ========================================================= -->
     <!-- PRODUCTS -->
@@ -248,57 +297,6 @@
 
     </div>
 
-    <!-- ========================================================= -->
-    <!-- CUSTOMER -->
-    <!-- ========================================================= -->
-
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-secondary text-white">
-            <h5 class="mb-0">
-                Customer Reports
-            </h5>
-        </div>
-
-        <div class="card-body">
-
-        <div class="row g-3 mb-4">
-
-            <div class="col-md-4">
-                <div class="border rounded p-3 text-center">
-                    <h6>Total Customers</h6>
-                    <h4>{{ total_customers }}</h4>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="border rounded p-3 text-center">
-                    <h6>Total Sales</h6>
-                    <h4>$ {{ totalsales }}</h4>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="border rounded p-3 text-center">
-                    <h6>Receivables</h6>
-                    <h4>$ {{ remainingsales }}</h4>
-                </div>
-            </div>
-
-        </div>
-
-            <div class="d-flex flex-wrap gap-2">
-
-                <a href="#" class="btn btn-outline-secondary">Customer Statement</a>
-                <a href="#" class="btn btn-outline-secondary">Purchase History</a>
-                <a href="#" class="btn btn-outline-secondary">Top Customers</a>
-                <a href="#" class="btn btn-outline-secondary">Outstanding Customers</a>
-
-            </div>
-
-        </div>
-
-    </div>
 
     <!-- ========================================================= -->
     <!-- FACTORY -->

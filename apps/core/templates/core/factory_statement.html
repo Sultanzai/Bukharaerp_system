@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Factory Statement - {{ factory.name }}
+    </title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            padding: 30px;
+
+            background: #f5f6f8;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: #212529;
+
+        }
+
+        .statement-container {
+
+            max-width: 900px;
+
+            margin: 0 auto;
+
+        }
+
+        .statement-page {
+
+            background: #ffffff;
+
+            padding: 40px;
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.08);
+
+            border-radius: 6px;
+
+        }
+
+        /* -----------------------------------------
+           Print Controls
+        ----------------------------------------- */
+
+        .print-controls {
+
+            margin-bottom: 20px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+        /* -----------------------------------------
+           Header
+        ----------------------------------------- */
+
+        .statement-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            border-bottom: 2px solid #212529;
+
+            padding-bottom: 20px;
+
+            margin-bottom: 25px;
+
+        }
+
+        .company-name {
+
+            font-size: 25px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+
+        }
+
+        .company-info {
+
+            font-size: 13px;
+
+            color: #6c757d;
+
+            line-height: 1.5;
+
+        }
+
+        .document-title {
+
+            text-align: right;
+
+        }
+
+        .document-title h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+
+            font-weight: 700;
+
+        }
+
+        .document-title p {
+
+            margin: 5px 0 0;
+
+            font-size: 13px;
+
+            color: #6c757d;
+
+        }
+
+        /* -----------------------------------------
+           Factory Information
+        ----------------------------------------- */
+
+        .info-section {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 30px;
+
+            margin-bottom: 25px;
+
+        }
+
+        .info-box {
+
+            flex: 1;
+
+        }
+
+        .info-box h6 {
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+
+            color: #6c757d;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+        }
+
+        .info-box p {
+
+            margin: 2px 0;
+
+            font-size: 14px;
+
+        }
+
+        .factory-name {
+
+            font-size: 17px !important;
+
+            font-weight: 700;
+
+        }
+
+        /* -----------------------------------------
+           Statement Table
+        ----------------------------------------- */
+
+        .statement-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 15px;
+
+        }
+
+        .statement-table th {
+
+            background: #212529;
+
+            color: #ffffff;
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+
+            padding: 10px 8px;
+
+            border: 1px solid #212529;
+
+        }
+
+        .statement-table td {
+
+            padding: 9px 8px;
+
+            border: 1px solid #dee2e6;
+
+            font-size: 13px;
+
+        }
+
+        .statement-table tbody tr:nth-child(even) {
+
+            background: #f8f9fa;
+
+        }
+
+        .text-right {
+
+            text-align: right;
+
+        }
+
+        .text-center {
+
+            text-align: center;
+
+        }
+
+        .balance-cell {
+
+            font-weight: 600;
+
+        }
+
+        /* -----------------------------------------
+           Totals
+        ----------------------------------------- */
+
+        .totals-section {
+
+            margin-top: 25px;
+
+            display: flex;
+
+            justify-content: flex-end;
+
+        }
+
+        .totals-box {
+
+            width: 360px;
+
+        }
+
+        .total-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 8px 0;
+
+            border-bottom: 1px solid #dee2e6;
+
+            font-size: 14px;
+
+        }
+
+        .total-row:last-child {
+
+            border-bottom: 0;
+
+        }
+
+        .balance-due {
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            padding-top: 12px;
+
+            margin-top: 5px;
+
+            border-top: 2px solid #212529;
+
+        }
+
+        /* -----------------------------------------
+           Notes
+        ----------------------------------------- */
+
+        .notes-section {
+
+            margin-top: 30px;
+
+            padding-top: 15px;
+
+            border-top: 1px solid #dee2e6;
+
+        }
+
+        .notes-title {
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+
+        }
+
+        .notes-text {
+
+            font-size: 13px;
+
+            color: #6c757d;
+
+            white-space: pre-line;
+
+        }
+
+        /* -----------------------------------------
+           Footer
+        ----------------------------------------- */
+
+        .statement-footer {
+
+            margin-top: 40px;
+
+            padding-top: 15px;
+
+            border-top: 1px solid #dee2e6;
+
+            text-align: center;
+
+            font-size: 11px;
+
+            color: #6c757d;
+
+        }
+
+        /* -----------------------------------------
+           Empty Statement
+        ----------------------------------------- */
+
+        .empty-row {
+
+            text-align: center;
+
+            padding: 25px !important;
+
+            color: #6c757d;
+
+        }
+
+        /* -----------------------------------------
+           Print
+        ----------------------------------------- */
+
+        @media print {
+
+            body {
+
+                background: #ffffff;
+
+                padding: 0;
+
+            }
+
+            .statement-container {
+
+                max-width: none;
+
+            }
+
+            .statement-page {
+
+                padding: 0;
+
+                box-shadow: none;
+
+                border-radius: 0;
+
+            }
+
+            .print-controls {
+
+                display: none !important;
+
+            }
+
+            .statement-table {
+
+                page-break-inside: auto;
+
+            }
+
+            .statement-table tr {
+
+                page-break-inside: avoid;
+
+                page-break-after: auto;
+
+            }
+
+            .statement-table thead {
+
+                display: table-header-group;
+
+            }
+
+            .statement-table th {
+
+                -webkit-print-color-adjust: exact;
+
+                print-color-adjust: exact;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="statement-container">
+
+    <!-- =========================================
+         PRINT CONTROLS
+    ========================================== -->
+
+    <div class="print-controls">
+
+        <button
+            type="button"
+            onclick="window.print()"
+            class="btn btn-primary"
+        >
+            <i class="bi bi-printer"></i>
+            Print Statement
+        </button>
+
+        <button
+            type="button"
+            onclick="window.close()"
+            class="btn btn-secondary"
+        >
+            <i class="bi bi-x-lg"></i>
+            Close
+        </button>
+
+    </div>
+
+
+    <div class="statement-page">
+
+        <!-- =========================================
+             HEADER
+        ========================================== -->
+
+        <div class="statement-header">
+
+            <div>
+
+                <div class="company-name">
+                    Bukhari Enterprises company
+                </div>
+
+                <div class="company-info">
+
+                    Business Address<br>
+
+                    Phone: +000 000 0000<br>
+
+                    Email: company@example.com
+
+                </div>
+
+            </div>
+
+
+            <div class="document-title">
+
+                <h1>
+                    FACTORY STATEMENT
+                </h1>
+
+                <p>
+                    Statement Date:
+                    {{ statement_date|date:"d M Y" }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             FACTORY INFORMATION
+        ========================================== -->
+
+        <div class="info-section">
+
+            <div class="info-box">
+
+                <h6>
+                    Supplier / Factory
+                </h6>
+
+                <p class="factory-name">
+                    {{ factory.name }}
+                </p>
+
+                {% if factory.supliercode %}
+                    <p>
+                        Supplier Code:
+                        {{ factory.supliercode }}
+                    </p>
+                {% endif %}
+
+                {% if factory.gstin %}
+                    <p>
+                        GSTIN:
+                        {{ factory.gstin }}
+                    </p>
+                {% endif %}
+
+            </div>
+
+
+            <div class="info-box">
+
+                <h6>
+                    Contact Information
+                </h6>
+
+                {% if factory.phone %}
+                    <p>
+                        Phone:
+                        {{ factory.phone }}
+                    </p>
+                {% endif %}
+
+                {% if factory.email %}
+                    <p>
+                        Email:
+                        {{ factory.email }}
+                    </p>
+                {% endif %}
+
+                {% if factory.address %}
+                    <p>
+                        {{ factory.address }}
+                    </p>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             STATEMENT TABLE
+        ========================================== -->
+
+        <table class="statement-table">
+
+            <thead>
+
+                <tr>
+
+                    <th style="width: 13%;">
+                        Date
+                    </th>
+
+                    <th style="width: 15%;">
+                        Reference
+                    </th>
+
+                    <th>
+                        Description
+                    </th>
+
+                    <th
+                        class="text-right"
+                        style="width: 15%;"
+                    >
+                        Debit
+                    </th>
+
+                    <th
+                        class="text-right"
+                        style="width: 15%;"
+                    >
+                        Credit
+                    </th>
+
+                    <th
+                        class="text-right"
+                        style="width: 15%;"
+                    >
+                        Balance
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for row in statement_rows %}
+
+                    <tr>
+
+                        <td>
+                            {{ row.date|date:"d M Y" }}
+                        </td>
+
+                        <td>
+                            {{ row.reference }}
+                        </td>
+
+                        <td>
+
+                            {{ row.description }}
+
+                            {% if row.purchase_order %}
+
+                                {% if row.purchase_order.notes %}
+
+                                    <div class="text-muted small">
+                                        {{ row.purchase_order.notes }}
+                                    </div>
+
+                                {% endif %}
+
+                            {% endif %}
+
+                            {% if row.payment and row.payment.code_number %}
+
+                                <div class="text-muted small">
+
+                                    Code:
+                                    {{ row.payment.code_number }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="text-right">
+
+                            {% if row.debit > 0 %}
+
+                                {{ row.debit|floatformat:2 }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="text-right">
+
+                            {% if row.credit > 0 %}
+
+                                {{ row.credit|floatformat:2 }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="text-right balance-cell">
+
+                            {{ row.balance|floatformat:2 }}
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="empty-row"
+                        >
+                            No transactions found for this factory.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <!-- =========================================
+             TOTALS
+        ========================================== -->
+
+        <div class="totals-section">
+
+            <div class="totals-box">
+
+                <div class="total-row">
+
+                    <span>
+                        Total Purchases
+                    </span>
+
+                    <strong>
+                        {{ total_debit|floatformat:2 }}
+                    </strong>
+
+                </div>
+
+
+                <div class="total-row">
+
+                    <span>
+                        Total Paid
+                    </span>
+
+                    <strong>
+                        {{ total_credit|floatformat:2 }}
+                    </strong>
+
+                </div>
+
+
+                <div class="total-row balance-due">
+
+                    <span>
+                        Balance Due
+                    </span>
+
+                    <strong>
+                        {{ balance_due|floatformat:2 }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             NOTES
+        ========================================== -->
+
+        {% if factory.notes %}
+
+            <div class="notes-section">
+
+                <div class="notes-title">
+                    Notes
+                </div>
+
+                <div class="notes-text">
+                    {{ factory.notes }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =========================================
+             FOOTER
+        ========================================== -->
+
+        <div class="statement-footer">
+
+            This statement is generated from the
+            accounting records of the system.
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
