@@ -1,0 +1,1007 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Investor Statement
+{% endblock %}
+
+
+{% block content %}
+
+<div class="statement-page">
+
+    <!-- Print / Back Controls -->
+    <div class="statement-actions no-print">
+
+        <a
+            href="{% url 'core:investor_summary' %}"
+            class="btn btn-sm btn-outline-secondary"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+
+        <button
+            type="button"
+            onclick="window.print()"
+            class="btn btn-sm btn-outline-primary"
+        >
+            <i class="bi bi-printer"></i>
+            Print
+        </button>
+
+    </div>
+
+
+    <!-- Statement Document -->
+    <div class="statement-document">
+
+
+        <!-- Company Header -->
+        <div class="company-header">
+
+            <div class="company-name">
+                Bukhara Enterprise System
+            </div>
+
+            <div class="company-details">
+                Business Management & Accounting System
+            </div>
+
+            <div class="company-details">
+                Investor Financial Statement
+            </div>
+
+        </div>
+
+
+        <!-- Statement Header -->
+        <div class="statement-heading">
+
+            <div>
+                <h1>
+                    INVESTOR STATEMENT
+                </h1>
+
+                <div class="statement-subtitle">
+                    Investor Financial Account
+                </div>
+            </div>
+
+            <div class="statement-date">
+
+                <div class="label">
+                    STATEMENT DATE
+                </div>
+
+                <div class="value">
+                    {% now "d M Y" %}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Investor Information -->
+        <div class="account-information">
+
+            <div class="information-block">
+
+                <div class="section-label">
+                    INVESTOR
+                </div>
+
+                <div class="information-value">
+                    {{ investor.name }}
+                </div>
+
+            </div>
+
+            {% if investor.phone %}
+            <div class="information-block">
+
+                <div class="section-label">
+                    PHONE
+                </div>
+
+                <div class="information-value">
+                    {{ investor.phone }}
+                </div>
+
+            </div>
+            {% endif %}
+
+            {% if investor.address %}
+            <div class="information-block">
+
+                <div class="section-label">
+                    ADDRESS
+                </div>
+
+                <div class="information-value">
+                    {{ investor.address }}
+                </div>
+
+            </div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- Financial Summary -->
+        <div class="summary-section">
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    TOTAL INVESTED
+                </div>
+
+                <div class="summary-value">
+                    {{ total_invested|floatformat:2 }}
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    PROFIT DISTRIBUTED
+                </div>
+
+                <div class="summary-value">
+                    {{ total_profit_distributed|floatformat:2 }}
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    TOTAL WITHDRAWN
+                </div>
+
+                <div class="summary-value">
+                    {{ total_withdrawn|floatformat:2 }}
+                </div>
+
+            </div>
+
+
+            <div class="summary-item summary-balance">
+
+                <div class="summary-label">
+                    CURRENT BALANCE
+                </div>
+
+                <div class="summary-value">
+                    {{ current_balance|floatformat:2 }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Ledger -->
+        <div class="ledger-section">
+
+            <div class="section-title">
+                ACCOUNT TRANSACTION HISTORY
+            </div>
+
+
+            <table class="statement-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width: 7%;">
+                            #
+                        </th>
+
+                        <th style="width: 15%;">
+                            Date
+                        </th>
+
+                        <th style="width: 20%;">
+                            Reference
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th
+                            style="width: 16%;"
+                            class="text-end"
+                        >
+                            Debit
+                        </th>
+
+                        <th
+                            style="width: 16%;"
+                            class="text-end"
+                        >
+                            Credit
+                        </th>
+
+                        <th
+                            style="width: 17%;"
+                            class="text-end"
+                        >
+                            Balance
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for transaction in transactions %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <td>
+                            {{ transaction.date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+
+                            {% if transaction.type == "investment" %}
+
+                                Investment
+
+                            {% elif transaction.type == "profit_distribution" %}
+
+                                Profit Distribution
+
+                            {% elif transaction.type == "withdrawal" %}
+
+                                Withdrawal
+
+                            {% else %}
+
+                                {{ transaction.type|title }}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if transaction.notes %}
+                                {{ transaction.notes }}
+                            {% else %}
+
+                                {% if transaction.type == "investment" %}
+                                    Investment received
+
+                                {% elif transaction.type == "profit_distribution" %}
+                                    Profit distributed
+
+                                {% elif transaction.type == "withdrawal" %}
+                                    Investor withdrawal
+
+                                {% else %}
+                                    Investor transaction
+                                {% endif %}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Debit -->
+                        <td class="text-end">
+
+                            {% if transaction.type == "withdrawal" %}
+                                {{ transaction.amount|floatformat:2 }}
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Credit -->
+                        <td class="text-end">
+
+                            {% if transaction.type == "investment" %}
+
+                                {{ transaction.amount|floatformat:2 }}
+
+                            {% elif transaction.type == "profit_distribution" %}
+
+                                {{ transaction.amount|floatformat:2 }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Running Balance -->
+                        <td class="text-end">
+                            -
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty-row"
+                        >
+                            No completed investor transactions found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+
+                <!-- Totals -->
+                <tfoot>
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="totals-label"
+                        >
+                            TOTAL
+                        </td>
+
+                        <td class="text-end">
+                            {{ total_withdrawn|floatformat:2 }}
+                        </td>
+
+                        <td class="text-end">
+                            {% widthratio total_invested 1 1 %}
+                        </td>
+
+                        <td class="text-end">
+                            {{ current_balance|floatformat:2 }}
+                        </td>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+        </div>
+
+
+        <!-- Account Summary -->
+        <div class="account-summary">
+
+            <div class="account-summary-title">
+                ACCOUNT SUMMARY
+            </div>
+
+
+            <div class="account-summary-row">
+
+                <span>
+                    Total Investment
+                </span>
+
+                <strong>
+                    {{ total_invested|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div class="account-summary-row">
+
+                <span>
+                    Profit Distributed
+                </span>
+
+                <strong>
+                    {{ total_profit_distributed|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div class="account-summary-row">
+
+                <span>
+                    Less: Withdrawals
+                </span>
+
+                <strong>
+                    {{ total_withdrawn|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div class="account-summary-row final-balance">
+
+                <span>
+                    CURRENT INVESTOR BALANCE
+                </span>
+
+                <strong>
+                    {{ current_balance|floatformat:2 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- Footer -->
+        <div class="statement-footer">
+
+            <div>
+                Generated from the accounting system
+            </div>
+
+            <div>
+                Investor Statement
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<style>
+
+    /* =====================================================
+       SCREEN
+       ===================================================== */
+
+    .statement-page {
+        background: #f2f3f5;
+        min-height: 100vh;
+        padding: 25px;
+    }
+
+
+    .statement-actions {
+        max-width: 1000px;
+        margin: 0 auto 15px auto;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+
+    .statement-document {
+        max-width: 1000px;
+        margin: 0 auto;
+
+        background: #ffffff;
+
+        padding: 40px;
+
+        box-shadow:
+            0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+
+    /* =====================================================
+       COMPANY HEADER
+       ===================================================== */
+
+    .company-header {
+        text-align: center;
+
+        padding-bottom: 18px;
+
+        border-bottom: 2px solid #222;
+    }
+
+
+    .company-name {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+
+    .company-details {
+        margin-top: 4px;
+
+        font-size: 12px;
+        color: #666;
+    }
+
+
+    /* =====================================================
+       STATEMENT HEADING
+       ===================================================== */
+
+    .statement-heading {
+        display: flex;
+
+        justify-content: space-between;
+        align-items: flex-end;
+
+        padding: 25px 0 20px 0;
+    }
+
+
+    .statement-heading h1 {
+        margin: 0;
+
+        font-size: 22px;
+        font-weight: 700;
+
+        letter-spacing: 1px;
+    }
+
+
+    .statement-subtitle {
+        margin-top: 5px;
+
+        font-size: 12px;
+        color: #777;
+    }
+
+
+    .statement-date {
+        text-align: right;
+    }
+
+
+    .statement-date .label {
+        font-size: 9px;
+
+        font-weight: 700;
+
+        color: #777;
+
+        letter-spacing: 1px;
+    }
+
+
+    .statement-date .value {
+        margin-top: 3px;
+
+        font-size: 13px;
+
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       ACCOUNT INFORMATION
+       ===================================================== */
+
+    .account-information {
+        display: flex;
+
+        gap: 50px;
+
+        padding: 15px 0;
+
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+    }
+
+
+    .information-block {
+        min-width: 180px;
+    }
+
+
+    .section-label {
+        font-size: 9px;
+
+        font-weight: 700;
+
+        color: #777;
+
+        letter-spacing: 1px;
+
+        margin-bottom: 4px;
+    }
+
+
+    .information-value {
+        font-size: 13px;
+
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       SUMMARY
+       ===================================================== */
+
+    .summary-section {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        border-bottom: 1px solid #222;
+
+        margin-top: 20px;
+    }
+
+
+    .summary-item {
+        padding: 15px;
+
+        border-right: 1px solid #ddd;
+    }
+
+
+    .summary-item:first-child {
+        padding-left: 0;
+    }
+
+
+    .summary-item:last-child {
+        border-right: none;
+    }
+
+
+    .summary-label {
+        font-size: 9px;
+
+        color: #777;
+
+        font-weight: 700;
+
+        letter-spacing: .8px;
+    }
+
+
+    .summary-value {
+        margin-top: 6px;
+
+        font-size: 16px;
+
+        font-weight: 700;
+    }
+
+
+    .summary-balance .summary-value {
+        font-size: 18px;
+    }
+
+
+    /* =====================================================
+       LEDGER
+       ===================================================== */
+
+    .ledger-section {
+        margin-top: 25px;
+    }
+
+
+    .section-title {
+        font-size: 11px;
+
+        font-weight: 700;
+
+        letter-spacing: 1px;
+
+        text-transform: uppercase;
+
+        margin-bottom: 8px;
+    }
+
+
+    .statement-table {
+        width: 100%;
+
+        border-collapse: collapse;
+
+        font-size: 11px;
+    }
+
+
+    .statement-table th {
+        background: #222;
+
+        color: #fff;
+
+        padding: 8px 7px;
+
+        text-align: left;
+
+        font-weight: 600;
+
+        border: 1px solid #222;
+    }
+
+
+    .statement-table td {
+        padding: 8px 7px;
+
+        border: 1px solid #d8d8d8;
+
+        vertical-align: top;
+    }
+
+
+    .statement-table tbody tr:nth-child(even) {
+        background: #f8f8f8;
+    }
+
+
+    .statement-table .text-end {
+        text-align: right;
+    }
+
+
+    .statement-table tfoot td {
+        background: #f1f1f1;
+
+        font-weight: 700;
+
+        border-top: 2px solid #222;
+    }
+
+
+    .totals-label {
+        text-align: right;
+    }
+
+
+    .empty-row {
+        text-align: center;
+
+        padding: 20px !important;
+
+        color: #777;
+    }
+
+
+    /* =====================================================
+       ACCOUNT SUMMARY
+       ===================================================== */
+
+    .account-summary {
+        width: 360px;
+
+        margin-left: auto;
+
+        margin-top: 25px;
+    }
+
+
+    .account-summary-title {
+        font-size: 10px;
+
+        font-weight: 700;
+
+        letter-spacing: 1px;
+
+        border-bottom: 1px solid #222;
+
+        padding-bottom: 6px;
+    }
+
+
+    .account-summary-row {
+        display: flex;
+
+        justify-content: space-between;
+
+        padding: 7px 0;
+
+        font-size: 11px;
+
+        border-bottom: 1px solid #eee;
+    }
+
+
+    .final-balance {
+        margin-top: 5px;
+
+        padding: 10px 0;
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        border-top: 2px solid #222;
+
+        border-bottom: 2px solid #222;
+    }
+
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    .statement-footer {
+        display: flex;
+
+        justify-content: space-between;
+
+        margin-top: 35px;
+
+        padding-top: 10px;
+
+        border-top: 1px solid #ddd;
+
+        font-size: 9px;
+
+        color: #888;
+    }
+
+
+    /* =====================================================
+       PRINT / A4
+       ===================================================== */
+
+    @media print {
+
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+
+
+        html,
+        body {
+            background: #fff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+
+        .no-print {
+            display: none !important;
+        }
+
+
+        .navbar,
+        .sidebar,
+        .footer {
+            display: none !important;
+        }
+
+
+        .statement-page {
+            background: #fff !important;
+
+            padding: 0 !important;
+
+            min-height: auto !important;
+        }
+
+
+        .statement-document {
+            width: 100% !important;
+
+            max-width: none !important;
+
+            margin: 0 !important;
+
+            padding: 0 !important;
+
+            box-shadow: none !important;
+        }
+
+
+        .company-header {
+            padding-bottom: 12px;
+        }
+
+
+        .company-name {
+            font-size: 20px;
+        }
+
+
+        .statement-heading {
+            padding: 18px 0 15px 0;
+        }
+
+
+        .statement-heading h1 {
+            font-size: 19px;
+        }
+
+
+        .account-information {
+            padding: 10px 0;
+        }
+
+
+        .summary-section {
+            margin-top: 15px;
+        }
+
+
+        .summary-item {
+            padding: 10px;
+        }
+
+
+        .summary-value {
+            font-size: 13px;
+        }
+
+
+        .summary-balance .summary-value {
+            font-size: 15px;
+        }
+
+
+        .ledger-section {
+            margin-top: 18px;
+        }
+
+
+        .statement-table {
+            font-size: 9px;
+        }
+
+
+        .statement-table th,
+        .statement-table td {
+            padding: 6px 5px;
+        }
+
+
+        .account-summary {
+            margin-top: 18px;
+        }
+
+
+        .statement-footer {
+            margin-top: 25px;
+        }
+
+
+        .statement-table tr {
+            break-inside: avoid;
+        }
+
+
+        .ledger-section {
+            break-inside: auto;
+        }
+
+
+        .account-summary {
+            break-inside: avoid;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+

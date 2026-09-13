@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Investments Report
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Top Navigation -->
+    <div class="mb-3">
+
+        <a
+            href="{% url 'core:reports' %}"
+            class="btn btn-sm btn-outline-secondary"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+
+    </div>
+
+
+    <!-- Page Header -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+                    <h4 class="mb-1">
+                        Investments Report
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Investor investment and balance summary
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Investor Summary Table -->
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Investor Summary
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-bordered table-hover datatable"
+                >
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>
+                                Investor
+                            </th>
+
+                            <th class="text-end">
+                                Total Invested
+                            </th>
+
+                            <th class="text-end">
+                                Profit Distributed
+                            </th>
+
+                            <th class="text-end">
+                                Withdrawn
+                            </th>
+
+                            <th class="text-end">
+                                Current Balance
+                            </th>
+
+                            <th
+                                class="text-center"
+                                style="white-space: nowrap; width: 1%;"
+                            >
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in investor_data %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{ item.investor.name }}
+                                </strong>
+                            </td>
+
+                            <td class="text-end">
+                                {{ item.total_invested|floatformat:2 }}
+                            </td>
+
+                            <td class="text-end">
+                                {{ item.total_profit_distributed|floatformat:2 }}
+                            </td>
+
+                            <td class="text-end">
+                                {{ item.total_withdrawn|floatformat:2 }}
+                            </td>
+
+                            <td class="text-end">
+
+                                <strong>
+                                    {{ item.current_balance|floatformat:2 }}
+                                </strong>
+
+                            </td>
+
+                            <td
+                                class="text-center"
+                                style="white-space: nowrap; width: 1%;"
+                            >
+
+                                <div class="d-inline-flex gap-1">
+
+                                    <a
+                                         href="{% url 'core:investor_detail' item.investor.id %}"
+                                        class="btn btn-sm btn-outline-primary"
+                                    >
+                                        <i class="bi bi-eye"></i>
+                                        View
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center text-muted py-4"
+                            >
+                                No investor records found.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -122,11 +122,8 @@
 
             <div class="d-flex flex-wrap gap-2">
 
-                <a href="#" class="btn btn-outline-success">Investor List</a>
-                <a href="#" class="btn btn-outline-success">Investment Report</a>
-                <a href="#" class="btn btn-outline-success">Profit Share</a>
-                <a href="#" class="btn btn-outline-success">Withdrawals</a>
-                <a href="#" class="btn btn-outline-success">Current Balance</a>
+                <a href="{% url 'core:investor_summary' %}" class="btn btn-outline-success">Investor Summary</a>
+                <a href="{% url 'core:investor_report' %}" class="btn btn-outline-success">Investor Report</a>
 
             </div>
 
@@ -228,7 +225,7 @@
 
             <div class="d-flex flex-wrap gap-2">
 
-                <a href="#" class="btn btn-outline-secondary">Customer Statement</a>
+                <a href="{% url 'core:customer_statement_report' %}" class="btn btn-outline-secondary">Customer Statement</a>
                 <a href="#" class="btn btn-outline-secondary">Purchase History</a>
             </div>
 

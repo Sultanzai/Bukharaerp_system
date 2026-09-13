@@ -1,21 +1,20 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-
+from django.views.generic import DetailView, ListView, TemplateView
 from apps.core.services.dashboard import financial_overview
 from decimal import Decimal
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView
-
 from apps.sales.models import Customer, Order
 from apps.accounting.models import Transaction, PaymentRecord
-
-from decimal import Decimal
-
-
 from apps.purchases.models import Factory, PurchaseOrder
+
+from django.shortcuts import render
+from django.db.models import Sum, Q
+
+from apps.investors.models import Investor, InvestorTransaction
+from django.views import View
+
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -430,3 +429,380 @@ class FactoryStatementView(LoginRequiredMixin, TemplateView):
         })
 
         return context
+
+# ==========================================================
+# Customer Statement Report - Customer List
+# =========================================================
+class CustomerStatementReportView(
+    LoginRequiredMixin,
+    ListView
+):
+
+    model = Customer
+
+    template_name = "core/customer_statement_report.html"
+
+    context_object_name = "customers"
+
+    def get_queryset(self):
+
+        customers = list(
+            Customer.objects.order_by("-id")
+        )
+
+        for customer in customers:
+
+            # ------------------------------------------
+            # Customer Orders
+            # ------------------------------------------
+
+            orders = Order.objects.filter(
+                customer=customer
+            )
+
+            customer.total_orders = orders.count()
+
+            # ------------------------------------------
+            # Total Order Amount
+            # ------------------------------------------
+
+            customer.total_amount = (
+                orders.aggregate(
+                    total=Sum("total")
+                )["total"]
+                or Decimal("0.00")
+            )
+
+            # ------------------------------------------
+            # Customer Transactions
+            # ------------------------------------------
+
+            transactions = Transaction.objects.filter(
+                party_type="customer",
+                party_id=customer.id,
+                reference_type="customer_order",
+            )
+
+            # ------------------------------------------
+            # Total Paid
+            # ------------------------------------------
+
+            customer.total_paid = (
+                PaymentRecord.objects.filter(
+                    transaction__in=transactions
+                ).aggregate(
+                    total=Sum("paid_amount")
+                )["total"]
+                or Decimal("0.00")
+            )
+
+            # ------------------------------------------
+            # Remaining Balance
+            # ------------------------------------------
+
+            customer.balance = (
+                customer.total_amount -
+                customer.total_paid
+            )
+
+        return customers
+
+
+
+
+def investor_summary(request):
+    investors = Investor.objects.all().order_by('name')
+
+    investor_data = []
+
+    for investor in investors:
+
+        transactions = InvestorTransaction.objects.filter(
+            investor=investor,
+            status='completed'
+        )
+
+        total_invested = transactions.filter(
+            type='investment'
+        ).aggregate(
+            total=Sum('amount')
+        )['total'] or 0
+
+        total_profit_distributed = transactions.filter(
+            type='profit_distribution'
+        ).aggregate(
+            total=Sum('amount')
+        )['total'] or 0
+
+        total_withdrawn = transactions.filter(
+            type='withdrawal'
+        ).aggregate(
+            total=Sum('amount')
+        )['total'] or 0
+
+        current_balance = (
+            total_invested
+            + total_profit_distributed
+            - total_withdrawn
+        )
+
+        investor_data.append({
+            'investor': investor,
+            'total_invested': total_invested,
+            'total_profit_distributed': total_profit_distributed,
+            'total_withdrawn': total_withdrawn,
+            'current_balance': current_balance,
+        })
+
+    return render(
+        request,
+        'core/investor_summary.html',
+        {
+            'investor_data': investor_data,
+        }
+    )
+
+
+
+
+class InvestorDetailView(
+    LoginRequiredMixin,
+    DetailView
+):
+    model = Investor
+    template_name = "core/investor_detail.html"
+    context_object_name = "investor"
+
+    def get_object(self):
+        return get_object_or_404(
+            Investor,
+            id=self.kwargs["investor_id"]
+        )
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        investor = self.object
+
+        # ------------------------------------------
+        # Completed Investor Transactions
+        # ------------------------------------------
+
+        transactions = InvestorTransaction.objects.filter(
+            investor=investor,
+            status="completed"
+        ).order_by("-created_at", "-id")
+
+
+        # ------------------------------------------
+        # Total Invested
+        # ------------------------------------------
+
+        total_invested = (
+            transactions.filter(
+                type="investment"
+            ).aggregate(
+                total=Sum("amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+
+        # ------------------------------------------
+        # Total Profit Distributed
+        # ------------------------------------------
+
+        total_profit_distributed = (
+            transactions.filter(
+                type="profit_distribution"
+            ).aggregate(
+                total=Sum("amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+
+        # ------------------------------------------
+        # Total Withdrawn
+        # ------------------------------------------
+
+        total_withdrawn = (
+            transactions.filter(
+                type="withdrawal"
+            ).aggregate(
+                total=Sum("amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+
+        # ------------------------------------------
+        # Current Balance
+        # ------------------------------------------
+
+        current_balance = (
+            total_invested
+            + total_profit_distributed
+            - total_withdrawn
+        )
+
+
+        # ------------------------------------------
+        # Context
+        # ------------------------------------------
+
+        context["transactions"] = transactions
+
+        context["total_invested"] = total_invested
+
+        context["total_profit_distributed"] = (
+            total_profit_distributed
+        )
+
+        context["total_withdrawn"] = total_withdrawn
+
+        context["current_balance"] = current_balance
+
+        return context
+
+
+
+class InvestorSummaryView(LoginRequiredMixin, View):
+
+    template_name = "core/investor_report.html"
+
+    def get(self, request, *args, **kwargs):
+
+        # --------------------------------------------------
+        # Filters
+        # --------------------------------------------------
+
+        search = request.GET.get("search", "").strip()
+        date_from = request.GET.get("date_from", "").strip()
+        date_to = request.GET.get("date_to", "").strip()
+
+        # --------------------------------------------------
+        # Completed Investor Transactions
+        # --------------------------------------------------
+
+        transactions = (
+            InvestorTransaction.objects
+            .filter(status="completed")
+            .select_related(
+                "investor",
+                "added_by",
+            )
+            .order_by(
+                "-transaction_date",
+                "-id"
+            )
+        )
+
+        # --------------------------------------------------
+        # Search Investor
+        # --------------------------------------------------
+
+        if search:
+            transactions = transactions.filter(
+                Q(
+                    investor__name__icontains=search
+                )
+            )
+
+        # --------------------------------------------------
+        # From Date
+        # --------------------------------------------------
+
+        if date_from:
+            transactions = transactions.filter(
+                transaction_date__gte=date_from
+            )
+
+        # --------------------------------------------------
+        # To Date
+        # --------------------------------------------------
+
+        if date_to:
+            transactions = transactions.filter(
+                transaction_date__lte=date_to
+            )
+
+        # --------------------------------------------------
+        # Total Invested
+        # --------------------------------------------------
+
+        total_invested = (
+            transactions
+            .filter(type="investment")
+            .aggregate(
+                total=Sum("amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        # --------------------------------------------------
+        # Total Profit Distributed
+        # --------------------------------------------------
+
+        total_profit_distributed = (
+            transactions
+            .filter(type="profit_distribution")
+            .aggregate(
+                total=Sum("amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        # --------------------------------------------------
+        # Total Withdrawn
+        # --------------------------------------------------
+
+        total_withdrawn = (
+            transactions
+            .filter(type="withdrawal")
+            .aggregate(
+                total=Sum("amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        # --------------------------------------------------
+        # Net Movement
+        # --------------------------------------------------
+
+        net_movement = (
+            total_invested
+            + total_profit_distributed
+            - total_withdrawn
+        )
+
+        # --------------------------------------------------
+        # Context
+        # --------------------------------------------------
+
+        context = {
+            "transactions": transactions,
+
+            "search": search,
+
+            "date_from": date_from,
+
+            "date_to": date_to,
+
+            "total_invested": total_invested,
+
+            "total_profit_distributed": (
+                total_profit_distributed
+            ),
+
+            "total_withdrawn": total_withdrawn,
+
+            "net_movement": net_movement,
+        }
+
+        return render(
+            request,
+            self.template_name,
+            context
+        )

@@ -1,0 +1,1189 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Investments Report
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+
+
+    <!-- ==========================================
+         TOP NAVIGATION
+         ========================================== -->
+
+    <div class="mb-3 d-flex justify-content-between align-items-center">
+
+        <a
+            href="{% url 'core:reports' %}"
+            class="btn btn-sm btn-outline-secondary no-print"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+
+
+        <button
+            type="button"
+            onclick="window.print()"
+            class="btn btn-sm btn-outline-primary no-print"
+        >
+            <i class="bi bi-printer"></i>
+            Print
+        </button>
+
+    </div>
+
+    <!-- ==========================================
+         FILTERS
+         ========================================== -->
+
+    <div class="card shadow-sm mb-4 no-print">
+
+        <div class="card-body">
+
+            <form method="get" id="filterForm">
+
+                <div class="row g-3 align-items-end">
+
+
+                    <!-- Search -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Search Investor
+                        </label>
+
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ search }}"
+                            class="form-control"
+                            placeholder="Search investor name..."
+                        >
+
+                    </div>
+
+
+                    <!-- From Date -->
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            From Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date_from"
+                            value="{{ date_from }}"
+                            class="form-control"
+                        >
+
+                    </div>
+
+
+                    <!-- To Date -->
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            To Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date_to"
+                            value="{{ date_to }}"
+                            class="form-control"
+                        >
+
+                    </div>
+
+
+                    <!-- Buttons -->
+                    <div class="col-md-2">
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                <i class="bi bi-search"></i>
+                                Search
+                            </button>
+
+                            <a
+                                href="{% url 'core:investor_report' %}"
+                                class="btn btn-outline-secondary"
+                            >
+                                Reset
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         FILTER INFORMATION
+         ========================================== -->
+
+    {% if search or date_from or date_to %}
+
+    <div class="alert alert-light border mb-3 no-print">
+
+        <i class="bi bi-funnel"></i>
+
+        <strong>
+            Active Filters:
+        </strong>
+
+        {% if search %}
+            Investor: <strong>{{ search }}</strong>
+        {% endif %}
+
+        {% if date_from %}
+            &nbsp; From:
+            <strong>{{ date_from }}</strong>
+        {% endif %}
+
+        {% if date_to %}
+            &nbsp; To:
+            <strong>{{ date_to }}</strong>
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ==========================================
+         SUMMARY
+         ========================================== -->
+
+    <div class="row g-3 mb-4">
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Total Invested
+                    </div>
+
+                    <div class="fs-5 fw-bold">
+                        {{ total_invested|floatformat:2 }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Profit Distributed
+                    </div>
+
+                    <div class="fs-5 fw-bold">
+                        {{ total_profit_distributed|floatformat:2 }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Total Withdrawn
+                    </div>
+
+                    <div class="fs-5 fw-bold">
+                        {{ total_withdrawn|floatformat:2 }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Net Movement
+                    </div>
+
+                    <div class="fs-5 fw-bold">
+                        {{ net_movement|floatformat:2 }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         TRANSACTION TABLE
+         ========================================== -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0">
+                    Investor Transactions
+                </h5>
+
+                <span class="text-muted small">
+
+                    {{ transactions|length }}
+                    transaction{{ transactions|length|pluralize }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-bordered table-hover align-middle datatable"
+                >
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th style="width: 5%;">
+                                #
+                            </th>
+
+                            <th style="width: 13%;">
+                                Date
+                            </th>
+
+                            <th style="width: 20%;">
+                                Investor
+                            </th>
+
+                            <th style="width: 20%;">
+                                Type
+                            </th>
+
+                            <th
+                                class="text-end"
+                                style="width: 15%;"
+                            >
+                                Amount
+                            </th>
+
+                            <th style="width: 15%;">
+                                Added By
+                            </th>
+
+                            <th>
+                                Notes
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for transaction in transactions %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
+                            <td>
+                                {{ transaction.created_at|date:"d M Y" }}
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    {{ transaction.investor.name }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if transaction.type == "investment" %}
+
+                                    <span class="badge bg-success">
+                                        Investment
+                                    </span>
+
+                                {% elif transaction.type == "profit_distribution" %}
+
+                                    <span class="badge bg-primary">
+                                        Profit Distribution
+                                    </span>
+
+                                {% elif transaction.type == "withdrawal" %}
+
+                                    <span class="badge bg-danger">
+                                        Withdrawal
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        {{ transaction.type|title }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td class="text-end fw-semibold">
+
+                                {{ transaction.amount|floatformat:2 }}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if transaction.added_by %}
+
+                                    {{ transaction.added_by }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if transaction.notes %}
+
+                                    {{ transaction.notes }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center text-muted py-5"
+                            >
+
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+
+                                No investor transactions found.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+
+                    {% if transactions %}
+
+                    {% endif %}
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ==========================================
+     PRINT CSS
+     ========================================== -->
+
+<style>
+
+    @media print {
+
+        @page {
+            size: A4 landscape;
+            margin: 12mm;
+        }
+
+
+        html,
+        body {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+
+        /* Hide ERP navigation */
+        .navbar,
+        .sidebar,
+        .footer,
+        .no-print {
+            display: none !important;
+        }
+
+
+        .container-fluid {
+            width: 100% !important;
+            max-width: 100% !important;
+
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+
+        .statement-page,
+        .card {
+            box-shadow: none !important;
+        }
+
+
+        .card {
+            border: 1px solid #ddd !important;
+        }
+
+
+        .report-header {
+            border: none !important;
+            border-bottom: 2px solid #222 !important;
+
+            margin-bottom: 15px !important;
+        }
+
+
+        .report-header .card-body {
+            padding: 0 0 12px 0 !important;
+        }
+
+
+        .report-header h4 {
+            font-size: 20px !important;
+        }
+
+
+        .report-header p {
+            font-size: 11px !important;
+        }
+
+
+        /* Hide summary cards when printing */
+        .row.g-3.mb-4 {
+            display: none !important;
+        }
+
+
+        .card-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid #222 !important;
+        }
+
+
+        .card-header h5 {
+            font-size: 13px !important;
+            text-transform: uppercase;
+        }
+
+
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+
+        .datatable {
+            width: 100% !important;
+            font-size: 9px !important;
+        }
+
+
+        .datatable th,
+        .datatable td {
+            padding: 5px !important;
+        }
+
+
+        .datatable thead th {
+            background: #eeeeee !important;
+            color: #000000 !important;
+
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+
+        .badge {
+            border: 1px solid #777 !important;
+
+            color: #000 !important;
+            background: #fff !important;
+
+            font-size: 8px !important;
+        }
+
+
+        .datatable tr {
+            break-inside: avoid;
+        }
+
+
+        .card {
+            break-inside: auto;
+        }
+
+    }
+
+</style>
+<!-- =========================================================
+     PRINT ONLY REPORT
+========================================================= -->
+
+<div id="printReport" class="print-report">
+
+    <!-- Header -->
+    <div class="print-header">
+
+        <div>
+            <h2>YOUR COMPANY NAME</h2>
+            <p>Investor Transaction Report</p>
+        </div>
+
+        <div class="print-header-right">
+            <strong>INVESTOR TRANSACTION REPORT</strong>
+            <span>
+                Printed: {% now "d M Y" %}
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- Filters -->
+    <div class="print-filters">
+
+        <strong>Applied Filters</strong>
+
+        {% if search %}
+            <span>
+                Investor:
+                <strong>{{ search }}</strong>
+            </span>
+        {% endif %}
+
+        {% if date_from %}
+            <span>
+                From:
+                <strong>{{ date_from }}</strong>
+            </span>
+        {% endif %}
+
+        {% if date_to %}
+            <span>
+                To:
+                <strong>{{ date_to }}</strong>
+            </span>
+        {% endif %}
+
+        {% if not search and not date_from and not date_to %}
+            <span>All transactions</span>
+        {% endif %}
+
+    </div>
+
+
+    <!-- Summary -->
+    <div class="print-summary">
+
+        <div>
+            <span>Total Invested</span>
+            <strong>
+                {{ total_invested|floatformat:2 }}
+            </strong>
+        </div>
+
+        <div>
+            <span>Profit Distributed</span>
+            <strong>
+                {{ total_profit_distributed|floatformat:2 }}
+            </strong>
+        </div>
+
+        <div>
+            <span>Total Withdrawn</span>
+            <strong>
+                {{ total_withdrawn|floatformat:2 }}
+            </strong>
+        </div>
+
+        <div>
+            <span>Net Movement</span>
+            <strong>
+                {{ net_movement|floatformat:2 }}
+            </strong>
+        </div>
+
+    </div>
+
+
+    <!-- Transaction Table -->
+    <div class="print-section-title">
+
+        <strong>INVESTOR TRANSACTIONS</strong>
+
+        <span>
+            {{ transactions|length }} transactions
+        </span>
+
+    </div>
+
+
+    <table class="print-table">
+
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Investor</th>
+                <th>Type</th>
+                <th class="amount-column">Amount</th>
+                <th>Added By</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for transaction in transactions %}
+
+            <tr>
+
+                <td>
+                    {{ forloop.counter }}
+                </td>
+
+                <td>
+                    {{ transaction.transaction_date|date:"d M Y" }}
+                </td>
+
+                <td>
+                    <strong>
+                        {{ transaction.investor.name }}
+                    </strong>
+                </td>
+
+                <td>
+
+                    {% if transaction.type == "investment" %}
+
+                        Investment
+
+                    {% elif transaction.type == "profit_distribution" %}
+
+                        Profit Distribution
+
+                    {% elif transaction.type == "withdrawal" %}
+
+                        Withdrawal
+
+                    {% else %}
+
+                        {{ transaction.get_type_display }}
+
+                    {% endif %}
+
+                </td>
+
+                <td class="amount-column">
+
+                    {{ transaction.amount|floatformat:2 }}
+
+                </td>
+
+                <td>
+
+                    {% if transaction.added_by %}
+                        {{ transaction.added_by.username }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    {% if transaction.notes %}
+                        {{ transaction.notes }}
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="7" class="no-data">
+                    No transactions found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- Totals -->
+    <div class="print-totals">
+
+        <div>
+            <span>Total Invested</span>
+            <strong>
+                {{ total_invested|floatformat:2 }}
+            </strong>
+        </div>
+
+        <div>
+            <span>Profit Distributed</span>
+            <strong>
+                {{ total_profit_distributed|floatformat:2 }}
+            </strong>
+        </div>
+
+        <div>
+            <span>Total Withdrawn</span>
+            <strong>
+                {{ total_withdrawn|floatformat:2 }}
+            </strong>
+        </div>
+
+        <div class="net-total">
+            <span>Net Movement</span>
+            <strong>
+                {{ net_movement|floatformat:2 }}
+            </strong>
+        </div>
+
+    </div>
+
+
+    <!-- Footer -->
+    <div class="print-footer">
+
+        <span>
+            Investor Transaction Report
+        </span>
+
+        <span>
+            Generated by ERP System
+        </span>
+
+    </div>
+
+</div>
+<style>
+
+/* =========================================================
+   PRINT REPORT
+========================================================= */
+
+.print-report {
+    display: none;
+}
+
+
+/* =========================================================
+   PRINT MODE
+========================================================= */
+
+@media print {
+
+    @page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+
+    /* Hide normal website */
+
+    body > * {
+        visibility: hidden;
+    }
+
+
+    /* Show print report */
+
+    #printReport {
+        display: block !important;
+        visibility: visible !important;
+
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        width: 100%;
+    }
+
+
+    #printReport * {
+        visibility: visible !important;
+    }
+
+
+    /* -----------------------------------------------------
+       Header
+    ----------------------------------------------------- */
+
+    .print-header {
+
+        display: flex;
+        justify-content: space-between;
+
+        border-bottom: 2px solid #222;
+
+        padding-bottom: 12px;
+        margin-bottom: 15px;
+    }
+
+
+    .print-header h2 {
+
+        margin: 0;
+
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+
+    .print-header p {
+
+        margin: 3px 0 0;
+
+        font-size: 11px;
+
+        color: #666;
+    }
+
+
+    .print-header-right {
+
+        text-align: right;
+
+        display: flex;
+        flex-direction: column;
+
+        font-size: 12px;
+    }
+
+
+    .print-header-right span {
+
+        margin-top: 4px;
+
+        font-size: 10px;
+
+        color: #666;
+    }
+
+
+    /* -----------------------------------------------------
+       Filters
+    ----------------------------------------------------- */
+
+    .print-filters {
+
+        display: flex;
+
+        gap: 20px;
+
+        align-items: center;
+
+        border: 1px solid #ccc;
+
+        padding: 8px 10px;
+
+        margin-bottom: 15px;
+
+        font-size: 10px;
+    }
+
+
+    /* -----------------------------------------------------
+       Summary
+    ----------------------------------------------------- */
+
+    .print-summary {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 8px;
+
+        margin-bottom: 18px;
+    }
+
+
+    .print-summary > div {
+
+        border: 1px solid #ccc;
+
+        padding: 8px 10px;
+    }
+
+
+    .print-summary span {
+
+        display: block;
+
+        font-size: 9px;
+
+        color: #666;
+
+        margin-bottom: 3px;
+    }
+
+
+    .print-summary strong {
+
+        display: block;
+
+        font-size: 14px;
+    }
+
+
+    /* -----------------------------------------------------
+       Section
+    ----------------------------------------------------- */
+
+    .print-section-title {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        border: 1px solid #333;
+
+        border-bottom: none;
+
+        padding: 7px 9px;
+
+        font-size: 10px;
+    }
+
+
+    .print-section-title span {
+
+        color: #666;
+    }
+
+
+    /* -----------------------------------------------------
+       Table
+    ----------------------------------------------------- */
+
+    .print-table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        font-size: 9px;
+    }
+
+
+    .print-table th {
+
+        background: #f1f1f1;
+
+        border: 1px solid #333;
+
+        padding: 6px;
+
+        text-align: left;
+
+        font-weight: 700;
+    }
+
+
+    .print-table td {
+
+        border: 1px solid #ccc;
+
+        padding: 6px;
+    }
+
+
+    .print-table tbody tr:nth-child(even) {
+
+        background: #fafafa;
+    }
+
+
+    .amount-column {
+
+        text-align: right !important;
+
+        white-space: nowrap;
+    }
+
+
+    .no-data {
+
+        text-align: center;
+
+        padding: 15px !important;
+    }
+
+
+    /* -----------------------------------------------------
+       Totals
+    ----------------------------------------------------- */
+
+    .print-totals {
+
+        margin-top: 12px;
+
+        margin-left: auto;
+
+        width: 320px;
+    }
+
+
+    .print-totals > div {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        border-bottom: 1px solid #ddd;
+
+        padding: 5px 0;
+
+        font-size: 10px;
+    }
+
+
+    .print-totals .net-total {
+
+        border-top: 2px solid #222;
+
+        border-bottom: 2px solid #222;
+
+        margin-top: 3px;
+
+        padding: 7px 0;
+
+        font-size: 11px;
+    }
+
+
+    /* -----------------------------------------------------
+       Footer
+    ----------------------------------------------------- */
+
+    .print-footer {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        border-top: 1px solid #ccc;
+
+        margin-top: 20px;
+
+        padding-top: 8px;
+
+        font-size: 8px;
+
+        color: #666;
+    }
+
+
+    /* Don't split rows */
+
+    .print-table tr {
+
+        page-break-inside: avoid;
+    }
+
+}
+
+</style>
+{% endblock %}
