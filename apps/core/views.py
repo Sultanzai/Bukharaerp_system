@@ -506,6 +506,462 @@ class CustomerStatementReportView(
 
         return customers
 
+class CustomerReportView(LoginRequiredMixin, View):
+    template_name = "core/customer_report.html"
+
+    def get(self, request, *args, **kwargs):
+
+        search = request.GET.get("search", "").strip()
+        date_from = request.GET.get("date_from", "").strip()
+        date_to = request.GET.get("date_to", "").strip()
+
+        # =========================================================
+        # CUSTOMERS
+        # =========================================================
+
+        customers = Customer.objects.all().order_by("name")
+
+        if search:
+            customers = customers.filter(
+                Q(name__icontains=search) |
+                Q(phone__icontains=search)
+            )
+
+        # =========================================================
+        # ORDERS
+        # =========================================================
+
+        orders = (
+            Order.objects
+            .filter(customer__in=customers)
+            .select_related("customer")
+            .order_by("-created_at", "-id")
+        )
+
+        if date_from:
+            orders = orders.filter(
+                created_at__date__gte=date_from
+            )
+
+        if date_to:
+            orders = orders.filter(
+                created_at__date__lte=date_to
+            )
+
+        # =========================================================
+        # PAYMENTS
+        # =========================================================
+
+        payments = (
+            PaymentRecord.objects
+            .filter(
+                transaction__party_type="customer",
+                transaction__party_id__in=customers.values("id")
+            )
+            .select_related("transaction")
+            .order_by("-payment_date", "-id")
+        )
+
+        if date_from:
+            payments = payments.filter(
+                payment_date__gte=date_from
+            )
+
+        if date_to:
+            payments = payments.filter(
+                payment_date__lte=date_to
+            )
+
+        # =========================================================
+        # CUSTOMER DATA
+        # =========================================================
+
+        customer_data = []
+
+        for customer in customers:
+
+            customer_orders = orders.filter(
+                customer=customer
+            )
+
+            # Order total
+            total_orders = (
+                customer_orders.aggregate(
+                    total=Sum("total")
+                )["total"]
+                or Decimal("0.00")
+            )
+
+            # Payments
+            customer_payments = payments.filter(
+                transaction__party_id=customer.id
+            )
+
+            total_paid = (
+                customer_payments.aggregate(
+                    total=Sum("paid_amount")
+                )["total"]
+                or Decimal("0.00")
+            )
+
+            # Remaining balance
+            remaining = total_orders - total_paid
+
+            customer_data.append({
+                "customer": customer,
+                "orders": customer_orders,
+                "payments": customer_payments,
+                "total_orders": total_orders,
+                "total_paid": total_paid,
+                "remaining": remaining,
+            })
+
+        # =========================================================
+        # GRAND TOTALS
+        # =========================================================
+
+        total_order_amount = sum(
+            item["total_orders"]
+            for item in customer_data
+        ) or Decimal("0.00")
+
+        total_paid_amount = sum(
+            item["total_paid"]
+            for item in customer_data
+        ) or Decimal("0.00")
+
+        total_remaining = (
+            total_order_amount - total_paid_amount
+        )
+
+        # =========================================================
+        # CONTEXT
+        # =========================================================
+
+        context = {
+            "customer_data": customer_data,
+
+            "search": search,
+            "date_from": date_from,
+            "date_to": date_to,
+
+            "total_order_amount": total_order_amount,
+            "total_paid_amount": total_paid_amount,
+            "total_remaining": total_remaining,
+        }
+
+        return render(
+            request,
+            self.template_name,
+            context
+        )
+
+
+class CustomerTransactionReportView(LoginRequiredMixin, View):
+    template_name = "core/customer_transaction_report.html"
+
+    def get(self, request, *args, **kwargs):
+
+        search = request.GET.get("search", "").strip()
+        date_from = request.GET.get("date_from", "").strip()
+        date_to = request.GET.get("date_to", "").strip()
+
+        # =========================================================
+        # CUSTOMER TRANSACTIONS
+        # =========================================================
+
+        transactions = (
+            Transaction.objects
+            .filter(
+                party_type="customer"
+            )
+            .select_related("added_by")
+            .order_by("-created_at", "-id")
+        )
+
+        # =========================================================
+        # SEARCH CUSTOMER
+        # =========================================================
+
+        if search:
+
+            customer_ids = Customer.objects.filter(
+                Q(name__icontains=search) |
+                Q(phone__icontains=search)
+            ).values_list("id", flat=True)
+
+            transactions = transactions.filter(
+                party_id__in=customer_ids
+            )
+
+        # =========================================================
+        # DATE FILTER - TRANSACTIONS
+        # =========================================================
+
+        if date_from:
+
+            transactions = transactions.filter(
+                created_at__date__gte=date_from
+            )
+
+        if date_to:
+
+            transactions = transactions.filter(
+                created_at__date__lte=date_to
+            )
+
+        # =========================================================
+        # CUSTOMER IDS
+        # =========================================================
+
+        transaction_customer_ids = list(
+            transactions.values_list(
+                "party_id",
+                flat=True
+            ).distinct()
+        )
+
+        # =========================================================
+        # CUSTOMER MAP
+        # =========================================================
+
+        customer_map = {
+            customer.id: customer
+            for customer in Customer.objects.filter(
+                id__in=transaction_customer_ids
+            )
+        }
+
+        # =========================================================
+        # PAYMENT RECORDS
+        # =========================================================
+        #
+        # PaymentRecord does not belong to a customer directly.
+        # It belongs to a Transaction, and the Transaction identifies
+        # the customer.
+        #
+        # =========================================================
+
+        payments = (
+            PaymentRecord.objects
+            .filter(
+                transaction__party_type="customer"
+            )
+            .select_related(
+                "transaction",
+                "transaction__added_by"
+            )
+            .order_by("-payment_date", "-id")
+        )
+
+        # =========================================================
+        # SEARCH - PAYMENTS
+        # =========================================================
+
+        if search:
+
+            payment_customer_ids = Customer.objects.filter(
+                Q(name__icontains=search) |
+                Q(phone__icontains=search)
+            ).values_list("id", flat=True)
+
+            payments = payments.filter(
+                transaction__party_id__in=payment_customer_ids
+            )
+
+        # =========================================================
+        # DATE FILTER - PAYMENTS
+        # =========================================================
+
+        if date_from:
+
+            payments = payments.filter(
+                payment_date__gte=date_from
+            )
+
+        if date_to:
+
+            payments = payments.filter(
+                payment_date__lte=date_to
+            )
+
+        # =========================================================
+        # CUSTOMER MAP FOR PAYMENTS
+        # =========================================================
+
+        payment_customer_ids = list(
+            payments.values_list(
+                "transaction__party_id",
+                flat=True
+            ).distinct()
+        )
+
+        all_customer_ids = set(
+            transaction_customer_ids
+        ) | set(
+            payment_customer_ids
+        )
+
+        customer_map = {
+            customer.id: customer
+            for customer in Customer.objects.filter(
+                id__in=all_customer_ids
+            )
+        }
+
+        # =========================================================
+        # BUILD ONE COMBINED REPORT
+        # =========================================================
+
+        report_rows = []
+
+        # ---------------------------------------------------------
+        # TRANSACTION ROWS
+        # ---------------------------------------------------------
+
+        for transaction in transactions:
+
+            report_rows.append({
+                "date": transaction.created_at.date(),
+
+                "customer": customer_map.get(
+                    transaction.party_id
+                ),
+
+                "type": "transaction",
+
+                "type_display": transaction.get_type_display(),
+
+                "reference": (
+                    f"{transaction.get_reference_type_display()} "
+                    f"#{transaction.reference_id}"
+                    if transaction.reference_id
+                    else transaction.get_reference_type_display()
+                ),
+
+                "amount": transaction.amount,
+
+                "payment_method": "-",
+
+                "status": transaction.get_status_display(),
+
+                "added_by": (
+                    transaction.added_by.username
+                    if transaction.added_by
+                    else "-"
+                ),
+
+                "notes": transaction.notes or "",
+
+                "transaction": transaction,
+
+                "payment": None,
+            })
+
+        # ---------------------------------------------------------
+        # PAYMENT ROWS
+        # ---------------------------------------------------------
+
+        for payment in payments:
+
+            transaction = payment.transaction
+
+            report_rows.append({
+                "date": payment.payment_date,
+
+                "customer": customer_map.get(
+                    transaction.party_id
+                ),
+
+                "type": "payment",
+
+                "type_display": "Payment",
+
+                "reference": (
+                    f"{transaction.get_reference_type_display()} "
+                    f"#{transaction.reference_id}"
+                    if transaction.reference_id
+                    else transaction.get_reference_type_display()
+                ),
+
+                "amount": payment.paid_amount,
+
+                "payment_method": payment.payment_method or "-",
+
+                "status": "Completed",
+
+                "added_by": (
+                    transaction.added_by.username
+                    if transaction.added_by
+                    else "-"
+                ),
+
+                "notes": payment.notes or transaction.notes or "",
+
+                "transaction": transaction,
+
+                "payment": payment,
+            })
+
+        # =========================================================
+        # SORT EVERYTHING TOGETHER BY DATE
+        # =========================================================
+
+        report_rows.sort(
+            key=lambda row: row["date"],
+            reverse=True
+        )
+
+        # =========================================================
+        # SUMMARY
+        # =========================================================
+
+        total_transaction_amount = (
+            transactions.aggregate(
+                total=Sum("amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        total_paid_amount = (
+            payments.aggregate(
+                total=Sum("paid_amount")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        # Customer balance:
+        #
+        # Transaction amount - payments
+        #
+
+        customer_balance = (
+            total_transaction_amount
+            - total_paid_amount
+        )
+
+        # =========================================================
+        # CONTEXT
+        # =========================================================
+
+        context = {
+
+            "report_rows": report_rows,
+
+            "search": search,
+            "date_from": date_from,
+            "date_to": date_to,
+
+            "total_transaction_amount": total_transaction_amount,
+            "total_paid_amount": total_paid_amount,
+            "customer_balance": customer_balance,
+        }
+
+        return render(
+            request,
+            self.template_name,
+            context
+        )
 
 
 

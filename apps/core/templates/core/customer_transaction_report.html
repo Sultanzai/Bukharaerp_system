@@ -1,0 +1,882 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Customer Transaction Report
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ========================================================= -->
+    <!-- SCREEN REPORT -->
+    <!-- ========================================================= -->
+
+    <div class="no-print">
+
+        <!-- Top Navigation -->
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <a
+                href="{% url 'core:reports' %}"
+                class="btn btn-sm btn-outline-secondary"
+            >
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+
+            <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                onclick="window.print()"
+            >
+                <i class="bi bi-printer"></i> Print
+            </button>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- HEADER -->
+        <!-- ===================================================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <h4 class="mb-1">
+                    Customer Transaction Report
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Customer transactions and payments
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- FILTER -->
+        <!-- ===================================================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <form method="get">
+
+                    <div class="row g-3 align-items-end">
+
+                        <!-- Customer -->
+
+                        <div class="col-md-5">
+
+                            <label class="form-label">
+                                Customer
+                            </label>
+
+                            <input
+                                type="text"
+                                name="search"
+                                value="{{ search }}"
+                                class="form-control"
+                                placeholder="Search customer..."
+                            >
+
+                        </div>
+
+
+                        <!-- From -->
+
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                From Date
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_from"
+                                value="{{ date_from }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- To -->
+
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                To Date
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_to"
+                                value="{{ date_to }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- Search -->
+
+                        <div class="col-md-1">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100"
+                                title="Search"
+                            >
+                                <i class="bi bi-search"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- ACTIVE FILTERS -->
+        <!-- ===================================================== -->
+
+        {% if search or date_from or date_to %}
+
+            <div class="alert alert-light border mb-3 no-print">
+
+                <i class="bi bi-funnel"></i>
+
+                <strong>
+                    Active Filters:
+                </strong>
+
+                {% if search %}
+                    Investor: <strong>{{ search }}</strong>
+                {% endif %}
+
+                {% if date_from %}
+                    &nbsp; From:
+                    <strong>{{ date_from }}</strong>
+                {% endif %}
+
+                {% if date_to %}
+                    &nbsp; To:
+                    <strong>{{ date_to }}</strong>
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- ===================================================== -->
+        <!-- SUMMARY -->
+        <!-- ===================================================== -->
+
+        <div class="row g-3 mb-4">
+
+            <!-- Transactions -->
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Transaction Amount
+                        </div>
+
+                        <h4 class="mb-0 mt-1">
+                            {{ total_transaction_amount|floatformat:2 }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Paid -->
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Total Paid
+                        </div>
+
+                        <h4 class="mb-0 mt-1">
+                            {{ total_paid_amount|floatformat:2 }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Balance -->
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Customer Balance
+                        </div>
+
+                        <h4 class="mb-0 mt-1">
+                            {{ customer_balance|floatformat:2 }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- COMBINED TRANSACTION + PAYMENT TABLE -->
+        <!-- ===================================================== -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+                    Customer Transactions
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover datatable">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th>
+                                    #
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th>
+                                    Type
+                                </th>
+
+                                <th>
+                                    Reference
+                                </th>
+
+                                <th class="text-end">
+                                    Amount
+                                </th>
+
+                                <th>
+                                    Payment Method
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Added By
+                                </th>
+
+                                <th>
+                                    Notes
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for row in report_rows %}
+
+                            <tr>
+
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.date|date:"Y-m-d" }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if row.customer %}
+
+                                        <strong>
+                                            {{ row.customer.name }}
+                                        </strong>
+
+                                    {% else %}
+
+                                        Customer
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if row.type == "payment" %}
+
+                                        <span class="badge bg-success">
+                                            Payment
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-primary">
+                                            {{ row.type_display }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+                                    {{ row.reference }}
+                                </td>
+
+
+                                <td class="text-end">
+
+                                    {{ row.amount|floatformat:2 }}
+
+                                </td>
+
+
+                                <td>
+                                    {{ row.payment_method }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if row.status == "Completed" %}
+
+                                        <span class="badge bg-success">
+                                            Completed
+                                        </span>
+
+                                    {% elif row.status == "Pending" %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+
+                                    {% elif row.status == "Cancelled" %}
+
+                                        <span class="badge bg-danger">
+                                            Cancelled
+                                        </span>
+
+                                    {% else %}
+
+                                        {{ row.status }}
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+                                    {{ row.added_by }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.notes|default:"-" }}
+                                </td>
+
+                            </tr>
+
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="10"
+                                    class="text-center text-muted py-4"
+                                >
+                                    No customer transactions found.
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+
+                        {% if report_rows %}
+
+                        <tfoot class="table-light">
+
+                            <tr>
+
+                                <th colspan="5" class="text-end">
+                                    Total
+                                </th>
+
+                                <th class="text-end">
+                                    {{ total_transaction_amount|floatformat:2 }}
+                                </th>
+
+                                <th colspan="4"></th>
+
+                            </tr>
+
+                        </tfoot>
+
+                        {% endif %}
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- PRINT REPORT -->
+    <!-- ========================================================= -->
+
+    <div id="printReport">
+
+        <!-- Print Header -->
+
+        <div class="text-center mb-4">
+
+            <h2 class="mb-1">
+                Customer Transaction Report
+            </h2>
+
+            <p class="mb-0">
+                Customer Transactions & Payments
+            </p>
+
+            <p class="small">
+                Printed on {% now "Y-m-d H:i" %}
+            </p>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- FILTER INFORMATION -->
+        <!-- ===================================================== -->
+
+        {% if search or date_from or date_to %}
+
+        <div class="mb-3">
+
+            <strong>
+                Applied Filters:
+            </strong>
+
+
+            {% if search %}
+
+                <span class="ms-2">
+                    Customer: {{ search }}
+                </span>
+
+            {% endif %}
+
+
+            {% if date_from %}
+
+                <span class="ms-2">
+                    From: {{ date_from }}
+                </span>
+
+            {% endif %}
+
+
+            {% if date_to %}
+
+                <span class="ms-2">
+                    To: {{ date_to }}
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ===================================================== -->
+        <!-- PRINT SUMMARY -->
+        <!-- ===================================================== -->
+
+        <table class="table table-bordered mb-4">
+
+            <tr>
+
+                <th>
+                    Transaction Amount
+                </th>
+
+                <td class="text-end">
+                    {{ total_transaction_amount|floatformat:2 }}
+                </td>
+
+
+                <th>
+                    Total Paid
+                </th>
+
+                <td class="text-end">
+                    {{ total_paid_amount|floatformat:2 }}
+                </td>
+
+
+                <th>
+                    Customer Balance
+                </th>
+
+                <td class="text-end">
+                    {{ customer_balance|floatformat:2 }}
+                </td>
+
+            </tr>
+
+        </table>
+
+
+        <!-- ===================================================== -->
+        <!-- PRINT TABLE -->
+        <!-- ===================================================== -->
+
+        <table class="table table-bordered">
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>Date</th>
+
+                    <th>Customer</th>
+
+                    <th>Type</th>
+
+                    <th>Reference</th>
+
+                    <th class="text-end">
+                        Amount
+                    </th>
+
+                    <th>
+                        Payment Method
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Added By
+                    </th>
+
+                    <th>
+                        Notes
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for row in report_rows %}
+
+                <tr>
+
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+
+                    <td>
+                        {{ row.date|date:"Y-m-d" }}
+                    </td>
+
+
+                    <td>
+
+                        {% if row.customer %}
+                            {{ row.customer.name }}
+                        {% else %}
+                            Customer
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ row.type_display }}
+                    </td>
+
+
+                    <td>
+                        {{ row.reference }}
+                    </td>
+
+
+                    <td class="text-end">
+                        {{ row.amount|floatformat:2 }}
+                    </td>
+
+
+                    <td>
+                        {{ row.payment_method }}
+                    </td>
+
+
+                    <td>
+                        {{ row.status }}
+                    </td>
+
+
+                    <td>
+                        {{ row.added_by }}
+                    </td>
+
+
+                    <td>
+                        {{ row.notes|default:"-" }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+
+            <tfoot>
+
+                <tr>
+
+                    <th colspan="5" class="text-end">
+                        Transaction Amount
+                    </th>
+
+                    <th class="text-end">
+                        {{ total_transaction_amount|floatformat:2 }}
+                    </th>
+
+                    <th colspan="4"></th>
+
+                </tr>
+
+
+                <tr>
+
+                    <th colspan="5" class="text-end">
+                        Total Paid
+                    </th>
+
+                    <th class="text-end">
+                        {{ total_paid_amount|floatformat:2 }}
+                    </th>
+
+                    <th colspan="4"></th>
+
+                </tr>
+
+
+                <tr>
+
+                    <th colspan="5" class="text-end">
+                        Customer Balance
+                    </th>
+
+                    <th class="text-end">
+                        {{ customer_balance|floatformat:2 }}
+                    </th>
+
+                    <th colspan="4"></th>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+
+        <!-- Footer -->
+
+        <div class="text-center mt-4">
+
+            <small>
+                Customer Transaction Report
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- PRINT CSS -->
+<!-- ============================================================= -->
+
+<style>
+
+    #printReport {
+        display: none;
+    }
+
+
+    @media print {
+
+        @page {
+            size: A4 landscape;
+            margin: 12mm;
+        }
+
+
+        /*
+         * Hide the entire normal application.
+         *
+         * This includes:
+         * - Sidebar
+         * - Navbar
+         * - Header
+         * - Normal report
+         * - Buttons
+         */
+
+        body * {
+            visibility: hidden !important;
+        }
+
+
+        /*
+         * Show ONLY the print report.
+         */
+
+        #printReport,
+        #printReport * {
+            visibility: visible !important;
+        }
+
+
+        /*
+         * Put print report at the top of the page.
+         */
+
+        #printReport {
+            display: block !important;
+
+            position: absolute !important;
+
+            left: 0 !important;
+            top: 0 !important;
+
+            width: 100% !important;
+
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+
+        body {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+
+        #printReport table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+
+
+        #printReport th,
+        #printReport td {
+            border: 1px solid #000 !important;
+            padding: 5px !important;
+            font-size: 10px !important;
+        }
+
+
+        #printReport h2 {
+            font-size: 20px !important;
+        }
+
+
+        #printReport p {
+            font-size: 12px !important;
+        }
+
+
+        #printReport tr {
+            page-break-inside: avoid !important;
+        }
+
+    }
+
+</style>
+
+{% endblock %}

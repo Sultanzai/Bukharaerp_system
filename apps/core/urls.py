@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .views import (
+    CustomerReportView,
+    CustomerTransactionReportView,
     DashboardView,
     HawalaReportView,
     ReportView,
@@ -36,6 +38,17 @@ urlpatterns = [
         "reports/customer-statements/",
         CustomerStatementReportView.as_view(),
         name="customer_statement_report",
+    ),
+
+    path(
+        "reports/customer-report/",
+        CustomerReportView.as_view(),
+        name="customer_report",
+    ),
+    path(
+        "reports/customer-transactions/",
+        CustomerTransactionReportView.as_view(),
+        name="customer_transaction_report",
     ),
 
     # Individual Customer Statement

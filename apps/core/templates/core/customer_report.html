@@ -1,0 +1,735 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Customer Report
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ========================================================= -->
+    <!-- SCREEN REPORT -->
+    <!-- ========================================================= -->
+
+    <div class="no-print">
+
+        <!-- Back + Print -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <a
+                href="{% url 'core:reports' %}"
+                class="btn btn-sm btn-outline-secondary"
+            >
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+
+            <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                onclick="window.print()"
+            >
+                <i class="bi bi-printer"></i> Print
+            </button>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- PAGE HEADER -->
+        <!-- ===================================================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div>
+                    <h4 class="mb-1">
+                        Customer Report
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Customer orders and payment statement
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- SEARCH / FILTER -->
+        <!-- ===================================================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+                    Search & Filter
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <form method="get">
+
+                    <div class="row g-3 align-items-end">
+
+                        <!-- Search -->
+                        <div class="col-md-5">
+
+                            <label class="form-label">
+                                Customer
+                            </label>
+
+                            <input
+                                type="text"
+                                name="search"
+                                value="{{ search }}"
+                                class="form-control"
+                                placeholder="Search customer name or phone..."
+                            >
+
+                        </div>
+
+
+                        <!-- From -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                From Date
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_from"
+                                value="{{ date_from }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- To -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                To Date
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_to"
+                                value="{{ date_to }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- Buttons -->
+                        <div class="col-md-1">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100"
+                            >
+                                <i class="bi bi-search"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- ACTIVE FILTER -->
+        <!-- ===================================================== -->
+
+        {% if search or date_from or date_to %}
+            <div class="alert alert-light border mb-3 no-print">
+
+                <i class="bi bi-funnel"></i>
+
+                <strong>
+                    Active Filters:
+                </strong>
+
+                {% if search %}
+                    Investor: <strong>{{ search }}</strong>
+                {% endif %}
+
+                {% if date_from %}
+                    &nbsp; From:
+                    <strong>{{ date_from }}</strong>
+                {% endif %}
+
+                {% if date_to %}
+                    &nbsp; To:
+                    <strong>{{ date_to }}</strong>
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- ===================================================== -->
+        <!-- SUMMARY CARDS -->
+        <!-- ===================================================== -->
+
+        <div class="row g-3 mb-4">
+
+            <!-- Orders -->
+            <div class="col-md-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Total Order Amount
+                        </div>
+
+                        <h4 class="mb-0 mt-1">
+                            {{ total_order_amount|floatformat:2 }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Paid -->
+            <div class="col-md-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Total Paid
+                        </div>
+
+                        <h4 class="mb-0 mt-1">
+                            {{ total_paid_amount|floatformat:2 }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Remaining -->
+            <div class="col-md-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Total Remaining
+                        </div>
+
+                        <h4 class="mb-0 mt-1">
+                            {{ total_remaining|floatformat:2 }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- CUSTOMER REPORT -->
+        <!-- ===================================================== -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+                    Customer Orders & Payments
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover datatable">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th class="text-center">
+                                    Orders
+                                </th>
+
+                                <th class="text-end">
+                                    Order Amount
+                                </th>
+
+                                <th class="text-end">
+                                    Paid
+                                </th>
+
+                                <th class="text-end">
+                                    Remaining
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for item in customer_data %}
+
+                            <tr>
+
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+
+                                <td>
+
+                                    <strong>
+                                        {{ item.customer.name }}
+                                    </strong>
+
+                                    {% if item.customer.phone %}
+                                        <div class="small text-muted">
+                                            {{ item.customer.phone }}
+                                        </div>
+                                    {% endif %}
+
+                                </td>
+
+                                <td class="text-center">
+
+                                    {{ item.orders|length }}
+
+                                </td>
+
+                                <td class="text-end">
+
+                                    {{ item.total_orders|floatformat:2 }}
+
+                                </td>
+
+                                <td class="text-end">
+
+                                    {{ item.total_paid|floatformat:2 }}
+
+                                </td>
+
+                                <td class="text-end">
+
+                                    <strong>
+                                        {{ item.remaining|floatformat:2 }}
+                                    </strong>
+
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="6"
+                                    class="text-center text-muted py-4"
+                                >
+                                    No customer records found.
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+
+                        {% if customer_data %}
+
+                        <tfoot class="table-light">
+
+                            <tr>
+
+                                <th colspan="3" class="text-end">
+                                    Total
+                                </th>
+
+                                <th class="text-end">
+                                    {{ total_order_amount|floatformat:2 }}
+                                </th>
+
+                                <th class="text-end">
+                                    {{ total_paid_amount|floatformat:2 }}
+                                </th>
+
+                                <th class="text-end">
+                                    {{ total_remaining|floatformat:2 }}
+                                </th>
+
+                            </tr>
+
+                        </tfoot>
+
+                        {% endif %}
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- PRINT REPORT -->
+    <!-- ========================================================= -->
+
+    <div id="printReport" class="customer-print-report">
+
+        <!-- Company Header -->
+
+        <div class="text-center mb-4">
+
+            <h2 class="mb-1">
+                Customer Report
+            </h2>
+
+            <p class="mb-0">
+                Customer Orders & Payments Statement
+            </p>
+
+            <p class="small text-muted">
+                Printed on {% now "Y-m-d H:i" %}
+            </p>
+
+        </div>
+
+
+        <!-- Filters -->
+
+        {% if search or date_from or date_to %}
+
+        <div class="mb-3">
+
+            <strong>
+                Applied Filters:
+            </strong>
+
+            {% if search %}
+                Customer: {{ search }}
+            {% endif %}
+
+            {% if date_from %}
+                | From: {{ date_from }}
+            {% endif %}
+
+            {% if date_to %}
+                | To: {{ date_to }}
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- Print Summary -->
+
+        <table class="table table-bordered mb-4">
+
+            <tr>
+
+                <th>
+                    Total Order Amount
+                </th>
+
+                <td class="text-end">
+                    {{ total_order_amount|floatformat:2 }}
+                </td>
+
+                <th>
+                    Total Paid
+                </th>
+
+                <td class="text-end">
+                    {{ total_paid_amount|floatformat:2 }}
+                </td>
+
+                <th>
+                    Total Remaining
+                </th>
+
+                <td class="text-end">
+                    {{ total_remaining|floatformat:2 }}
+                </td>
+
+            </tr>
+
+        </table>
+
+
+        <!-- Print Table -->
+
+        <table class="table table-bordered">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Customer
+                    </th>
+
+                    <th class="text-center">
+                        Orders
+                    </th>
+
+                    <th class="text-end">
+                        Order Amount
+                    </th>
+
+                    <th class="text-end">
+                        Paid
+                    </th>
+
+                    <th class="text-end">
+                        Remaining
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in customer_data %}
+
+                <tr>
+
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+                    <td>
+                        {{ item.customer.name }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ item.orders|length }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ item.total_orders|floatformat:2 }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ item.total_paid|floatformat:2 }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ item.remaining|floatformat:2 }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+
+            <tfoot>
+
+                <tr>
+
+                    <th colspan="3" class="text-end">
+                        Total
+                    </th>
+
+                    <th class="text-end">
+                        {{ total_order_amount|floatformat:2 }}
+                    </th>
+
+                    <th class="text-end">
+                        {{ total_paid_amount|floatformat:2 }}
+                    </th>
+
+                    <th class="text-end">
+                        {{ total_remaining|floatformat:2 }}
+                    </th>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+
+        <div class="text-center mt-4">
+
+            <small>
+                Customer Report
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ============================================================= -->
+<!-- PRINT CSS -->
+<!-- ============================================================= -->
+
+<style>
+
+    /* Hide print report on normal screen */
+    #printReport {
+        display: none;
+    }
+
+
+    @media print {
+
+        /* A4 landscape */
+        @page {
+            size: A4 landscape;
+            margin: 12mm;
+        }
+
+
+        /* Hide EVERYTHING first */
+        body * {
+            visibility: hidden !important;
+        }
+
+
+        /* Show ONLY the print report */
+        #printReport,
+        #printReport * {
+            visibility: visible !important;
+        }
+
+
+        /* Put print report at the top-left of the printed page */
+        #printReport {
+            display: block !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+
+        /* Remove normal page background/layout effects */
+        html,
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            background: #ffffff !important;
+        }
+
+
+        /* Print header */
+        #printReport h2 {
+            font-size: 20px !important;
+            margin-bottom: 4px !important;
+        }
+
+
+        #printReport p {
+            font-size: 12px !important;
+        }
+
+
+        /* Print tables */
+        #printReport table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-bottom: 20px !important;
+        }
+
+
+        #printReport th,
+        #printReport td {
+            border: 1px solid #000 !important;
+            padding: 6px !important;
+            font-size: 10px !important;
+            color: #000 !important;
+            background: #fff !important;
+        }
+
+
+        #printReport th {
+            font-weight: bold !important;
+        }
+
+
+        /* Keep rows together where possible */
+        #printReport tr {
+            page-break-inside: avoid !important;
+        }
+
+
+        /* Do not print Bootstrap shadows */
+        #printReport .card {
+            box-shadow: none !important;
+        }
+
+
+        /* Hide elements explicitly marked no-print */
+        .no-print {
+            display: none !important;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
