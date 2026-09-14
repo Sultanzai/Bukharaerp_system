@@ -1,0 +1,1511 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Hawala Report
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+
+
+    <!-- =========================================================
+         SCREEN VERSION
+         ========================================================= -->
+
+    <div class="no-print">
+
+
+        <!-- =====================================================
+             TOP NAVIGATION
+             ===================================================== -->
+
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+
+                <a
+                    href="{% url 'core:reports' %}"
+                    class="btn btn-sm btn-outline-secondary no-print"
+                >
+                    <i class="bi bi-arrow-left"></i>
+                    Back
+                </a>
+
+
+                <button
+                    type="button"
+                    onclick="window.print()"
+                    class="btn btn-sm btn-outline-primary no-print"
+                >
+                    <i class="bi bi-printer"></i>
+                    Print
+                </button>
+
+            </div>
+
+
+        <!-- =====================================================
+             FILTER CARD
+             ===================================================== -->
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <form method="get">
+
+                    <div class="row g-3 align-items-end">
+
+
+                        <!-- SEARCH -->
+
+                        <div class="col-md-4">
+
+                            <label
+                                for="search"
+                                class="form-label"
+                            >
+                                Hawala
+                            </label>
+
+                            <input
+                                type="text"
+                                id="search"
+                                name="search"
+                                value="{{ search }}"
+                                class="form-control"
+                                placeholder="Search Hawala..."
+                            >
+
+                        </div>
+
+
+                        <!-- FROM DATE -->
+
+                        <div class="col-md-3">
+
+                            <label
+                                for="date_from"
+                                class="form-label"
+                            >
+                                From Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="date_from"
+                                name="date_from"
+                                value="{{ date_from }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- TO DATE -->
+
+                        <div class="col-md-3">
+
+                            <label
+                                for="date_to"
+                                class="form-label"
+                            >
+                                To Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="date_to"
+                                name="date_to"
+                                value="{{ date_to }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+
+                        <div class="col-md-2">
+
+                            <div class="d-flex gap-1">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-primary"
+                                >
+                                    <i class="bi bi-search"></i>
+                                    Search
+                                </button>
+
+                                <a
+                                    href="{% url 'core:hawala_report' %}"
+                                    class="btn btn-sm btn-outline-secondary"
+                                >
+                                    Reset
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             ACTIVE FILTERS
+             ===================================================== -->
+
+        {% if search or date_from or date_to %}
+
+        <div class="alert alert-light border mb-3">
+
+            <i class="bi bi-funnel"></i>
+
+            <strong>
+                Active Filters:
+            </strong>
+
+
+            {% if search %}
+
+                <span class="ms-1">
+                    Hawala:
+                    <strong>{{ search }}</strong>
+                </span>
+
+            {% endif %}
+
+
+            {% if date_from %}
+
+                <span class="ms-3">
+                    From:
+                    <strong>{{ date_from }}</strong>
+                </span>
+
+            {% endif %}
+
+
+            {% if date_to %}
+
+                <span class="ms-3">
+                    To:
+                    <strong>{{ date_to }}</strong>
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- =====================================================
+             SUMMARY CARDS
+             ===================================================== -->
+
+        <div class="row g-3 mb-3">
+
+
+            <!-- TOTAL CREDIT -->
+
+            <div class="col-md-4">
+
+                <div class="card h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Total Credit
+                        </div>
+
+                        <div class="fs-4 fw-bold">
+                            {{ total_credit|floatformat:2 }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL DEBIT -->
+
+            <div class="col-md-4">
+
+                <div class="card h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Total Debit
+                        </div>
+
+                        <div class="fs-4 fw-bold">
+                            {{ total_debit|floatformat:2 }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BALANCE -->
+
+            <div class="col-md-4">
+
+                <div class="card h-100">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Hawala Balance
+                        </div>
+
+                        <div class="fs-4 fw-bold">
+                            {{ hawala_balance|floatformat:2 }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             TRANSACTION TABLE
+             ===================================================== -->
+
+        <div class="card">
+
+
+            <!-- CARD HEADER -->
+
+            <div
+                class="card-header d-flex justify-content-between align-items-center"
+            >
+
+                <h5 class="mb-0">
+                    Hawala Transactions
+                </h5>
+
+                <span class="text-muted">
+                    {{ transactions|length }} transactions
+                </span>
+
+            </div>
+
+
+            <!-- CARD BODY -->
+
+            <div class="card-body">
+
+
+                <div class="table-responsive">
+
+                    <table
+                        id="hawalaTable"
+                        class="table table-bordered table-hover datatable"
+                    >
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    #
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Hawala
+                                </th>
+
+                                <th>
+                                    Type
+                                </th>
+
+                                <th class="text-end">
+                                    Credit
+                                </th>
+
+                                <th class="text-end">
+                                    Debit
+                                </th>
+
+                                <th>
+                                    Added By
+                                </th>
+
+                                <th>
+                                    Reference Type
+                                </th>
+                            
+                                <th>
+                                    Reference ID
+                                </th>
+                            
+                                <th>
+                                    Reference Number
+                                </th>
+
+                                <th>
+                                    Notes
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for transaction in transactions %}
+
+                            <tr>
+
+
+                                <!-- NUMBER -->
+
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+
+
+                                <!-- DATE -->
+
+                                <td>
+                                    {{ transaction.transaction_date|date:"d M Y" }}
+                                </td>
+
+
+                                <!-- HAWALA ACCOUNT -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ transaction.hawala_account.name }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- TYPE -->
+
+                                <td>
+
+                                    {% if transaction.transaction_type == "credit" %}
+
+                                        <span class="badge bg-success">
+                                            Credit
+                                        </span>
+
+                                    {% elif transaction.transaction_type == "debit" %}
+
+                                        <span class="badge bg-danger">
+                                            Debit
+                                        </span>
+
+                                    {% else %}
+
+                                        {{ transaction.transaction_type }}
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- CREDIT -->
+
+                                <td class="text-end">
+
+                                    {% if transaction.credit %}
+
+                                        {{ transaction.credit|floatformat:2 }}
+
+                                    {% else %}
+
+                                        0.00
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- DEBIT -->
+
+                                <td class="text-end">
+
+                                    {% if transaction.debit %}
+
+                                        {{ transaction.debit|floatformat:2 }}
+
+                                    {% else %}
+
+                                        0.00
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- ADDED BY -->
+
+                                <td>
+
+                                    {% if transaction.added_by %}
+
+                                        {{ transaction.added_by.username }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- REFERENCE -->
+
+                                <td>
+
+                                    {% if transaction.reference_type %}
+
+                                        {{ transaction.reference_type }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+                                <td>
+
+                                    {% if transaction.reference_id %}
+
+                                        {{ transaction.reference_id }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+                                <td>
+
+                                    {% if transaction.reference_number %}
+
+                                        {{ transaction.reference_number }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- NOTES -->
+
+                                <td>
+
+                                    {% if transaction.notes %}
+
+                                        {{ transaction.notes }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="9"
+                                    class="text-center py-4"
+                                >
+                                    No Hawala transactions found.
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         PRINT-ONLY REPORT
+         Hidden on normal screen
+         ========================================================= -->
+
+    <div
+        id="printReport"
+        class="hawala-print-report"
+    >
+
+
+        <!-- =====================================================
+             REPORT HEADER
+             ===================================================== -->
+
+        <div class="print-header">
+
+
+            <div>
+
+                <h2>
+                    YOUR COMPANY NAME
+                </h2>
+
+                <p>
+                    Hawala Account Management
+                </p>
+
+            </div>
+
+
+            <div class="print-header-right">
+
+                <strong>
+                    HAWALA TRANSACTION REPORT
+                </strong>
+
+                <span>
+                    Printed:
+                    {% now "d M Y" %}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             APPLIED FILTERS
+             ===================================================== -->
+
+        <div class="print-filters">
+
+            <strong>
+                Applied Filters
+            </strong>
+
+
+            {% if search %}
+
+            <span>
+
+                Hawala:
+                <strong>
+                    {{ search }}
+                </strong>
+
+            </span>
+
+            {% endif %}
+
+
+            {% if date_from %}
+
+            <span>
+
+                From:
+                <strong>
+                    {{ date_from }}
+                </strong>
+
+            </span>
+
+            {% endif %}
+
+
+            {% if date_to %}
+
+            <span>
+
+                To:
+                <strong>
+                    {{ date_to }}
+                </strong>
+
+            </span>
+
+            {% endif %}
+
+
+            {% if not search and not date_from and not date_to %}
+
+            <span>
+                All transactions
+            </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =====================================================
+             SUMMARY
+             ===================================================== -->
+
+        <div class="print-summary">
+
+
+            <div>
+
+                <span>
+                    Total Credit
+                </span>
+
+                <strong>
+                    {{ total_credit|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Total Debit
+                </span>
+
+                <strong>
+                    {{ total_debit|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Hawala Balance
+                </span>
+
+                <strong>
+                    {{ hawala_balance|floatformat:2 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             SECTION HEADER
+             ===================================================== -->
+
+        <div class="print-section-title">
+
+            <strong>
+                HAWALA TRANSACTIONS
+            </strong>
+
+            <span>
+                {{ transactions|length }} transactions
+            </span>
+
+        </div>
+
+
+        <!-- =====================================================
+             PRINT TABLE
+             ===================================================== -->
+
+        <table class="print-table">
+
+
+            <thead>
+
+                <tr>
+
+                    <th style="width: 4%;">
+                        #
+                    </th>
+
+                    <th style="width: 11%;">
+                        Date
+                    </th>
+
+                    <th style="width: 19%;">
+                        Hawala
+                    </th>
+
+                    <th style="width: 14%;">
+                        Type
+                    </th>
+
+                    <th
+                        style="width: 12%;"
+                        class="amount-column"
+                    >
+                        Credit
+                    </th>
+
+                    <th
+                        style="width: 12%;"
+                        class="amount-column"
+                    >
+                        Debit
+                    </th>
+
+                    <th style="width: 11%;">
+                        Added By
+                    </th>
+
+                    <th style="width: 9%;">
+                        Reference Type
+                    </th>
+
+                    <th style="width: 9%;">
+                        Reference ID
+                    </th>
+
+                    <th style="width: 9%;">
+                        Reference Number
+                    </th>
+
+                    <th style="width: 8%;">
+                        Notes
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for transaction in transactions %}
+
+                <tr>
+
+
+                    <!-- NUMBER -->
+
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+
+                    <!-- DATE -->
+
+                    <td>
+                        {{ transaction.transaction_date|date:"d M Y" }}
+                    </td>
+
+
+                    <!-- HAWALA -->
+
+                    <td>
+
+                        <strong>
+                            {{ transaction.hawala_account.name }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- TYPE -->
+
+                    <td>
+
+                        {% if transaction.transaction_type == "credit" %}
+
+                            Credit
+
+                        {% elif transaction.transaction_type == "debit" %}
+
+                            Debit
+
+                        {% else %}
+
+                            {{ transaction.transaction_type }}
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- CREDIT -->
+
+                    <td class="amount-column">
+
+                        {{ transaction.credit|default_if_none:"0.00"|floatformat:2 }}
+
+                    </td>
+
+
+                    <!-- DEBIT -->
+
+                    <td class="amount-column">
+
+                        {{ transaction.debit|default_if_none:"0.00"|floatformat:2 }}
+
+                    </td>
+
+
+                    <!-- ADDED BY -->
+
+                    <td>
+
+                        {% if transaction.added_by %}
+
+                            {{ transaction.added_by.username }}
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- REFERENCE -->
+
+                    <td>
+
+                        {% if transaction.reference_type %}
+
+                            {{ transaction.reference_type }}
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+                    <td>
+
+                        {% if transaction.reference_id %}
+
+                            {{ transaction.reference_id }}
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+                    <td>
+
+                        {% if transaction.reference_number %}
+
+                            {{ transaction.reference_number }}
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- NOTES -->
+
+                    <td>
+
+                        {% if transaction.notes %}
+
+                            {{ transaction.notes }}
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="9"
+                        class="no-data"
+                    >
+                        No Hawala transactions found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+            </tbody>
+
+
+            <!-- =================================================
+                 TABLE TOTALS
+                 ================================================= -->
+
+            <tfoot>
+
+                <tr>
+
+                    <th
+                        colspan="4"
+                        class="totals-label"
+                    >
+                        TOTALS
+                    </th>
+
+                    <th class="amount-column">
+
+                        {{ total_credit|floatformat:2 }}
+
+                    </th>
+
+                    <th class="amount-column">
+
+                        {{ total_debit|floatformat:2 }}
+
+                    </th>
+
+                    <th colspan="3"></th>
+
+                </tr>
+
+            </tfoot>
+
+
+        </table>
+
+
+        <!-- =====================================================
+             BALANCE
+             ===================================================== -->
+
+        <div class="print-balance">
+
+            <div>
+
+                <span>
+                    Total Credit
+                </span>
+
+                <strong>
+                    {{ total_credit|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Total Debit
+                </span>
+
+                <strong>
+                    {{ total_debit|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div class="net-total">
+
+                <span>
+                    Hawala Balance
+                </span>
+
+                <strong>
+                    {{ hawala_balance|floatformat:2 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             FOOTER
+             ===================================================== -->
+
+        <div class="print-footer">
+
+            <span>
+                Hawala Transaction Report
+            </span>
+
+            <span>
+                Generated by ERP System
+            </span>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     PRINT CSS
+========================================================= -->
+
+<style>
+
+
+/* =========================================================
+   PRINT REPORT HIDDEN ON SCREEN
+========================================================= */
+
+.hawala-print-report {
+
+    display: none;
+
+}
+
+
+/* =========================================================
+   PRINT MODE
+========================================================= */
+
+@media print {
+
+
+    /* -----------------------------------------------------
+       A4 LANDSCAPE
+    ----------------------------------------------------- */
+
+    @page {
+
+        size: A4 landscape;
+
+        margin: 12mm;
+
+    }
+
+
+    /* -----------------------------------------------------
+       HIDE NORMAL APPLICATION
+    ----------------------------------------------------- */
+
+    body > * {
+
+        visibility: hidden;
+
+    }
+
+
+    /* -----------------------------------------------------
+       SHOW PRINT REPORT
+    ----------------------------------------------------- */
+
+    #printReport {
+
+        display: block !important;
+
+        visibility: visible !important;
+
+        position: absolute;
+
+        left: 0;
+
+        top: 0;
+
+        width: 100%;
+
+        margin: 0;
+
+        padding: 0;
+
+    }
+
+
+    #printReport * {
+
+        visibility: visible !important;
+
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .print-header {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: flex-start;
+
+        border-bottom: 2px solid #222;
+
+        padding-bottom: 12px;
+
+        margin-bottom: 15px;
+
+    }
+
+
+    .print-header h2 {
+
+        margin: 0;
+
+        font-size: 20px;
+
+        font-weight: 700;
+
+    }
+
+
+    .print-header p {
+
+        margin: 3px 0 0;
+
+        font-size: 10px;
+
+        color: #666;
+
+    }
+
+
+    .print-header-right {
+
+        display: flex;
+
+        flex-direction: column;
+
+        text-align: right;
+
+        font-size: 12px;
+
+    }
+
+
+    .print-header-right span {
+
+        margin-top: 4px;
+
+        font-size: 10px;
+
+        color: #666;
+
+    }
+
+
+    /* =====================================================
+       FILTERS
+    ===================================================== */
+
+    .print-filters {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 20px;
+
+        border: 1px solid #ccc;
+
+        padding: 8px 10px;
+
+        margin-bottom: 15px;
+
+        font-size: 10px;
+
+    }
+
+
+    /* =====================================================
+       SUMMARY
+    ===================================================== */
+
+    .print-summary {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 8px;
+
+        margin-bottom: 18px;
+
+    }
+
+
+    .print-summary > div {
+
+        border: 1px solid #ccc;
+
+        padding: 8px 10px;
+
+    }
+
+
+    .print-summary span {
+
+        display: block;
+
+        font-size: 9px;
+
+        color: #666;
+
+        margin-bottom: 3px;
+
+    }
+
+
+    .print-summary strong {
+
+        display: block;
+
+        font-size: 14px;
+
+    }
+
+
+    /* =====================================================
+       SECTION TITLE
+    ===================================================== */
+
+    .print-section-title {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        border: 1px solid #333;
+
+        border-bottom: none;
+
+        padding: 7px 9px;
+
+        font-size: 10px;
+
+    }
+
+
+    .print-section-title span {
+
+        color: #666;
+
+    }
+
+
+    /* =====================================================
+       TABLE
+    ===================================================== */
+
+    .print-table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        font-size: 9px;
+
+    }
+
+
+    .print-table th {
+
+        background: #f1f1f1;
+
+        border: 1px solid #333;
+
+        padding: 6px;
+
+        text-align: left;
+
+        font-weight: 700;
+
+    }
+
+
+    .print-table td {
+
+        border: 1px solid #ccc;
+
+        padding: 6px;
+
+        vertical-align: top;
+
+    }
+
+
+    .print-table tbody tr:nth-child(even) {
+
+        background: #fafafa;
+
+    }
+
+
+    .print-table tfoot th {
+
+        background: #f1f1f1;
+
+        border: 1px solid #333;
+
+        padding: 7px;
+
+    }
+
+
+    .amount-column {
+
+        text-align: right !important;
+
+        white-space: nowrap;
+
+    }
+
+
+    .totals-label {
+
+        text-align: right !important;
+
+    }
+
+
+    .no-data {
+
+        text-align: center;
+
+        padding: 15px !important;
+
+    }
+
+
+    /* =====================================================
+       BALANCE TOTALS
+    ===================================================== */
+
+    .print-balance {
+
+        width: 300px;
+
+        margin-left: auto;
+
+        margin-top: 12px;
+
+    }
+
+
+    .print-balance > div {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        border-bottom: 1px solid #ddd;
+
+        padding: 5px 0;
+
+        font-size: 10px;
+
+    }
+
+
+    .print-balance .net-total {
+
+        border-top: 2px solid #222;
+
+        border-bottom: 2px solid #222;
+
+        margin-top: 3px;
+
+        padding: 7px 0;
+
+        font-size: 11px;
+
+    }
+
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    .print-footer {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        border-top: 1px solid #ccc;
+
+        margin-top: 20px;
+
+        padding-top: 8px;
+
+        font-size: 8px;
+
+        color: #666;
+
+    }
+
+
+    /* =====================================================
+       KEEP ROWS TOGETHER
+    ===================================================== */
+
+    .print-table tr {
+
+        page-break-inside: avoid;
+
+    }
+
+
+}
+
+</style>
+
+{% endblock %}

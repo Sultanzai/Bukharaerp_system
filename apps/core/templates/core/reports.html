@@ -172,11 +172,8 @@
 
             <div class="d-flex flex-wrap gap-2">
 
-                <a href="#" class="btn btn-outline-info">Company Statement</a>
-                <a href="#" class="btn btn-outline-info">Received Report</a>
-                <a href="#" class="btn btn-outline-info">Payment Report</a>
-                <a href="#" class="btn btn-outline-info">Outstanding Balance</a>
-
+                <a href="{% url 'core:hawala_summary' %}" class="btn btn-outline-info">Hawala Statement Summery</a>
+                <a href="{% url 'core:hawala_report' %}" class="btn btn-outline-info">Hawala Report</a>
             </div>
 
         </div>
@@ -226,7 +223,7 @@
             <div class="d-flex flex-wrap gap-2">
 
                 <a href="{% url 'core:customer_statement_report' %}" class="btn btn-outline-secondary">Customer Statement</a>
-                <a href="#" class="btn btn-outline-secondary">Purchase History</a>
+                <a href="#" class="btn btn-outline-secondary">Customer Report</a>
             </div>
 
         </div>

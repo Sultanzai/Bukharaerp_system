@@ -6,9 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from apps.sales.models import Customer, Order
-from apps.accounting.models import Transaction, PaymentRecord
+from apps.accounting.models import HawalaTransaction, Transaction, PaymentRecord, HawalaAccount
 from apps.purchases.models import Factory, PurchaseOrder
-
 from django.shortcuts import render
 from django.db.models import Sum, Q
 
@@ -806,3 +805,200 @@ class InvestorSummaryView(LoginRequiredMixin, View):
             self.template_name,
             context
         )
+
+
+
+class HawalaReportView(LoginRequiredMixin, View):
+
+    template_name = "core/hawala_report.html"
+
+    def get(self, request, *args, **kwargs):
+
+        # ==================================================
+        # Filters
+        # ==================================================
+
+        search = request.GET.get("search", "").strip()
+        date_from = request.GET.get("date_from", "").strip()
+        date_to = request.GET.get("date_to", "").strip()
+
+        # ==================================================
+        # Completed Hawala Transactions
+        # ==================================================
+
+        transactions = (
+            HawalaTransaction.objects
+            .filter(status="completed")
+            .select_related(
+                "hawala_account",
+                "added_by",
+            )
+            .order_by(
+                "-transaction_date",
+                "-id"
+            )
+        )
+
+        # ==================================================
+        # Search Hawala Account
+        # ==================================================
+
+        if search:
+
+            transactions = transactions.filter(
+                Q(
+                    hawala_account__name__icontains=search
+                )
+            )
+
+        # ==================================================
+        # From Date
+        # ==================================================
+
+        if date_from:
+
+            transactions = transactions.filter(
+                transaction_date__gte=date_from
+            )
+
+        # ==================================================
+        # To Date
+        # ==================================================
+
+        if date_to:
+
+            transactions = transactions.filter(
+                transaction_date__lte=date_to
+            )
+
+        # ==================================================
+        # Total Credit
+        # ==================================================
+
+        total_credit = (
+            transactions
+            .aggregate(
+                total=Sum("credit")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        # ==================================================
+        # Total Debit
+        # ==================================================
+
+        total_debit = (
+            transactions
+            .aggregate(
+                total=Sum("debit")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        # ==================================================
+        # Hawala Balance
+        # ==================================================
+
+        hawala_balance = (
+            total_credit
+            - total_debit
+        )
+
+        # ==================================================
+        # Context
+        # ==================================================
+
+        context = {
+
+            "transactions": transactions,
+
+            "search": search,
+
+            "date_from": date_from,
+
+            "date_to": date_to,
+
+            "total_credit": total_credit,
+
+            "total_debit": total_debit,
+
+            "hawala_balance": hawala_balance,
+
+        }
+
+        return render(
+            request,
+            self.template_name,
+            context
+        )
+
+def hawala_summary(request):
+
+    hawala_accounts = (
+        HawalaAccount.objects
+        .all()
+        .order_by("name")
+    )
+
+    hawala_data = []
+
+    for account in hawala_accounts:
+
+        transactions = HawalaTransaction.objects.filter(
+            hawala_account=account,
+            status="completed"
+        )
+
+        # ------------------------------------------
+        # Total Credit
+        # ------------------------------------------
+
+        total_credit = (
+            transactions
+            .aggregate(
+                total=Sum("credit")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        # ------------------------------------------
+        # Total Debit
+        # ------------------------------------------
+
+        total_debit = (
+            transactions
+            .aggregate(
+                total=Sum("debit")
+            )["total"]
+            or Decimal("0.00")
+        )
+
+        # ------------------------------------------
+        # Current Balance
+        # Credit - Debit
+        # ------------------------------------------
+
+        current_balance = (
+            total_credit
+            - total_debit
+        )
+
+        hawala_data.append({
+
+            "hawala_account": account,
+
+            "total_credit": total_credit,
+
+            "total_debit": total_debit,
+
+            "current_balance": current_balance,
+
+        })
+
+    return render(
+        request,
+        "core/hawala_summary.html",
+        {
+            "hawala_data": hawala_data,
+        }
+    )

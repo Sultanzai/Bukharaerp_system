@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Hawala Summary
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+
+
+    <!-- =====================================================
+         TOP NAVIGATION
+         ===================================================== -->
+
+    <div class="mb-3">
+
+        <a
+            href="{% url 'core:reports' %}"
+            class="btn btn-sm btn-outline-secondary"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h4 class="mb-1">
+                        Hawala Summary
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Hawala account balance summary
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         HAWALA SUMMARY TABLE
+         ===================================================== -->
+
+    <div class="card shadow-sm">
+
+
+        <!-- CARD HEADER -->
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Hawala Summary
+            </h5>
+
+        </div>
+
+
+        <!-- CARD BODY -->
+
+        <div class="card-body">
+
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-bordered table-hover datatable"
+                >
+
+
+                    <!-- =================================================
+                         TABLE HEADER
+                         ================================================= -->
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Hawala Account
+                            </th>
+
+                            <th class="text-end">
+                                Total Credit
+                            </th>
+
+                            <th class="text-end">
+                                Total Debit
+                            </th>
+
+                            <th class="text-end">
+                                Current Balance
+                            </th>
+
+                            <th
+                                class="text-center"
+                                style="white-space: nowrap; width: 1%;"
+                            >
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <!-- =================================================
+                         TABLE BODY
+                         ================================================= -->
+
+                    <tbody>
+
+                        {% for item in hawala_data %}
+
+                        <tr>
+
+
+                            <!-- NUMBER -->
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
+                            <!-- HAWALA ACCOUNT -->
+
+                            <td>
+
+                                <strong>
+                                    {{ item.hawala_account.name }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- TOTAL CREDIT -->
+
+                            <td class="text-end">
+
+                                {{ item.total_credit|floatformat:2 }}
+
+                            </td>
+
+
+                            <!-- TOTAL DEBIT -->
+
+                            <td class="text-end">
+
+                                {{ item.total_debit|floatformat:2 }}
+
+                            </td>
+
+
+                            <!-- CURRENT BALANCE -->
+
+                            <td class="text-end">
+
+                                <strong>
+                                    {{ item.current_balance|floatformat:2 }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td
+                                class="text-center"
+                                style="white-space: nowrap; width: 1%;"
+                            >
+
+                                <div class="d-inline-flex gap-1">
+
+
+                                    <!-- VIEW -->
+
+                                    <a
+                                        href="{% url 'core:hawala_report' %}?search={{ item.hawala_account.name|urlencode }}"
+                                        class="btn btn-sm btn-outline-primary"
+                                    >
+
+                                        <i class="bi bi-eye"></i>
+
+                                        View
+
+                                    </a>
+
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+                        {% empty %}
+
+
+                        <!-- =================================================
+                             EMPTY
+                             ================================================= -->
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                class="text-center text-muted py-4"
+                            >
+
+                                No Hawala records found.
+
+                            </td>
+
+                        </tr>
+
+
+                        {% endfor %}
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

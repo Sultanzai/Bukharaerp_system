@@ -2,10 +2,12 @@ from django.urls import path
 
 from .views import (
     DashboardView,
+    HawalaReportView,
     ReportView,
     CustomerStatementView,
     CustomerStatementReportView,
     FactoryStatementView,
+    hawala_summary,
     investor_summary,
     InvestorDetailView,
     InvestorSummaryView,
@@ -69,5 +71,15 @@ urlpatterns = [
         "reports/investment-report/",
         InvestorSummaryView.as_view(),
         name="investor_report",
+    ),
+    path(
+        "reports/hawala/",
+        HawalaReportView.as_view(),
+        name="hawala_report",
+    ),
+    path(
+        "reports/hawala-summary/",
+        hawala_summary,
+        name="hawala_summary",
     ),
 ]
